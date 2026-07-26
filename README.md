@@ -6,6 +6,11 @@
 Log a trade, paste a screenshot, get an AI-powered post-mortem — everything else calculates itself.
 
 [![Live Demo](https://img.shields.io/badge/demo-live-brightgreen?style=for-the-badge)](https://tetiana-a.github.io/ai-trading-journal/)
+<br>
+
+![AI Trading Journal Dashboard](preview.png.png)
+
+<br>
 [![Made with](https://img.shields.io/badge/built%20with-HTML%20%2F%20CSS%20%2F%20JS-d4af37?style=for-the-badge)](#-tech-stack)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue?style=for-the-badge)](LICENSE)
 
