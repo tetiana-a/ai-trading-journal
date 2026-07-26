@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Journal — Tetiana Kotolup</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--tt:background .5s cubic-bezier(.4,0,.2,1),color .5s cubic-bezier(.4,0,.2,1),border-color .5s cubic-bezier(.4,0,.2,1)}
+[data-theme="dark"]{
+  --bg:#050505;--bg2:#0c0c0c;--bg3:#141414;
+  --line:rgba(212,175,55,.08);--line2:rgba(212,175,55,.2);
+  --txt:#e8e8e8;--txt2:#909090;--txt3:#555555;
+  --tag:rgba(212,175,55,.04);--hov:rgba(212,175,55,.02);
+  --accent:#d4af37;--pos:#4ade80;--neg:#ef4444;
+  --gold:212,175,55;
+}
+[data-theme="light"]{--bg:#f7f7f5;--bg2:#eeeeed;--bg3:#e4e4e2;--line:rgba(0,0,0,.07);--line2:rgba(0,0,0,.13);--txt:#0c0c0c;--txt2:#565656;--txt3:#b0b0b0;--tag:rgba(0,0,0,.04);--hov:rgba(0,0,0,.025);--accent:#b5730c;--pos:#1f8f52;--neg:#c23b32;--gold:181,115,12}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:'Poppins',sans-serif;font-weight:400;line-height:1.8;overflow-x:hidden;transition:var(--tt);font-size:16px;position:relative}
+::selection{background:var(--accent);color:#000}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1160px;margin:0 auto;padding:0 48px;position:relative;z-index:2}
+@media(max-width:900px){.wrap{padding:0 28px}}
+@media(max-width:480px){.wrap{padding:0 20px}}
+
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.3;transition:opacity 1s}
+body.radio-on #bgCanvas{opacity:0.7}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,5,5,.8);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);transition:var(--tt)}
+.nav-in{max-width:1160px;margin:0 auto;padding:0 48px;height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.nav-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:14px;letter-spacing:.06em;color:var(--txt);display:flex;align-items:center;gap:8px}
+.nav-logo span{color:var(--accent);font-weight:400;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.nav-links{display:flex;gap:28px;align-items:center}
+.nav-links a{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt3);transition:color .2s}
+.nav-links a:hover{color:var(--accent)}
+.nav-controls{display:flex;align-items:center;gap:12px}
+.theme-tog{width:42px;height:22px;background:var(--bg3);border:1px solid var(--line2);border-radius:11px;cursor:pointer;position:relative;flex-shrink:0;transition:var(--tt)}
+.theme-tog::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:var(--txt);top:3px;left:3px;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+[data-theme="light"] .theme-tog::before{transform:translateX(20px)}
+.nav-icon{background:none;border:1px solid var(--line2);color:var(--txt3);width:28px;height:22px;border-radius:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+.nav-icon:hover{border-color:var(--accent);color:var(--accent)}
+.lang-select{background:var(--bg3);border:1px solid var(--line2);color:var(--txt);height:22px;border-radius:11px;padding:0 4px;font-family:'JetBrains Mono',monospace;font-size:10px;cursor:pointer;outline:none}
+.radio-btn{background:none;border:1px solid var(--line2);color:var(--txt3);padding:5px 12px;border-radius:11px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:6px;text-transform:uppercase}
+.radio-btn:hover{border-color:var(--accent);color:var(--accent)}
+.radio-btn.on{background:var(--accent);color:#000;border-color:var(--accent)}
+.radio-dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:pdot 2.5s infinite}
+.radio-btn.on .radio-dot{animation:radioBeat .5s infinite}
+@keyframes radioBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+@media(max-width:700px){.nav-links{display:none}.radio-btn span{display:none}}
+
+.hero{position:relative;min-height:78vh;display:flex;flex-direction:column;justify-content:flex-end;padding:120px 0 64px}
+.hero-eyebrow{display:flex;align-items:center;gap:12px;margin-bottom:24px;opacity:0;animation:fadeUp .7s .2s both}
+.eye-line{width:28px;height:1px;background:var(--accent)}
+.eye-txt{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--txt3)}
+.eye-dot{width:5px;height:5px;border-radius:50%;background:var(--pos);animation:pdot 2.5s infinite}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
+.hero-title{font-family:'Poppins',sans-serif;font-size:clamp(42px,7vw,84px);font-weight:600;line-height:1.02;letter-spacing:-.03em;opacity:0;animation:fadeUp .7s .32s both}
+.hero-title em{font-style:italic;color:var(--accent)}
+.hero-desc{margin-top:20px;max-width:520px;font-size:16px;color:var(--txt2);line-height:1.8;opacity:0;animation:fadeUp .7s .44s both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+.hero-bottom{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;margin-top:56px;padding-top:40px;border-top:1px solid var(--line);opacity:0;animation:fadeUp .7s .56s both}
+@media(max-width:800px){.hero-bottom{grid-template-columns:1fr;gap:32px}}
+.hero-stats{display:flex;flex-wrap:wrap;gap:36px}
+.stat-n{font-family:'Poppins',sans-serif;font-size:38px;line-height:1;font-weight:600}
+.stat-n.pos{color:var(--pos)}
+.stat-n.neg{color:var(--neg)}
+.stat-l{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);margin-top:6px}
+.equity-box{position:relative}
+.equity-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--txt3);margin-bottom:10px}
+#equityCanvas{width:100%;height:90px;display:block}
+
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .7s cubic-bezier(.4,0,.2,1)}
+.rv.on{opacity:1;transform:translateY(0)}
+.sec{padding:72px 0;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:20px;margin-bottom:44px;flex-wrap:wrap}
+.sec-head-l{display:flex;align-items:baseline;gap:18px}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.12em;flex-shrink:0}
+.sec-title{font-family:'Poppins',sans-serif;font-size:clamp(26px,3.2vw,38px);font-weight:600;letter-spacing:-.02em}
+@media(max-width:600px){.sec{padding:52px 0}.sec-head{margin-bottom:30px}}
+
+.sub-title{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:32px 0 12px;display:flex;align-items:center;gap:10px}
+.sub-title::before{content:'';width:14px;height:1px;background:var(--accent)}
+
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;border:1px solid var(--line)}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+.kpi-cell{background:var(--bg);padding:26px 24px;border:1px solid var(--line);transition:background .25s,border-color .25s}
+.kpi-cell:hover{background:var(--bg2);border-color:var(--line2)}
+.kpi-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3);margin-bottom:12px}
+.kpi-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:600}
+.kpi-val.pos{color:var(--pos)}
+.kpi-val.neg{color:var(--neg)}
+
+.form-card{border:1px solid var(--line);padding:32px;background:var(--bg)}
+.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+@media(max-width:900px){.form-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.form-grid{grid-template-columns:1fr}}
+.f-field{display:flex;flex-direction:column;gap:6px}
+.f-field.span2{grid-column:span 2}
+@media(max-width:520px){.f-field.span2{grid-column:span 1}}
+.f-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--txt3)}
+.f-input,.f-select,.f-textarea{background:var(--tag);border:1px solid var(--line);border-radius:2px;padding:10px 12px;font-family:'Poppins',sans-serif;font-size:13px;color:var(--txt);transition:border-color .2s,background .2s}
+.f-input:focus,.f-select:focus,.f-textarea:focus{outline:none;border-color:var(--accent);background:var(--bg2)}
+.f-textarea{resize:vertical;min-height:44px;font-family:'Poppins',sans-serif}
+.f-select{cursor:pointer}
+.price-hint{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);margin-top:4px;cursor:pointer;display:block;min-height:14px}
+.price-hint:hover{text-decoration:underline}
+.form-actions{margin-top:22px;display:flex;justify-content:flex-end}
+.btn{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:11px 22px;border-radius:2px;border:none;cursor:pointer;transition:opacity .2s,background .2s}
+.btn-primary{background:var(--accent);color:#000;font-weight:600}
+.btn-primary:hover{opacity:.82}
+.btn-ghost{background:none;border:1px solid var(--line2);color:var(--txt2)}
+.btn-ghost:hover{color:var(--txt);border-color:var(--accent)}
+
+.ss-dropzone{border:1px dashed var(--line2);background:var(--tag);padding:16px;border-radius:2px;cursor:pointer;transition:border-color .2s,background .2s;min-height:80px;display:flex;flex-direction:column;gap:12px}
+.ss-dropzone.dragover{border-color:var(--accent);background:rgba(var(--gold),.05)}
+.ss-dropzone p{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt3);text-align:center;letter-spacing:.1em;text-transform:uppercase}
+.ss-previews{display:flex;flex-wrap:wrap;gap:10px}
+.ss-thumb{position:relative;width:70px;height:70px;border:1px solid var(--line2);border-radius:2px;overflow:hidden}
+.ss-thumb img{width:100%;height:100%;object-fit:cover}
+.ss-thumb .ss-del{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border:none;width:16px;height:16px;border-radius:50%;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1}
+
+.tbl-wrap{border:1px solid var(--line);overflow-x:auto;margin-bottom:32px}
+.tk-table{width:100%;border-collapse:collapse;min-width:920px}
+.tk-table th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);text-align:left;padding:14px 16px;border-bottom:1px solid var(--line);white-space:nowrap}
+.tk-table td{padding:14px 16px;font-size:13px;color:var(--txt2);border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+.tk-table tr:last-child td{border-bottom:none}
+.tk-table tr:hover td{background:var(--hov)}
+.tk-table td.name{color:var(--txt);font-weight:700;font-family:'Poppins',sans-serif}
+.badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:2px;border:1px solid var(--line2)}
+.badge.long{color:var(--pos);border-color:var(--pos)}
+.badge.short{color:var(--neg);border-color:var(--neg)}
+.badge.open{color:var(--accent);border-color:var(--accent)}
+.badge.closed{color:var(--txt3);border-color:var(--line2)}
+.pnl.pos{color:var(--pos);font-weight:700}
+.pnl.neg{color:var(--neg);font-weight:700}
+.live-price.pos{color:var(--pos)}
+.live-price.neg{color:var(--neg)}
+.row-actions{display:flex;gap:8px;align-items:center}
+.row-btn{background:none;border:1px solid var(--line2);color:var(--txt2);padding:4px 8px;border-radius:2px;font-family:'JetBrains Mono',monospace;font-size:9px;cursor:pointer;text-transform:uppercase;letter-spacing:.08em;transition:all .2s}
+.row-btn:hover{border-color:var(--accent);color:var(--accent)}
+.row-btn.del:hover{border-color:var(--neg);color:var(--neg)}
+.row-btn.ai-btn{border-color:rgba(168,85,247,.3);color:#a855f7}
+.row-btn.ai-btn:hover{background:#a855f7;color:#fff;border-color:#a855f7}
+.row-ss{display:flex;gap:6px}
+.row-ss img{width:40px;height:40px;object-fit:cover;border-radius:2px;cursor:pointer;border:1px solid var(--line2);transition:transform .2s}
+.row-ss img:hover{transform:scale(1.1);border-color:var(--accent)}
+.empty-state{padding:48px 24px;text-align:center;color:var(--txt3);font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.05em}
+
+.month-table{width:100%;border-collapse:collapse;border:1px solid var(--line)}
+.month-table th{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);text-align:left;padding:12px 18px;border-bottom:1px solid var(--line)}
+.month-table td{padding:12px 18px;font-size:13px;color:var(--txt2);border-bottom:1px solid var(--line)}
+.month-table tr:last-child td{border-bottom:none}
+.month-table tr.total td{font-weight:700;color:var(--txt);background:var(--tag)}
+
+.autosave-note{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--txt3)}
+.autosave-dot{width:6px;height:6px;border-radius:50%;background:var(--pos)}
+
+.ss-library-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.ss-lib-item{position:relative;aspect-ratio:1;border:1px solid var(--line2);border-radius:2px;overflow:hidden;cursor:pointer}
+.ss-lib-item img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.ss-lib-item:hover img{transform:scale(1.05)}
+.ss-lib-meta{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.8);padding:6px;font-family:'JetBrains Mono',monospace;font-size:9px;color:#fff;display:flex;justify-content:space-between;align-items:center}
+
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal-box{background:var(--bg2);border:1px solid var(--line2);max-width:500px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto}
+.modal-box.large{max-width:680px}
+.modal-close{position:absolute;top:12px;right:12px;background:none;border:none;color:var(--txt3);font-size:20px;cursor:pointer}
+.modal-title{font-size:20px;font-weight:600;margin-bottom:20px;color:var(--accent)}
+.img-viewer{max-width:90vw;max-height:90vh;border:3px solid var(--accent);object-fit:contain}
+.ai-content{font-size:14px;color:var(--txt);white-space:pre-wrap;line-height:1.6}
+.ai-loading{display:flex;align-items:center;gap:10px;color:var(--txt2);font-family:'JetBrains Mono',monospace;font-size:12px}
+.ai-loading::after{content:'';width:12px;height:12px;border:2px solid var(--txt3);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.modal-footer{margin-top:24px;display:flex;justify-content:flex-end;border-top:1px solid var(--line);padding-top:16px}
+
+footer{padding:40px 0;border-top:1px solid var(--line)}
+.foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3)}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<nav>
+  <div class="nav-in">
+    <div class="nav-logo">TK <span>· Trading Journal</span></div>
+    <div class="nav-links">
+      <a href="#add" data-i18n="nav_new">Новая сделка</a>
+      <a href="#trades" data-i18n="nav_trades">Сделки</a>
+      <a href="#stats" data-i18n="nav_stats">Статистика</a>
+      <a href="#library" data-i18n="nav_library">Скрины</a>
+      <a href="#monthly" data-i18n="nav_monthly">Месяцы</a>
+    </div>
+    <div class="nav-controls">
+      <button class="radio-btn" id="radioBtn">
+        <div class="radio-dot"></div>
+        <span>Kiss FM</span>
+      </button>
+      <select id="langSelect" class="lang-select">
+        <option value="ru">RU</option>
+        <option value="en">EN</option>
+        <option value="uk">UK</option>
+        <option value="cs">CS</option>
+      </select>
+      <button class="nav-icon" id="apiSettingsBtn" title="AI Settings">⚙</button>
+      <button class="theme-tog" id="themeTog" aria-label="Theme"></button>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-content wrap">
+    <div class="hero-eyebrow"><div class="eye-line"></div><div class="eye-txt" data-i18n="hero_eyebrow">Личный журнал трейдера</div><div class="eye-dot"></div></div>
+    <h1 class="hero-title">Trading <em>Journal</em></h1>
+    <p class="hero-desc" data-i18n="hero_desc">Все сделки, PNL и статистика считаются автоматически. Подключены актуальные цены с биржи Binance.</p>
+
+    <div class="hero-bottom">
+      <div class="hero-stats" id="heroStats"></div>
+      <div class="equity-box">
+        <div class="equity-lbl" data-i18n="equity_lbl">Кривая доходности</div>
+        <canvas id="equityCanvas"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="add">
+  <div class="wrap">
+    <div class="sec-head rv">
+      <div class="sec-head-l"><span class="sec-num">01</span><h2 class="sec-title" data-i18n="sec1_title">Новая сделка</h2></div>
+      <div class="autosave-note"><div class="autosave-dot"></div><span data-i18n="autosave_note">Сохраняется автоматически</span></div>
+    </div>
+
+    <div class="form-card rv">
+      <div class="form-grid">
+        <div class="f-field">
+          <label class="f-lbl" data-i18n="lbl_ticker">Тикер</label>
+          <input class="f-input" id="fTicker" placeholder="BTCUSDT">
+          <span id="livePriceHint" class="price-hint"></span>
+        </div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_date">Дата</label><input class="f-input" id="fDate" type="date"></div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_side">Long / Short</label>
+          <select class="f-select" id="fSide"><option value="Long">Long</option><option value="Short">Short</option></select>
+        </div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_status">Статус</label>
+          <select class="f-select" id="fStatus"><option value="closed" data-i18n="opt_closed">Закрытая</option><option value="open" data-i18n="opt_open">Открытая</option></select>
+        </div>
+
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_deposit">Депо, $</label><input class="f-input" id="fDeposit" type="number" step="any" placeholder="1000"></div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_entry">Цена входа</label><input class="f-input" id="fEntry" type="number" step="any" placeholder="62150.5"></div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_exit">Цена выхода (если есть)</label><input class="f-input" id="fExit" type="number" step="any" placeholder="63400"></div>
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_volume">Объём</label><input class="f-input" id="fVolume" type="number" step="any" placeholder="0.05"></div>
+        
+        <div class="f-field"><label class="f-lbl" data-i18n="lbl_emotion">Эмоция</label>
+          <select class="f-select" id="fEmotion">
+            <option data-i18n="emo_calm">Спокойствие</option><option data-i18n="emo_confidence">Уверенность</option><option data-i18n="emo_greed">Жадность</option>
+            <option data-i18n="emo_fear">Страх</option><option>FOMO</option><option data-i18n="emo_excitement">Азарт</option>
+            <option data-i18n="emo_irritation">Раздражение</option><option data-i18n="emo_impatience">Нетерпение</option><option data-i18n="emo_pride">Гордость</option><option data-i18n="emo_disappointment">Разочарование</option>
+          </select>
+        </div>
+        <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_entry_reason">Причина входа</label><input class="f-input" id="fEntryReason" placeholder="Пробой уровня + объём"></div>
+        <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_exit_reason">Причина выхода</label><input class="f-input" id="fExitReason" placeholder="Тейк-профит по плану"></div>
+
+        <div class="f-field" style="grid-column:1/-1"><label class="f-lbl" data-i18n="lbl_notes">Вывод / урок</label><textarea class="f-textarea" id="fNotes" placeholder="Что получилось, что улучшить в следующий раз"></textarea></div>
+        
+        <div class="f-field" style="grid-column:1/-1">
+          <label class="f-lbl" data-i18n="lbl_screens">Скриншоты (Ctrl+V или выберите файл)</label>
+          <div class="ss-dropzone" id="ssDropzone">
+            <input type="file" id="ssFile" accept="image/*" multiple hidden>
+            <p data-i18n="dropzone_text">Вставьте из буфера (Ctrl+V) или нажмите для выбора</p>
+            <div class="ss-previews" id="ssPreviews"></div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="btnAdd" data-i18n="btn_add">Добавить сделку</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="trades">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title" data-i18n="sec2_title">Сделки</h2></div></div>
+    
+    <div class="rv">
+      <div class="sub-title" data-i18n="sub_open">Открытые</div>
+      <div class="tbl-wrap">
+        <table class="tk-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_date">Дата</th><th data-i18n="th_ticker">Тикер</th><th data-i18n="th_side">Сторона</th><th data-i18n="th_entry">Вход</th><th data-i18n="th_current">Тек. цена</th><th data-i18n="th_volume">Объём</th><th data-i18n="th_emotion">Эмоция</th><th data-i18n="th_screens">Скрины</th><th data-i18n="th_actions">Действия</th>
+            </tr>
+          </thead>
+          <tbody id="openTradesBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyOpen" data-i18n="empty_open">Нет открытых сделок.</div>
+      </div>
+    </div>
+
+    <div class="rv">
+      <div class="sub-title" data-i18n="sub_closed">Закрытые</div>
+      <div class="tbl-wrap">
+        <table class="tk-table">
+          <thead>
+            <tr>
+              <th data-i18n="th_date">Дата</th><th data-i18n="th_ticker">Тикер</th><th data-i18n="th_side">Сторона</th><th data-i18n="th_deposit">Депо</th><th data-i18n="th_entry">Вход</th><th data-i18n="th_exit">Выход</th>
+              <th data-i18n="th_volume">Объём</th><th data-i18n="th_pnl_usd">PNL $</th><th data-i18n="th_pnl_pct">PNL %</th><th data-i18n="th_emotion">Эмоция</th><th data-i18n="th_screens">Скрины</th><th data-i18n="th_actions">Действия</th>
+            </tr>
+          </thead>
+          <tbody id="closedTradesBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyClosed" data-i18n="empty_closed">Пока нет закрытых сделок — добавь первую выше.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="stats">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">03</span><h2 class="sec-title" data-i18n="sec3_title">Статистика</h2></div></div>
+    <div class="kpi-grid rv" id="kpiGrid"></div>
+  </div>
+</section>
+
+<section class="sec" id="library">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">04</span><h2 class="sec-title" data-i18n="sec4_title">Библиотека скриншотов</h2></div></div>
+    <div class="ss-library-grid rv" id="ssLibraryGrid"></div>
+    <div class="empty-state rv" id="emptyLibrary" style="display:none;" data-i18n="empty_library">Нет сохраненных скриншотов.</div>
+  </div>
+</section>
+
+<section class="sec" id="monthly">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">05</span><h2 class="sec-title" data-i18n="sec5_title">По месяцам</h2></div></div>
+    <table class="month-table rv">
+      <thead><tr><th data-i18n="th_month">Месяц</th><th data-i18n="th_count">Сделок</th><th>Win rate</th><th data-i18n="th_pnl_usd">PNL $</th></tr></thead>
+      <tbody id="monthlyBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>Trading Journal · Tetiana Kotolup</span>
+    <span id="footTradeCount">0</span>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="closeTradeModal">
+  <div class="modal-box">
+    <button class="modal-close" data-close="closeTradeModal">✕</button>
+    <h3 class="modal-title" id="closeModalTitle" data-i18n="modal_close_title">Закрыть сделку</h3>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div class="f-field"><label class="f-lbl" data-i18n="lbl_exit_price">Цена выхода</label><input class="f-input" type="number" step="any" id="closeExitPrice"></div>
+      <div class="f-field"><label class="f-lbl" data-i18n="lbl_exit_reason_modal">Причина выхода</label><input class="f-input" id="closeExitReason"></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="confirmCloseBtn" data-i18n="modal_close_title">Закрыть сделку</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="imgViewerModal">
+  <img id="imgViewerSrc" class="img-viewer" src="">
+</div>
+
+<div class="modal-overlay" id="aiModal">
+  <div class="modal-box large">
+    <button class="modal-close" data-close="aiModal">✕</button>
+    <h3 class="modal-title" id="aiModalTitle" data-i18n="modal_ai_title">ИИ Анализ сделки</h3>
+    <div id="aiContent" class="ai-content">
+      <div class="ai-loading" data-i18n="modal_ai_loading">Получаю актуальную цену и новости...</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" data-close="aiModal" data-i18n="btn_close_modal">Закрыть окно</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="apiSettingsModal">
+  <div class="modal-box">
+    <button class="modal-close" data-close="apiSettingsModal">✕</button>
+    <h3 class="modal-title" data-i18n="modal_api_title">Настройки ИИ (Бесплатно)</h3>
+    <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;"><span data-i18n="modal_api_desc">Для работы ИИ-аналитика нужна регистрация на</span> <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent)">console.groq.com/keys</a> <span data-i18n="modal_api_desc2">(бесплатно) и вставка ключа сюда.</span></p>
+    <div class="form-grid" style="grid-template-columns:1fr">
+      <div class="f-field"><label class="f-lbl">API URL</label><input class="f-input" id="apiUrlInput" value="https://api.groq.com/openai/v1/chat/completions"></div>
+      <div class="f-field"><label class="f-lbl" data-i18n="lbl_api_key">API Ключ</label><input class="f-input" id="apiKeyInput" type="password" placeholder="gsk_..."></div>
+      <div class="f-field"><label class="f-lbl" data-i18n="lbl_api_model">Модель</label><input class="f-input" id="apiModelInput" value="llama-3.3-70b-versatile"></div>
+      <div class="form-actions">
+        <button class="btn btn-primary" id="saveApiBtn" data-i18n="btn_save">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- TRANSLATIONS ---------- */
+const translations = {
+  ru: {
+    nav_new: "Новая сделка", nav_trades: "Сделки", nav_stats: "Статистика", nav_library: "Скрины", nav_monthly: "Месяцы",
+    hero_eyebrow: "Личный журнал трейдера", hero_desc: "Все сделки, PNL и статистика считаются автоматически. Подключены актуальные цены с биржи Binance.",
+    equity_lbl: "Кривая доходности", stat_total: "Всего сделок", stat_winrate: "Win rate", stat_totalpnl: "Общий PNL",
+    sec1_title: "Новая сделка", autosave_note: "Сохраняется автоматически",
+    lbl_ticker: "Тикер", lbl_date: "Дата", lbl_side: "Long / Short", lbl_status: "Статус", opt_closed: "Закрытая", opt_open: "Открытая",
+    lbl_deposit: "Депо, $", lbl_entry: "Цена входа", lbl_exit: "Цена выхода (если есть)", lbl_volume: "Объём",
+    lbl_emotion: "Эмоция", lbl_entry_reason: "Причина входа", lbl_exit_reason: "Причина выхода", lbl_notes: "Вывод / урок",
+    lbl_screens: "Скриншоты (Ctrl+V или выберите файл)", dropzone_text: "Вставьте из буфера (Ctrl+V) или нажмите для выбора", btn_add: "Добавить сделку",
+    sec2_title: "Сделки", sub_open: "Открытые", sub_closed: "Закрытые",
+    th_date: "Дата", th_ticker: "Тикер", th_side: "Сторона", th_deposit: "Депо", th_entry: "Вход", th_exit: "Выход", th_current: "Тек. цена",
+    th_volume: "Объём", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Эмоция", th_screens: "Скрины", th_actions: "Действия",
+    empty_open: "Нет открытых сделок.", empty_closed: "Пока нет закрытых сделок — добавь первую выше.",
+    sec3_title: "Статистика", kpi_closed: "Всего закрытых", kpi_open: "Открыто сейчас", kpi_pf: "Profit factor",
+    kpi_total_usd: "Общий PNL, $", kpi_total_pct: "Общий PNL, %", kpi_avg_win: "Средняя прибыль, $", kpi_avg_loss: "Средний убыток, $",
+    sec4_title: "Библиотека скриншотов", empty_library: "Нет сохраненных скриншотов.",
+    sec5_title: "По месяцам", th_month: "Месяц", th_count: "Сделок", th_total: "Итого",
+    modal_close_title: "Закрыть сделку", lbl_exit_price: "Цена выхода", lbl_exit_reason_modal: "Причина выхода",
+    modal_ai_title: "ИИ Анализ сделки", modal_ai_loading: "Получаю актуальную цену и новости...", modal_ai_curr_price: "Текущая цена", modal_ai_gathering_news: "Собираю новости...", modal_ai_analyzing: "Анализирую сделку, цену и фундаментальный фон...", btn_close_modal: "Закрыть окно",
+    modal_api_title: "Настройки ИИ (Бесплатно)", modal_api_desc: "Для работы ИИ-аналитика нужна регистрация на", modal_api_desc2: "(бесплатно) и вставка ключа сюда.",
+    lbl_api_key: "API Ключ", lbl_api_model: "Модель", btn_save: "Сохранить",
+    alert_no_api: "Пожалуйста, настройте ИИ API ключ в настройках (иконка шестеренки).", alert_api_saved: "Настройки ИИ сохранены!",
+    alert_storage_error: "Ошибка сохранения. Возможно, превышен лимит localStorage (слишком много фото).", alert_radio_error: "К сожалению, поток радио недоступен или заблокирован в вашем регионе.",
+    hint_price: "Текущая цена:", hint_click: "(нажми, чтобы вставить)", hint_not_found: "Цена не найдена (проверь тикер, напр. BTCUSDT)",
+    live_loading: "загрузка...", live_na: "Н/Д",
+    months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    lang_name: "русском",
+    emo_calm: "Спокойствие", emo_confidence: "Уверенность", emo_greed: "Жадность", emo_fear: "Страх", emo_excitement: "Азарт", emo_irritation: "Раздражение", emo_impatience: "Нетерпение", emo_pride: "Гордость", emo_disappointment: "Разочарование",
+    pl_trade_1: "сделка", pl_trade_2: "сделки", pl_trade_5: "сделок"
+  },
+  en: {
+    nav_new: "New Trade", nav_trades: "Trades", nav_stats: "Stats", nav_library: "Screens", nav_monthly: "Monthly",
+    hero_eyebrow: "Personal Trading Journal", hero_desc: "All trades, PNL, and stats are calculated automatically. Live prices from Binance are connected.",
+    equity_lbl: "Equity Curve", stat_total: "Total Trades", stat_winrate: "Win rate", stat_totalpnl: "Total PNL",
+    sec1_title: "New Trade", autosave_note: "Saved automatically",
+    lbl_ticker: "Ticker", lbl_date: "Date", lbl_side: "Long / Short", lbl_status: "Status", opt_closed: "Closed", opt_open: "Open",
+    lbl_deposit: "Deposit, $", lbl_entry: "Entry Price", lbl_exit: "Exit Price (if any)", lbl_volume: "Volume",
+    lbl_emotion: "Emotion", lbl_entry_reason: "Entry Reason", lbl_exit_reason: "Exit Reason", lbl_notes: "Conclusion / Lesson",
+    lbl_screens: "Screenshots (Ctrl+V or select file)", dropzone_text: "Paste from clipboard (Ctrl+V) or click to select", btn_add: "Add Trade",
+    sec2_title: "Trades", sub_open: "Open", sub_closed: "Closed",
+    th_date: "Date", th_ticker: "Ticker", th_side: "Side", th_deposit: "Deposit", th_entry: "Entry", th_exit: "Exit", th_current: "Curr. Price",
+    th_volume: "Volume", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Emotion", th_screens: "Screens", th_actions: "Actions",
+    empty_open: "No open trades.", empty_closed: "No closed trades yet — add the first one above.",
+    sec3_title: "Statistics", kpi_closed: "Total Closed", kpi_open: "Open Now", kpi_pf: "Profit factor",
+    kpi_total_usd: "Total PNL, $", kpi_total_pct: "Total PNL, %", kpi_avg_win: "Avg Profit, $", kpi_avg_loss: "Avg Loss, $",
+    sec4_title: "Screenshot Library", empty_library: "No saved screenshots.",
+    sec5_title: "Monthly", th_month: "Month", th_count: "Trades", th_total: "Total",
+    modal_close_title: "Close Trade", lbl_exit_price: "Exit Price", lbl_exit_reason_modal: "Exit Reason",
+    modal_ai_title: "AI Trade Analysis", modal_ai_loading: "Fetching live price and news...", modal_ai_curr_price: "Current price", modal_ai_gathering_news: "Gathering news...", modal_ai_analyzing: "Analyzing trade, price, and fundamentals...", btn_close_modal: "Close Window",
+    modal_api_title: "AI Settings (Free)", modal_api_desc: "To use AI analysis, register at", modal_api_desc2: "(free) and paste the key here.",
+    lbl_api_key: "API Key", lbl_api_model: "Model", btn_save: "Save",
+    alert_no_api: "Please set up the AI API key in settings (gear icon).", alert_api_saved: "AI settings saved!",
+    alert_storage_error: "Save error. localStorage limit exceeded (too many photos).", alert_radio_error: "Unfortunately, the radio stream is unavailable or blocked in your region.",
+    hint_price: "Current price:", hint_click: "(click to insert)", hint_not_found: "Price not found (check ticker, e.g. BTCUSDT)",
+    live_loading: "loading...", live_na: "N/A",
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    lang_name: "English",
+    emo_calm: "Calmness", emo_confidence: "Confidence", emo_greed: "Greed", emo_fear: "Fear", emo_excitement: "Excitement", emo_irritation: "Irritation", emo_impatience: "Impatience", emo_pride: "Pride", emo_disappointment: "Disappointment",
+    pl_trade_1: "trade", pl_trade_2: "trades", pl_trade_5: "trades"
+  },
+  uk: {
+    nav_new: "Нова угода", nav_trades: "Угоди", nav_stats: "Статистика", nav_library: "Скріни", nav_monthly: "Місяці",
+    hero_eyebrow: "Особистий журнал трейдера", hero_desc: "Всі угоди, PNL та статистика рахуються автоматично. Підключено актуальні ціни з біржі Binance.",
+    equity_lbl: "Крива прибутковості", stat_total: "Всього угод", stat_winrate: "Win rate", stat_totalpnl: "Загальний PNL",
+    sec1_title: "Нова угода", autosave_note: "Зберігається автоматично",
+    lbl_ticker: "Тікер", lbl_date: "Дата", lbl_side: "Long / Short", lbl_status: "Статус", opt_closed: "Закрита", opt_open: "Відкрита",
+    lbl_deposit: "Депозит, $", lbl_entry: "Ціна входу", lbl_exit: "Ціна виходу (якщо є)", lbl_volume: "Об'єм",
+    lbl_emotion: "Емоція", lbl_entry_reason: "Причина входу", lbl_exit_reason: "Причина виходу", lbl_notes: "Висновок / урок",
+    lbl_screens: "Скріншоти (Ctrl+V або виберіть файл)", dropzone_text: "Вставте з буфера (Ctrl+V) або натисніть для вибору", btn_add: "Додати угоду",
+    sec2_title: "Угоди", sub_open: "Відкриті", sub_closed: "Закриті",
+    th_date: "Дата", th_ticker: "Тікер", th_side: "Сторона", th_deposit: "Депозит", th_entry: "Вхід", th_exit: "Вихід", th_current: "Поточ. ціна",
+    th_volume: "Об'єм", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Емоція", th_screens: "Скріни", th_actions: "Дії",
+    empty_open: "Немає відкритих угод.", empty_closed: "Поки немає закритих угод — додай першу вище.",
+    sec3_title: "Статистика", kpi_closed: "Всього закритих", kpi_open: "Відкрито зараз", kpi_pf: "Profit factor",
+    kpi_total_usd: "Загальний PNL, $", kpi_total_pct: "Загальний PNL, %", kpi_avg_win: "Сер. прибуток, $", kpi_avg_loss: "Сер. збиток, $",
+    sec4_title: "Бібліотека скріншотів", empty_library: "Немає збережених скріншотів.",
+    sec5_title: "По місяцях", th_month: "Місяць", th_count: "Угод", th_total: "Разом",
+    modal_close_title: "Закрити угоду", lbl_exit_price: "Ціна виходу", lbl_exit_reason_modal: "Причина виходу",
+    modal_ai_title: "ІІ Аналіз угоди", modal_ai_loading: "Отримую актуальну ціну та новини...", modal_ai_curr_price: "Поточна ціна", modal_ai_gathering_news: "Збираю новини...", modal_ai_analyzing: "Аналізую угоду, ціну та фундаментал...", btn_close_modal: "Закрити вікно",
+    modal_api_title: "Налаштування ІІ (Безкоштовно)", modal_api_desc: "Для роботи ІІ-аналітика потрібна реєстрація на", modal_api_desc2: "(безкоштовно) та вставка ключа сюди.",
+    lbl_api_key: "API Ключ", lbl_api_model: "Модель", btn_save: "Зберегти",
+    alert_no_api: "Будь ласка, налаштуйте API ключ ІІ в налаштуваннях (іконка шестерні).", alert_api_saved: "Налаштування ІІ збережено!",
+    alert_storage_error: "Помилка збереження. Можливо, перевищено ліміт localStorage (забагато фото).", alert_radio_error: "На жаль, потік радіо недоступний або заблокований у вашому регіоні.",
+    hint_price: "Поточна ціна:", hint_click: "(натисни, щоб вставити)", hint_not_found: "Ціну не знайдено (перевір тікер, напр. BTCUSDT)",
+    live_loading: "завантаження...", live_na: "Н/Д",
+    months: ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+    lang_name: "українській",
+    emo_calm: "Спокій", emo_confidence: "Впевненість", emo_greed: "Жадібність", emo_fear: "Страх", emo_excitement: "Азарт", emo_irritation: "Роздратування", emo_impatience: "Нетерпіння", emo_pride: "Гордість", emo_disappointment: "Розчарування",
+    pl_trade_1: "угода", pl_trade_2: "угоди", pl_trade_5: "угод"
+  },
+  cs: {
+    nav_new: "Nový obchod", nav_trades: "Obchody", nav_stats: "Statistiky", nav_library: "Screenshoty", nav_monthly: "Měsíčně",
+    hero_eyebrow: "Osobní obchodní deník", hero_desc: "Všechny obchody, PNL a statistiky se počítají automaticky. Připojeny živé ceny z burzy Binance.",
+    equity_lbl: "Křivka kapitálu", stat_total: "Celkem obchodů", stat_winrate: "Win rate", stat_totalpnl: "Celkový PNL",
+    sec1_title: "Nový obchod", autosave_note: "Ukládá se automaticky",
+    lbl_ticker: "Ticker", lbl_date: "Datum", lbl_side: "Long / Short", lbl_status: "Stav", opt_closed: "Uzavřený", opt_open: "Otevřený",
+    lbl_deposit: "Vklad, $", lbl_entry: "Vstupní cena", lbl_exit: "Výstupní cena (pokud existuje)", lbl_volume: "Objem",
+    lbl_emotion: "Emoce", lbl_entry_reason: "Důvod vstupu", lbl_exit_reason: "Důvod výstupu", lbl_notes: "Závěr / lekce",
+    lbl_screens: "Screenshoty (Ctrl+V nebo vyberte soubor)", dropzone_text: "Vložte ze schránky (Ctrl+V) nebo klikněte pro výběr", btn_add: "Přidat obchod",
+    sec2_title: "Obchody", sub_open: "Otevřené", sub_closed: "Uzavřené",
+    th_date: "Datum", th_ticker: "Ticker", th_side: "Strana", th_deposit: "Vklad", th_entry: "Vstup", th_exit: "Výstup", th_current: "Aktuální cena",
+    th_volume: "Objem", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Emoce", th_screens: "Screenshoty", th_actions: "Akce",
+    empty_open: "Žádné otevřené obchody.", empty_closed: "Zatím nejsou žádné uzavřené obchody — přidejte první výše.",
+    sec3_title: "Statistiky", kpi_closed: "Celkem uzavřených", kpi_open: "Otevřeno nyní", kpi_pf: "Profit factor",
+    kpi_total_usd: "Celkový PNL, $", kpi_total_pct: "Celkový PNL, %", kpi_avg_win: "Prům. zisk, $", kpi_avg_loss: "Prům. ztráta, $",
+    sec4_title: "Knihovna screenshotů", empty_library: "Žádné uložené screenshoty.",
+    sec5_title: "Měsíčně", th_month: "Měsíc", th_count: "Obchodů", th_total: "Celkem",
+    modal_close_title: "Zavřít obchod", lbl_exit_price: "Výstupní cena", lbl_exit_reason_modal: "Důvod výstupu",
+    modal_ai_title: "AI Analýza obchodu", modal_ai_loading: "Získávám aktuální cenu a zprávy...", modal_ai_curr_price: "Aktuální cena", modal_ai_gathering_news: "Shromážďuji zprávy...", modal_ai_analyzing: "Analyzuji obchod, cenu a fundamenty...", btn_close_modal: "Zavřít okno",
+    modal_api_title: "Nastavení AI (Zdarma)", modal_api_desc: "Pro použití AI analýzy se zaregistrujte na", modal_api_desc2: "(zdarma) a vložte klíč sem.",
+    lbl_api_key: "API Klíč", lbl_api_model: "Model", btn_save: "Uložit",
+    alert_no_api: "Nakonfigurujte prosím AI API klíč v nastavení (ikonka ozubeného kola).", alert_api_saved: "Nastavení AI uloženo!",
+    alert_storage_error: "Chyba ukládání. Pravděpodobně byl překročen limit localStorage (příliš mnoho fotek).", alert_radio_error: "Bohužel, rádiový stream je nedostupný nebo blokován ve vašem regionu.",
+    hint_price: "Aktuální cena:", hint_click: "(klikněte pro vložení)", hint_not_found: "Cena nebyla nalezena (zkontrolujte ticker, např. BTCUSDT)",
+    live_loading: "načítání...", live_na: "N/A",
+    months: ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'],
+    lang_name: "češtině",
+    emo_calm: "Klid", emo_confidence: "Jistota", emo_greed: "Chamtivost", emo_fear: "Strach", emo_excitement: "Vzrušení", emo_irritation: "Irritace", emo_impatience: "Nětrpělivost", emo_pride: "Hrdost", emo_disappointment: "Zklamání",
+    pl_trade_1: "obchod", pl_trade_2: "obchody", pl_trade_5: "obchodů"
+  }
+};
+
+let currentLang = localStorage.getItem('tk_lang') || 'ru';
+
+function applyTranslations() {
+  const t = translations[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) el.textContent = t[key];
+  });
+  renderAll();
+}
+
+document.getElementById('langSelect').value = currentLang;
+document.getElementById('langSelect').addEventListener('change', (e) => {
+  currentLang = e.target.value;
+  localStorage.setItem('tk_lang', currentLang);
+  applyTranslations();
+});
+
+/* ---------- THEME ---------- */
+const themeTog=document.getElementById('themeTog');
+themeTog.addEventListener('click',()=>{
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  drawEquity();
+});
+
+/* ---------- REVEAL ON SCROLL ---------- */
+const rvObserver=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('on'); rvObserver.unobserve(e.target);} });
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.rv').forEach(el=>rvObserver.observe(el));
+
+/* ---------- STORAGE WRAPPER ---------- */
+const db = {
+  get: (k) => {
+    try { return Promise.resolve(localStorage.getItem(k)); } 
+    catch(e) { return window.storage ? window.storage.get(k) : null; }
+  },
+  set: (k, v) => {
+    try { return Promise.resolve(localStorage.setItem(k, v)); } 
+    catch(e) { return window.storage ? window.storage.set(k, v) : null; }
+  }
+};
+
+/* ---------- STATE ---------- */
+let trades=[];
+let currentScreenshots = [];
+let closingTradeId = null;
+const STORAGE_KEY='tk_journal_trades_v2';
+const API_KEY_STORAGE='tk_ai_api_key';
+const API_URL_STORAGE='tk_ai_api_url';
+const API_MODEL_STORAGE='tk_ai_model';
+
+function uid(){return 't'+Date.now()+Math.random().toString(36).slice(2,8);}
+
+async function loadTrades(){
+  try{
+    const res=await db.get(STORAGE_KEY);
+    trades = res ? JSON.parse(res) : [];
+  }catch(e){ trades = []; }
+  renderAll();
+}
+
+async function saveTrades(){
+  try{ await db.set(STORAGE_KEY, JSON.stringify(trades)); }
+  catch(e){ console.error('Storage error', e); alert(translations[currentLang].alert_storage_error); }
+}
+
+/* ---------- CALC ---------- */
+function calcPnl(t){
+  const entry=parseFloat(t.entry), exit=parseFloat(t.exit), vol=parseFloat(t.volume);
+  if(isNaN(entry)||isNaN(exit)||isNaN(vol)||t.status==='open') return {pnl:0,pct:0};
+  const pnl = t.side==='Short' ? (entry-exit)*vol : (exit-entry)*vol;
+  const dep = parseFloat(t.deposit)||0;
+  const pct = dep ? pnl/dep : 0;
+  return {pnl,pct};
+}
+
+function fmtMoney(n){
+  const sign = n<0?'-':'';
+  return sign+'$'+Math.abs(n).toLocaleString('ru-RU',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+function fmtPct(n){ return (n*100).toFixed(2)+'%'; }
+
+/* ---------- LIVE PRICE FETCHER ---------- */
+function cleanTicker(ticker) {
+  let t = ticker.toUpperCase();
+  t = t.replace(/USDT|USD|BUSD|PERP|USDC|T/g, '');
+  t = t.replace(/[^A-Z0-9]/g, '');
+  return t;
+}
+
+async function fetchLivePrice(ticker) {
+  try {
+    let symbol = ticker.toUpperCase();
+    if (!symbol.endsWith('USDT') && !symbol.endsWith('BUSD') && !symbol.endsWith('USDC')) {
+      symbol += 'USDT';
+    }
+    const res = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    return parseFloat(data.price);
+  } catch (e) {
+    return null;
+  }
+}
+
+const fTickerInput = document.getElementById('fTicker');
+const livePriceHint = document.getElementById('livePriceHint');
+let priceDebounce;
+
+fTickerInput.addEventListener('input', () => {
+  clearTimeout(priceDebounce);
+  const val = fTickerInput.value.trim();
+  if (!val) { livePriceHint.textContent = ''; return; }
+  
+  priceDebounce = setTimeout(async () => {
+    const price = await fetchLivePrice(val);
+    const t = translations[currentLang];
+    if (price) {
+      livePriceHint.textContent = `${t.hint_price} $${price.toLocaleString('ru-RU', {maximumFractionDigits: 8})} ${t.hint_click}`;
+      livePriceHint.onclick = () => {
+        document.getElementById('fEntry').value = price;
+        document.getElementById('fEntry').focus();
+      };
+    } else {
+      livePriceHint.textContent = t.hint_not_found;
+      livePriceHint.onclick = null;
+    }
+  }, 400);
+});
+
+async function updateLivePrices() {
+  const openTrades = trades.filter(t => t.status === 'open');
+  for (const t of openTrades) {
+    const cell = document.querySelector(`td.live-price[data-ticker-id="${t.id}"]`);
+    if (cell) {
+      const price = await fetchLivePrice(t.ticker);
+      if (price) {
+        cell.textContent = price.toLocaleString('ru-RU', {maximumFractionDigits: 8});
+        const entry = parseFloat(t.entry);
+        if(!isNaN(entry)) {
+          if (t.side === 'Long') cell.className = `live-price ${price >= entry ? 'pos' : 'neg'}`;
+          else cell.className = `live-price ${price <= entry ? 'pos' : 'neg'}`;
+        }
+      } else {
+        cell.textContent = translations[currentLang].live_na;
+      }
+    }
+  }
+}
+setInterval(updateLivePrices, 30000);
+
+/* ---------- RENDER ---------- */
+function renderAll(){
+  const t = translations[currentLang];
+  renderTrades(t);
+  renderStats(t);
+  renderHero(t);
+  renderMonthly(t);
+  renderLibrary(t);
+  drawEquity();
+  document.getElementById('footTradeCount').textContent = trades.length+' '+pluralTrades(trades.length, t);
+}
+
+function pluralTrades(n, t) {
+  if (currentLang === 'en') {
+    return n === 1 ? t.pl_trade_1 : t.pl_trade_2;
+  }
+  const mod10 = n % 10, mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return t.pl_trade_1;
+  if ([2,3,4].includes(mod10) && ![12,13,14].includes(mod100)) return t.pl_trade_2;
+  return t.pl_trade_5;
+}
+
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function renderTrades(t){
+  const openBody=document.getElementById('openTradesBody');
+  const closedBody=document.getElementById('closedTradesBody');
+  openBody.innerHTML=''; closedBody.innerHTML='';
+  
+  const openTrades = trades.filter(tr => tr.status === 'open').sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+  const closedTrades = trades.filter(tr => tr.status !== 'open').sort((a,b)=> (b.date||'').localeCompare(a.date||''));
+
+  document.getElementById('emptyOpen').style.display = openTrades.length ? 'none' : 'block';
+  document.getElementById('emptyClosed').style.display = closedTrades.length ? 'none' : 'block';
+
+  openTrades.forEach(tr=>{
+    const row=document.createElement('tr');
+    const ssHtml = (tr.screenshots||[]).map(src=>`<img src="${src}" data-ss="${src}" alt="sc">`).join('');
+    row.innerHTML=`
+      <td>${tr.date||'—'}</td>
+      <td class="name">${escapeHtml(tr.ticker||'—')}</td>
+      <td><span class="badge ${tr.side==='Long'?'long':'short'}">${tr.side}</span></td>
+      <td>${tr.entry||'—'}</td>
+      <td class="live-price" data-ticker-id="${tr.id}"><span style="color:var(--txt3);font-size:10px;">${t.live_loading}</span></td>
+      <td>${tr.volume||'—'}</td>
+      <td>${escapeHtml(tr.emotion||'—')}</td>
+      <td><div class="row-ss">${ssHtml}</div></td>
+      <td class="row-actions">
+        <button class="row-btn ai-btn" data-ai="${tr.id}">AI</button>
+        <button class="row-btn" data-close-id="${tr.id}">${t.modal_close_title}</button>
+        <button class="row-btn del" data-del="${tr.id}">✕</button>
+      </td>
+    `;
+    openBody.appendChild(row);
+  });
+
+  closedTrades.forEach(tr=>{
+    const {pnl,pct}=calcPnl(tr);
+    const row=document.createElement('tr');
+    const ssHtml = (tr.screenshots||[]).map(src=>`<img src="${src}" data-ss="${src}" alt="sc">`).join('');
+    row.innerHTML=`
+      <td>${tr.date||'—'}</td>
+      <td class="name">${escapeHtml(tr.ticker||'—')}</td>
+      <td><span class="badge ${tr.side==='Long'?'long':'short'}">${tr.side}</span></td>
+      <td>${fmtMoney(parseFloat(tr.deposit)||0)}</td>
+      <td>${tr.entry||'—'}</td>
+      <td>${tr.exit||'—'}</td>
+      <td>${tr.volume||'—'}</td>
+      <td class="pnl ${pnl>=0?'pos':'neg'}">${fmtMoney(pnl)}</td>
+      <td class="pnl ${pct>=0?'pos':'neg'}">${fmtPct(pct)}</td>
+      <td>${escapeHtml(tr.emotion||'—')}</td>
+      <td><div class="row-ss">${ssHtml}</div></td>
+      <td class="row-actions">
+        <button class="row-btn ai-btn" data-ai="${tr.id}">AI</button>
+        <button class="row-btn del" data-del="${tr.id}">✕</button>
+      </td>
+    `;
+    closedBody.appendChild(row);
+  });
+
+  document.querySelectorAll('[data-del]').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      trades = trades.filter(tr=>tr.id!==btn.dataset.del);
+      await saveTrades(); renderAll();
+    });
+  });
+
+  document.querySelectorAll('[data-close-id]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      closingTradeId = btn.dataset.closeId;
+      const tr = trades.find(x=>x.id===closingTradeId);
+      document.getElementById('closeModalTitle').textContent = `${t.modal_close_title}: ${tr.ticker}`;
+      document.getElementById('closeExitPrice').value = tr.exit || '';
+      document.getElementById('closeExitReason').value = tr.exitReason || '';
+      document.getElementById('closeTradeModal').classList.add('show');
+    });
+  });
+
+  document.querySelectorAll('[data-ai]').forEach(btn=>{
+    btn.addEventListener('click', ()=>analyzeTrade(btn.dataset.ai));
+  });
+
+  document.querySelectorAll('[data-ss]').forEach(img=>{
+    img.addEventListener('click', ()=>{
+      document.getElementById('imgViewerSrc').src = img.dataset.ss;
+      document.getElementById('imgViewerModal').classList.add('show');
+    });
+  });
+
+  updateLivePrices();
+}
+
+function renderLibrary(t){
+  const grid = document.getElementById('ssLibraryGrid');
+  const empty = document.getElementById('emptyLibrary');
+  grid.innerHTML = '';
+  
+  let allScreens = [];
+  trades.forEach(tr=>{
+    (tr.screenshots||[]).forEach(src=>{
+      allScreens.push({src: src, ticker: tr.ticker, date: tr.date});
+    });
+  });
+
+  if(!allScreens.length){
+    empty.style.display = 'block';
+    grid.style.display = 'none';
+    return;
+  }
+  empty.style.display = 'none';
+  grid.style.display = 'grid';
+
+  allScreens.forEach(s=>{
+    const div = document.createElement('div');
+    div.className = 'ss-lib-item';
+    div.innerHTML = `
+      <img src="${s.src}" alt="screen">
+      <div class="ss-lib-meta">
+        <span>${escapeHtml(s.ticker)}</span>
+        <span>${s.date||''}</span>
+      </div>
+    `;
+    div.addEventListener('click', ()=>{
+      document.getElementById('imgViewerSrc').src = s.src;
+      document.getElementById('imgViewerModal').classList.add('show');
+    });
+    grid.appendChild(div);
+  });
+}
+
+function renderStats(t){
+  const grid=document.getElementById('kpiGrid');
+  const pnls = trades.filter(tr=>tr.status!=='open').map(calcPnl);
+  const total = pnls.length;
+  const wins = pnls.filter(p=>p.pnl>0);
+  const losses = pnls.filter(p=>p.pnl<0);
+  const winRate = total ? wins.length/total : 0;
+  const totalPnl = pnls.reduce((s,p)=>s+p.pnl,0);
+  const totalPct = pnls.reduce((s,p)=>s+p.pct,0);
+  const avgWin = wins.length ? wins.reduce((s,p)=>s+p.pnl,0)/wins.length : 0;
+  const avgLoss = losses.length ? losses.reduce((s,p)=>s+p.pnl,0)/losses.length : 0;
+  const grossWin = wins.reduce((s,p)=>s+p.pnl,0);
+  const grossLoss = Math.abs(losses.reduce((s,p)=>s+p.pnl,0));
+  const profitFactor = grossLoss ? grossWin/grossLoss : (grossWin?Infinity:0);
+
+  const cards=[
+    {l:t.kpi_closed, v:total, cls:''},
+    {l:t.kpi_open, v:trades.filter(tr=>tr.status==='open').length, cls:''},
+    {l:t.stat_winrate, v:fmtPct(winRate), cls:''},
+    {l:t.kpi_pf, v: profitFactor===Infinity?'∞':profitFactor.toFixed(2), cls:''},
+    {l:t.kpi_total_usd, v:fmtMoney(totalPnl), cls:totalPnl>=0?'pos':'neg'},
+    {l:t.kpi_total_pct, v:fmtPct(totalPct), cls:totalPct>=0?'pos':'neg'},
+    {l:t.kpi_avg_win, v:fmtMoney(avgWin), cls:'pos'},
+    {l:t.kpi_avg_loss, v:fmtMoney(avgLoss), cls:'neg'},
+  ];
+  grid.innerHTML = cards.map(c=>`
+    <div class="kpi-cell">
+      <div class="kpi-lbl">${c.l}</div>
+      <div class="kpi-val ${c.cls}">${c.v}</div>
+    </div>`).join('');
+}
+
+function renderHero(t){
+  const box=document.getElementById('heroStats');
+  const pnls = trades.filter(tr=>tr.status!=='open').map(calcPnl);
+  const total = trades.length;
+  const wins = pnls.filter(p=>p.pnl>0).length;
+  const winRate = pnls.length ? wins/pnls.length : 0;
+  const totalPnl = pnls.reduce((s,p)=>s+p.pnl,0);
+  box.innerHTML=`
+    <div><div class="stat-n">${total}</div><div class="stat-l">${t.stat_total}</div></div>
+    <div><div class="stat-n">${fmtPct(winRate)}</div><div class="stat-l">${t.stat_winrate}</div></div>
+    <div><div class="stat-n ${totalPnl>=0?'pos':'neg'}">${fmtMoney(totalPnl)}</div><div class="stat-l">${t.stat_totalpnl}</div></div>
+  `;
+}
+
+function renderMonthly(t){
+  const body=document.getElementById('monthlyBody');
+  const map={};
+  trades.filter(tr=>tr.status!=='open').forEach(tr=>{
+    if(!tr.date) return;
+    const key=tr.date.slice(0,7);
+    if(!map[key]) map[key]={count:0,wins:0,pnl:0};
+    const {pnl}=calcPnl(tr);
+    map[key].count++;
+    if(pnl>0) map[key].wins++;
+    map[key].pnl+=pnl;
+  });
+  const keys=Object.keys(map).sort();
+  if(!keys.length){
+    body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--txt3);font-family:'JetBrains Mono',monospace;font-size:11px;padding:24px;">0 ${t.pl_trade_5}</td></tr>`;
+    return;
+  }
+  let totalCount=0,totalPnl=0,totalWins=0;
+  const rows=keys.map(k=>{
+    const [y,m]=k.split('-');
+    const d=map[k];
+    totalCount+=d.count; totalPnl+=d.pnl; totalWins+=d.wins;
+    const wr = d.count? d.wins/d.count:0;
+    return `<tr><td>${t.months[parseInt(m,10)-1]} ${y}</td><td>${d.count}</td><td>${fmtPct(wr)}</td><td class="${d.pnl>=0?'pnl pos':'pnl neg'}">${fmtMoney(d.pnl)}</td></tr>`;
+  }).join('');
+  const totalWr = totalCount? totalWins/totalCount:0;
+  body.innerHTML = rows + `<tr class="total"><td>${t.th_total}</td><td>${totalCount}</td><td>${fmtPct(totalWr)}</td><td class="${totalPnl>=0?'pnl pos':'pnl neg'}">${fmtMoney(totalPnl)}</td></tr>`;
+}
+
+function drawEquity(){
+  const canvas=document.getElementById('equityCanvas');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  if(rect.width === 0) return;
+  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+  ctx.scale(dpr,dpr);
+  ctx.clearRect(0,0,rect.width,rect.height);
+
+  const sorted=trades.filter(tr=>tr.status!=='open').sort((a,b)=>(a.date||'').localeCompare(b.date||''));
+  let cum=0;
+  const pts=[0];
+  sorted.forEach(tr=>{ cum+=calcPnl(tr).pnl; pts.push(cum); });
+  
+  if(pts.length<2){
+    ctx.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue('--line2');
+    ctx.beginPath(); ctx.moveTo(0,rect.height/2); ctx.lineTo(rect.width,rect.height/2); ctx.stroke();
+    return;
+  }
+  const min=Math.min(...pts), max=Math.max(...pts);
+  const range = (max-min)||1;
+  const stepX = rect.width/(pts.length-1);
+  const lineColor = pts[pts.length-1]>=pts[0] ? getComputedStyle(document.documentElement).getPropertyValue('--pos') : getComputedStyle(document.documentElement).getPropertyValue('--neg');
+
+  ctx.beginPath();
+  pts.forEach((v,i)=>{
+    const x=i*stepX;
+    const y=rect.height - ((v-min)/range)*rect.height*0.8 - rect.height*0.1;
+    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  });
+  ctx.strokeStyle=lineColor.trim();
+  ctx.lineWidth=1.6;
+  ctx.stroke();
+
+  const lastX=(pts.length-1)*stepX;
+  const lastY=rect.height - ((pts[pts.length-1]-min)/range)*rect.height*0.8 - rect.height*0.1;
+  ctx.beginPath(); ctx.arc(lastX,lastY,3,0,Math.PI*2);
+  ctx.fillStyle=lineColor.trim(); ctx.fill();
+}
+window.addEventListener('resize', drawEquity);
+
+const ssDropzone = document.getElementById('ssDropzone');
+const ssFile = document.getElementById('ssFile');
+const ssPreviews = document.getElementById('ssPreviews');
+
+ssDropzone.addEventListener('click', ()=>ssFile.click());
+ssFile.addEventListener('change', (e)=>handleFiles(e.target.files));
+
+ssDropzone.addEventListener('dragover', (e)=>{e.preventDefault(); ssDropzone.classList.add('dragover');});
+ssDropzone.addEventListener('dragleave', ()=>ssDropzone.classList.remove('dragover'));
+ssDropzone.addEventListener('drop', (e)=>{
+  e.preventDefault(); ssDropzone.classList.remove('dragover');
+  handleFiles(e.dataTransfer.files);
+});
+
+document.addEventListener('paste', (e)=>{
+  if(!document.getElementById('add').contains(document.activeElement) && document.activeElement.tagName !== 'BODY') return;
+  const items = e.clipboardData.items;
+  for(let i=0; i<items.length; i++){
+    if(items[i].type.indexOf('image') !== -1){
+      handleFiles([items[i].getAsFile()]);
+    }
+  }
+});
+
+function handleFiles(files){
+  if(!files || !files.length) return;
+  Array.from(files).forEach(file=>{
+    if(!file.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = (e)=>{
+      const img = new Image();
+      img.onload = ()=>{
+        const canvas = document.createElement('canvas');
+        const maxW = 800;
+        let w = img.width, h = img.height;
+        if(w > maxW){ h = h * (maxW/w); w = maxW; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.7);
+        currentScreenshots.push(dataUrl);
+        renderFormScreenshots();
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderFormScreenshots(){
+  ssPreviews.innerHTML = '';
+  currentScreenshots.forEach((src, i)=>{
+    const div = document.createElement('div');
+    div.className = 'ss-thumb';
+    div.innerHTML = `<img src="${src}"><button class="ss-del" data-i="${i}">✕</button>`;
+    ssPreviews.appendChild(div);
+  });
+  ssPreviews.querySelectorAll('.ss-del').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      currentScreenshots.splice(btn.dataset.i, 1);
+      renderFormScreenshots();
+    });
+  });
+}
+
+document.getElementById('btnAdd').addEventListener('click', async ()=>{
+  const ticker=document.getElementById('fTicker').value.trim();
+  if(!ticker){ document.getElementById('fTicker').focus(); return; }
+  
+  const status = document.getElementById('fStatus').value;
+  const tr={
+    id: uid(),
+    ticker: ticker.toUpperCase(),
+    date: document.getElementById('fDate').value || new Date().toISOString().slice(0,10),
+    side: document.getElementById('fSide').value,
+    status: status,
+    deposit: document.getElementById('fDeposit').value,
+    entry: document.getElementById('fEntry').value,
+    exit: document.getElementById('fExit').value,
+    volume: document.getElementById('fVolume').value,
+    emotion: document.getElementById('fEmotion').value,
+    entryReason: document.getElementById('fEntryReason').value,
+    exitReason: document.getElementById('fExitReason').value,
+    notes: document.getElementById('fNotes').value,
+    screenshots: currentScreenshots
+  };
+  trades.push(tr);
+  await saveTrades();
+  renderAll();
+
+  ['fTicker','fDeposit','fEntry','fExit','fVolume','fEntryReason','fExitReason','fNotes'].forEach(id=>{
+    document.getElementById(id).value='';
+  });
+  currentScreenshots = [];
+  renderFormScreenshots();
+  livePriceHint.textContent = '';
+  document.getElementById('fTicker').focus();
+});
+
+document.getElementById('confirmCloseBtn').addEventListener('click', async ()=>{
+  if(!closingTradeId) return;
+  const tr = trades.find(x=>x.id===closingTradeId);
+  if(tr){
+    tr.status = 'closed';
+    tr.exit = document.getElementById('closeExitPrice').value;
+    tr.exitReason = document.getElementById('closeExitReason').value;
+    await saveTrades();
+    renderAll();
+  }
+  document.getElementById('closeTradeModal').classList.remove('show');
+  closingTradeId = null;
+});
+
+document.querySelectorAll('[data-close]').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.getElementById(btn.dataset.close).classList.remove('show');
+  });
+});
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if(e.target === overlay) {
+      overlay.classList.remove('show');
+    }
+  });
+});
+
+/* ---------- AI ANALYSIS ---------- */
+const aiModal = document.getElementById('aiModal');
+const aiContent = document.getElementById('aiContent');
+const aiModalTitle = document.getElementById('aiModalTitle');
+
+document.getElementById('apiSettingsBtn').addEventListener('click', ()=>{
+  document.getElementById('apiUrlInput').value = localStorage.getItem(API_URL_STORAGE) || 'https://api.groq.com/openai/v1/chat/completions';
+  document.getElementById('apiKeyInput').value = localStorage.getItem(API_KEY_STORAGE) || '';
+  document.getElementById('apiModelInput').value = localStorage.getItem(API_MODEL_STORAGE) || 'llama-3.3-70b-versatile';
+  document.getElementById('apiSettingsModal').classList.add('show');
+});
+
+document.getElementById('saveApiBtn').addEventListener('click', ()=>{
+  localStorage.setItem(API_URL_STORAGE, document.getElementById('apiUrlInput').value);
+  localStorage.setItem(API_KEY_STORAGE, document.getElementById('apiKeyInput').value);
+  localStorage.setItem(API_MODEL_STORAGE, document.getElementById('apiModelInput').value);
+  document.getElementById('apiSettingsModal').classList.remove('show');
+  alert(translations[currentLang].alert_api_saved);
+});
+
+async function analyzeTrade(id) {
+  const apiKey = localStorage.getItem(API_KEY_STORAGE);
+  const apiUrl = localStorage.getItem(API_URL_STORAGE) || 'https://api.groq.com/openai/v1/chat/completions';
+  const model = localStorage.getItem(API_MODEL_STORAGE) || 'llama-3.3-70b-versatile';
+  const t = translations[currentLang];
+
+  if(!apiKey){
+    alert(t.alert_no_api);
+    document.getElementById('apiSettingsBtn').click();
+    return;
+  }
+
+  const tr = trades.find(x=>x.id===id);
+  if(!tr) return;
+  
+  const {pnl, pct} = calcPnl(tr);
+  
+  aiModalTitle.textContent = `${t.modal_ai_title}: ${tr.ticker} (${tr.date})`;
+  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_loading}</div>`;
+  aiModal.classList.add('show');
+
+  const baseTicker = cleanTicker(tr.ticker);
+
+  // 1. Fetch current price
+  let currentPrice = "N/A";
+  try {
+    const priceRes = await fetch(`https://min-api.cryptocompare.com/data/price?fsym=${baseTicker}&tsyms=USD`);
+    const priceData = await priceRes.json();
+    if(priceData && priceData.USD) {
+      currentPrice = `$${priceData.USD.toLocaleString('ru-RU', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    }
+  } catch(e) {
+    console.warn("Price fetch error", e);
+  }
+
+  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_curr_price} ${baseTicker}: ${currentPrice}. ${t.modal_ai_gathering_news}</div>`;
+
+  // 2. Fetch news
+  let newsContext = "1. Market shows mixed dynamics amid macroeconomic expectations.\n2. Institutional interest in ETFs remains steady.\n3. Regulators continue monitoring DeFi.";
+  try {
+    let newsRes = await fetch(`https://min-api.cryptocompare.com/data/v2/news/?categories=${baseTicker}&sortOrder=latest`);
+    let newsData = await newsRes.json();
+    
+    if(!newsData || !newsData.Data || newsData.Data.length === 0) {
+      newsRes = await fetch(`https://min-api.cryptocompare.com/data/v2/news/?sortOrder=latest`);
+      newsData = await newsRes.json();
+    }
+    
+    if(newsData && newsData.Data && newsData.Data.length > 0) {
+      const latestNews = newsData.Data.slice(0, 5).map(n => `- ${n.title} (Source: ${n.source_info.name})`).join('\n');
+      newsContext = latestNews;
+    }
+  } catch(e) {
+    console.warn("News fetch error", e);
+  }
+
+  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_analyzing}</div>`;
+
+  const prompt = `You are a professional crypto trader and mentor with years of experience. 
+  Your task is to conduct a deep, strict, but constructive analysis of the trader's deal. 
+  Consider risk management, psychology, technical analysis, current market price, and fundamental background (based on the provided news).
+  YOU MUST WRITE YOUR RESPONSE IN ${t.lang_name} LANGUAGE.
+
+  Deal data:
+  - Ticker: ${tr.ticker}
+  - Side: ${tr.side}
+  - Status: ${tr.status}
+  - Deposit: $${tr.deposit}
+  - Entry Price: ${tr.entry}
+  - Exit Price: ${tr.exit || 'still open'}
+  - Volume: ${tr.volume}
+  - PNL: $${pnl.toFixed(2)} (${(pct*100).toFixed(2)}%)
+  - Emotion during trade: ${tr.emotion}
+  - Entry Reason: ${tr.entryReason || 'not specified'}
+  - Exit Reason: ${tr.exitReason || 'not specified'}
+  - Trader Notes: ${tr.notes || 'none'}
+
+  CURRENT MARKET PRICE (right now): ${currentPrice}
+
+  Latest market news:
+  ${newsContext}
+
+  Write the analysis in ${t.lang_name} language in the following format (use markdown with line breaks):
+
+  1. DEAL BREAKDOWN AND CURRENT SITUATION:
+  (Evaluate risk management, entry/exit points. BE SURE to compare the entry/exit price with the CURRENT MARKET PRICE (${currentPrice}). If the trade is closed, evaluate whether it was worth holding longer or if the entry was perfect. If open, evaluate the current floating PNL and risks. IT IS STRICTLY FORBIDDEN TO WRITE THAT THE PRICE IS NOT PROVIDED. If it equals "N/A", write "Could not fetch real-time quotes", but do not ignore this point).
+
+  2. PSYCHOLOGY AND DISCIPLINE:
+  (Analyze the stated emotion. How could it have affected decision-making? Was the trader impulsive or did they stick to the plan?)
+
+  3. FUNDAMENTAL BACKGROUND (BASED ON NEWS):
+  (BE SURE to analyze the provided news. How does it correlate with the trade? If the news does not directly concern the coin, assess the general market sentiment (risk-on/risk-off) and how global events affect this asset. IT IS STRICTLY FORBIDDEN TO WRITE THAT NEWS IS UNAVAILABLE — JUST ANALYZE WHAT IS PROVIDED).
+
+  4. RECOMMENDATIONS FOR THE FUTURE:
+  (Give 3 specific, actionable tips for the trader to improve results in future trades, considering the current price and news).
+
+  Be objective, professional, and mentoring. Do not use generic phrases, be specific. Remember, output must be in ${t.lang_name} language.`;
+
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: model,
+        messages: [
+          { role: "system", content: "You are a professional crypto trader and mentor." },
+          { role: "user", content: prompt }
+        ],
+        temperature: 0.7
+      })
+    });
+
+    if(!res.ok) {
+      const errData = await res.json().catch(() => null);
+      const errMsg = errData?.error?.message || 'Unknown API Error. Check model and key.';
+      throw new Error(`API Error: ${res.status} - ${errMsg}`);
+    }
+    
+    const data = await res.json();
+    const analysisText = data.choices[0].message.content;
+    
+    aiContent.innerHTML = `<div style="color:var(--txt);line-height:1.6;">${escapeHtml(analysisText).replace(/\n/g, '<br>')}</div>`;
+  } catch (err) {
+    console.error(err);
+    aiContent.innerHTML = `<div style="color:var(--neg);">Error fetching AI analysis.<br><small>${err.message}</small></div>`;
+  }
+}
+
+/* ---------- RADIO & VISUALIZER ---------- */
+let audioElement = null;
+let audioCtx = null;
+let analyser = null;
+let source = null;
+let radioBtn = document.getElementById('radioBtn');
+let bgCanvas = document.getElementById('bgCanvas');
+let bgCtx = bgCanvas.getContext('2d');
+let animationId = null;
+const streamUrl = "https://online.kissfm.ua/KissFM";
+
+const colorPalette = [
+  '212, 175, 55',  // Gold
+  '56, 189, 248',  // Cyan
+  '168, 85, 247',  // Purple
+  '236, 72, 153',  // Pink
+  '74, 222, 128'   // Green
+];
+
+function resizeBg(){ bgCanvas.width = window.innerWidth; bgCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeBg);
+resizeBg();
+
+radioBtn.addEventListener('click', async ()=>{
+  if(!audioElement){
+    audioElement = new Audio();
+    audioElement.crossOrigin = "anonymous"; 
+    audioElement.src = streamUrl;
+    audioElement.loop = true;
+  }
+
+  if(audioElement.paused){
+    try {
+      await audioElement.play();
+      radioBtn.classList.add('on');
+      document.body.classList.add('radio-on');
+      setupAudioContext(); 
+      animateBackground();
+    } catch (e) {
+      console.warn("CORS block. Retrying without audio analysis...", e);
+      if (audioElement.crossOrigin) {
+        audioElement.pause();
+        audioElement.crossOrigin = null;
+        audioElement.src = streamUrl; 
+        try {
+          await audioElement.play();
+          radioBtn.classList.add('on');
+          document.body.classList.add('radio-on');
+          animateBackground(); 
+        } catch (err) {
+          console.error("Stream unavailable", err);
+          alert(translations[currentLang].alert_radio_error);
+        }
+      } else {
+        alert(translations[currentLang].alert_radio_error);
+      }
+    }
+  } else {
+    audioElement.pause();
+    radioBtn.classList.remove('on');
+    document.body.classList.remove('radio-on');
+    cancelAnimationFrame(animationId);
+    drawIdleBg();
+  }
+});
+
+function setupAudioContext() {
+  if(audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 256;
+    source = audioCtx.createMediaElementSource(audioElement);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch(e) {
+    console.warn("Web Audio API blocked. Using generative mode.", e);
+    analyser = null; 
+  }
+}
+
+function animateBackground(){
+  const dataArray = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
+  
+  function draw(){
+    const t = performance.now();
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    let bassEnergy = 0;
+
+    if(analyser){
+      analyser.getByteFrequencyData(dataArray);
+      for(let i=0; i<10; i++) bassEnergy += dataArray[i];
+      bassEnergy = bassEnergy/10/255;
+    } else {
+      bassEnergy = (Math.sin(t/400) * 0.3 + 0.4) + Math.random()*0.1;
+    }
+
+    const cx = bgCanvas.width / 2;
+    const cy = bgCanvas.height / 2;
+    
+    for(let i=0; i<5; i++){
+      const radius = Math.max(1, 100 + i*80 + bassEnergy * 120);
+      const alpha = Math.max(0, 0.08 + bassEnergy*0.4 - i*0.05);
+      const color = colorPalette[i % colorPalette.length];
+      bgCtx.beginPath();
+      bgCtx.arc(cx, cy, radius, 0, Math.PI * 2);
+      bgCtx.strokeStyle = `rgba(${color}, ${alpha})`;
+      bgCtx.lineWidth = 1 + bassEnergy*3;
+      bgCtx.stroke();
+    }
+
+    for(let i=0; i<30; i++){
+      const x = (Math.sin(t/1000 + i) * 0.5 + 0.5) * bgCanvas.width;
+      const y = (Math.cos(t/1200 + i*1.3) * 0.5 + 0.5) * bgCanvas.height;
+      const size = Math.max(1, 1 + bassEnergy * 5 + Math.sin(i)*2);
+      const color = colorPalette[i % colorPalette.length];
+      bgCtx.beginPath();
+      bgCtx.arc(x, y, size, 0, Math.PI * 2);
+      bgCtx.fillStyle = `rgba(${color}, ${0.4 + bassEnergy*0.5})`;
+      bgCtx.fill();
+    }
+
+    animationId = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function drawIdleBg(){
+  bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+}
+drawIdleBg();
+
+// Init
+applyTranslations();
+loadTrades();
+</script>
+</body>
+</html>
