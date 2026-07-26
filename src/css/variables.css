@@ -1,0 +1,52 @@
+/* ===== CSS Custom Properties — Refined Feminine Palette ===== */
+:root {
+  --tt: background .4s ease, color .4s ease, border-color .4s ease, box-shadow .4s ease;
+}
+
+[data-theme="light"] {
+  --bg:       #fdfbf9;
+  --bg2:      #f8f4f1;
+  --bg3:      #f0ebe6;
+  --line:     rgba(180, 140, 130, 0.08);
+  --line2:    rgba(180, 140, 130, 0.16);
+  --txt:      #4a3f3a;
+  --txt2:     #8a7e78;
+  --txt3:     #b5aaa3;
+  --tag:      rgba(201, 136, 125, 0.04);
+  --hov:      rgba(201, 136, 125, 0.05);
+  --accent:   #c9887d;
+  --accent2:  #d4a29a;
+  --pos:      #7eb88a;
+  --neg:      #d97a7a;
+  --gold:     201, 136, 125;
+  --card-bg:  #ffffff;
+  --card-shadow: 0 1px 3px rgba(180,140,130,0.06), 0 4px 16px rgba(180,140,130,0.04);
+  --nav-bg:   rgba(253, 251, 249, 0.88);
+  --btn-shadow: 0 1px 3px rgba(120,80,70,0.08), 0 4px 12px rgba(120,80,70,0.06);
+  --cal-today: rgba(160, 140, 200, 0.18);
+  --cal-today-border: #a08cc8;
+}
+
+[data-theme="dark"] {
+  --bg:       #1c1a1f;
+  --bg2:      #28252e;
+  --bg3:      #35323d;
+  --line:     rgba(255,255,255,.05);
+  --line2:    rgba(255,255,255,.10);
+  --txt:      #f0ebe8;
+  --txt2:     #a9a3b0;
+  --txt3:     #6e6878;
+  --tag:      rgba(255,255,255,.02);
+  --hov:      rgba(255,255,255,.04);
+  --accent:   #d4a29a;
+  --accent2:  #c9887d;
+  --pos:      #8cc49a;
+  --neg:      #d98a8a;
+  --gold:     212, 162, 154;
+  --card-bg:  #28252e;
+  --card-shadow: 0 2px 8px rgba(0,0,0,.2);
+  --nav-bg:   rgba(28, 26, 31, 0.88);
+  --btn-shadow: 0 2px 8px rgba(0,0,0,.25);
+  --cal-today: rgba(160, 140, 200, 0.2);
+  --cal-today-border: #b8a4d8;
+}

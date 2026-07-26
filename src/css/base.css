@@ -1,0 +1,40 @@
+/* ===== Reset & Base Typography — Refined Feminine Style ===== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--txt);
+  font-family:'Outfit','DM Sans','Segoe UI',sans-serif;
+  font-weight:300;line-height:1.65;overflow-x:hidden;
+  transition:var(--tt);font-size:14px;position:relative;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+}
+::selection{background:var(--accent);color:#fff}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+
+/* ===== Display Font ===== */
+.hero-title,.sec-title,.modal-title{
+  font-family:'Playfair Display',Georgia,'Times New Roman',serif;
+  font-weight:500;letter-spacing:-.01em;
+}
+
+/* ===== Background Canvas ===== */
+#bgCanvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0.15;transition:opacity 1s}
+body.radio-on #bgCanvas{opacity:0.45}
+
+/* ===== Animations ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.5)}}
+@keyframes radioBeat{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes softGlow{0%,100%{box-shadow:0 0 6px rgba(var(--gold),.2)}50%{box-shadow:0 0 18px rgba(var(--gold),.4)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+/* ===== Scroll Reveal ===== */
+.rv{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.rv.on{opacity:1;transform:translateY(0)}
+
+/* ===== Footer ===== */
+footer{padding:36px 0;border-top:1px solid var(--line)}
+.foot-in{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;font-size:11px;color:var(--txt3);letter-spacing:.03em}

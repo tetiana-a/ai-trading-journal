@@ -1,0 +1,162 @@
+/**
+ * i18n.js — Internationalization module.
+ * Manages translations for ru/en/uk/cs and applies them to [data-i18n] elements.
+ */
+
+const translations = {
+  ru: {
+    nav_new: "Новая сделка", nav_trades: "Сделки", nav_calendar: "Календарь", nav_stats: "Статистика", nav_library: "Скрины", nav_monthly: "Месяцы",
+    hero_eyebrow: "Личный журнал трейдера", hero_desc: "Все сделки, PNL и статистика считаются автоматически. Подключены актуальные цены с биржи Binance.",
+    equity_lbl: "Кривая доходности", stat_total: "Всего сделок", stat_winrate: "Win rate", stat_totalpnl: "Общий PNL",
+    sec1_title: "Новая сделка", autosave_note: "Сохраняется автоматически",
+    lbl_ticker: "Тикер", lbl_date: "Дата", lbl_side: "Long / Short", lbl_status: "Статус", opt_closed: "Закрытая", opt_open: "Открытая",
+    lbl_deposit: "Депо, $", lbl_entry: "Цена входа", lbl_exit: "Цена выхода (если есть)", lbl_volume: "Объём",
+    lbl_emotion: "Эмоция", lbl_entry_reason: "Причина входа", lbl_exit_reason: "Причина выхода", lbl_notes: "Вывод / урок",
+    lbl_screens: "Скриншоты (Ctrl+V или выберите файл)", dropzone_text: "Вставьте из буфера (Ctrl+V) или нажмите для выбора", btn_add: "Добавить сделку",
+    sec2_title: "Сделки", sub_open: "Открытые", sub_closed: "Закрытые",
+    th_date: "Дата", th_ticker: "Тикер", th_side: "Сторона", th_deposit: "Депо", th_entry: "Вход", th_exit: "Выход", th_current: "Тек. цена",
+    th_volume: "Объём", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Эмоция", th_screens: "Скрины", th_actions: "Действия",
+    empty_open: "Нет открытых сделок.", empty_closed: "Пока нет закрытых сделок — добавь первую выше.",
+    sec3_calendar: "Календарь", cal_view_month: "Месяц", cal_view_year: "Год", pnl_chart_title: "PNL по месяцам",
+    sec4_title: "Статистика", kpi_closed: "Всего закрытых", kpi_open: "Открыто сейчас", kpi_pf: "Profit factor",
+    kpi_total_usd: "Общий PNL, $", kpi_total_pct: "Общий PNL, %", kpi_avg_win: "Средняя прибыль, $", kpi_avg_loss: "Средний убыток, $",
+    sec5_title: "Библиотека скриншотов", empty_library: "Нет сохраненных скриншотов.",
+    sec6_title: "По месяцам", th_month: "Месяц", th_count: "Сделок", th_total: "Итого",
+    modal_close_title: "Закрыть сделку", lbl_exit_price: "Цена выхода", lbl_exit_reason_modal: "Причина выхода",
+    modal_ai_title: "ИИ Анализ сделки", modal_ai_loading: "Получаю актуальную цену и новости...", modal_ai_curr_price: "Текущая цена", modal_ai_gathering_news: "Собираю новости...", modal_ai_analyzing: "Анализирую сделку, цену и фундаментальный фон...", btn_close_modal: "Закрыть окно",
+    modal_api_title: "Настройки ИИ (Бесплатно)", modal_api_desc: "Для работы ИИ-аналитика нужна регистрация на", modal_api_desc2: "(бесплатно) и вставка ключа сюда.",
+    lbl_api_key: "API Ключ", lbl_api_model: "Модель", btn_save: "Сохранить",
+    alert_no_api: "Пожалуйста, настройте ИИ API ключ в настройках (иконка шестеренки).", alert_api_saved: "Настройки ИИ сохранены!",
+    alert_storage_error: "Ошибка сохранения. Возможно, превышен лимит localStorage (слишком много фото).", alert_radio_error: "К сожалению, поток радио недоступен или заблокирован в вашем регионе.",
+    hint_price: "Текущая цена:", hint_click: "(нажми, чтобы вставить)", hint_not_found: "Цена не найдена (проверь тикер, напр. BTCUSDT)",
+    live_loading: "загрузка...", live_na: "Н/Д",
+    months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+    lang_name: "русском",
+    emo_calm: "Спокойствие", emo_confidence: "Уверенность", emo_greed: "Жадность", emo_fear: "Страх", emo_excitement: "Азарт", emo_irritation: "Раздражение", emo_impatience: "Нетерпение", emo_pride: "Гордость", emo_disappointment: "Разочарование",
+    pl_trade_1: "сделка", pl_trade_2: "сделки", pl_trade_5: "сделок",
+    export_json: "Экспорт JSON", export_csv: "Экспорт CSV", import_json: "Импорт JSON",
+    val_required: "Обязательное поле", val_positive: "Должно быть положительным числом",
+  },
+  en: {
+    nav_new: "New Trade", nav_trades: "Trades", nav_calendar: "Calendar", nav_stats: "Stats", nav_library: "Screens", nav_monthly: "Monthly",
+    hero_eyebrow: "Personal Trading Journal", hero_desc: "All trades, PNL, and stats are calculated automatically. Live prices from Binance are connected.",
+    equity_lbl: "Equity Curve", stat_total: "Total Trades", stat_winrate: "Win rate", stat_totalpnl: "Total PNL",
+    sec1_title: "New Trade", autosave_note: "Saved automatically",
+    lbl_ticker: "Ticker", lbl_date: "Date", lbl_side: "Long / Short", lbl_status: "Status", opt_closed: "Closed", opt_open: "Open",
+    lbl_deposit: "Deposit, $", lbl_entry: "Entry Price", lbl_exit: "Exit Price (if any)", lbl_volume: "Volume",
+    lbl_emotion: "Emotion", lbl_entry_reason: "Entry Reason", lbl_exit_reason: "Exit Reason", lbl_notes: "Conclusion / Lesson",
+    lbl_screens: "Screenshots (Ctrl+V or select file)", dropzone_text: "Paste from clipboard (Ctrl+V) or click to select", btn_add: "Add Trade",
+    sec2_title: "Trades", sub_open: "Open", sub_closed: "Closed",
+    th_date: "Date", th_ticker: "Ticker", th_side: "Side", th_deposit: "Deposit", th_entry: "Entry", th_exit: "Exit", th_current: "Curr. Price",
+    th_volume: "Volume", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Emotion", th_screens: "Screens", th_actions: "Actions",
+    empty_open: "No open trades.", empty_closed: "No closed trades yet — add the first one above.",
+    sec3_calendar: "Calendar", cal_view_month: "Month", cal_view_year: "Year", pnl_chart_title: "Monthly PNL",
+    sec4_title: "Statistics", kpi_closed: "Total Closed", kpi_open: "Open Now", kpi_pf: "Profit factor",
+    kpi_total_usd: "Total PNL, $", kpi_total_pct: "Total PNL, %", kpi_avg_win: "Avg Profit, $", kpi_avg_loss: "Avg Loss, $",
+    sec5_title: "Screenshot Library", empty_library: "No saved screenshots.",
+    sec6_title: "Monthly", th_month: "Month", th_count: "Trades", th_total: "Total",
+    modal_close_title: "Close Trade", lbl_exit_price: "Exit Price", lbl_exit_reason_modal: "Exit Reason",
+    modal_ai_title: "AI Trade Analysis", modal_ai_loading: "Fetching live price and news...", modal_ai_curr_price: "Current price", modal_ai_gathering_news: "Gathering news...", modal_ai_analyzing: "Analyzing trade, price, and fundamentals...", btn_close_modal: "Close Window",
+    modal_api_title: "AI Settings (Free)", modal_api_desc: "To use AI analysis, register at", modal_api_desc2: "(free) and paste the key here.",
+    lbl_api_key: "API Key", lbl_api_model: "Model", btn_save: "Save",
+    alert_no_api: "Please set up the AI API key in settings (gear icon).", alert_api_saved: "AI settings saved!",
+    alert_storage_error: "Save error. localStorage limit exceeded (too many photos).", alert_radio_error: "Unfortunately, the radio stream is unavailable or blocked in your region.",
+    hint_price: "Current price:", hint_click: "(click to insert)", hint_not_found: "Price not found (check ticker, e.g. BTCUSDT)",
+    live_loading: "loading...", live_na: "N/A",
+    months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+    lang_name: "English",
+    emo_calm: "Calmness", emo_confidence: "Confidence", emo_greed: "Greed", emo_fear: "Fear", emo_excitement: "Excitement", emo_irritation: "Irritation", emo_impatience: "Impatience", emo_pride: "Pride", emo_disappointment: "Disappointment",
+    pl_trade_1: "trade", pl_trade_2: "trades", pl_trade_5: "trades",
+    export_json: "Export JSON", export_csv: "Export CSV", import_json: "Import JSON",
+    val_required: "Required field", val_positive: "Must be a positive number",
+  },
+  uk: {
+    nav_new: "Нова угода", nav_trades: "Угоди", nav_calendar: "Календар", nav_stats: "Статистика", nav_library: "Скріни", nav_monthly: "Місяці",
+    hero_eyebrow: "Особистий журнал трейдера", hero_desc: "Всі угоди, PNL та статистика рахуються автоматично. Підключено актуальні ціни з біржі Binance.",
+    equity_lbl: "Крива прибутковості", stat_total: "Всього угод", stat_winrate: "Win rate", stat_totalpnl: "Загальний PNL",
+    sec1_title: "Нова угода", autosave_note: "Зберігається автоматично",
+    lbl_ticker: "Тікер", lbl_date: "Дата", lbl_side: "Long / Short", lbl_status: "Статус", opt_closed: "Закрита", opt_open: "Відкрита",
+    lbl_deposit: "Депозит, $", lbl_entry: "Ціна входу", lbl_exit: "Ціна виходу (якщо є)", lbl_volume: "Об'єм",
+    lbl_emotion: "Емоція", lbl_entry_reason: "Причина входу", lbl_exit_reason: "Причина виходу", lbl_notes: "Висновок / урок",
+    lbl_screens: "Скріншоти (Ctrl+V або виберіть файл)", dropzone_text: "Вставте з буфера (Ctrl+V) або натисніть для вибору", btn_add: "Додати угоду",
+    sec2_title: "Угоди", sub_open: "Відкриті", sub_closed: "Закриті",
+    th_date: "Дата", th_ticker: "Тікер", th_side: "Сторона", th_deposit: "Депозит", th_entry: "Вхід", th_exit: "Вихід", th_current: "Поточ. ціна",
+    th_volume: "Об'єм", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Емоція", th_screens: "Скріни", th_actions: "Дії",
+    empty_open: "Немає відкритих угод.", empty_closed: "Поки немає закритих угод — додай першу вище.",
+    sec3_calendar: "Календар", cal_view_month: "Місяць", cal_view_year: "Рік", pnl_chart_title: "PNL за місяцями",
+    sec4_title: "Статистика", kpi_closed: "Всього закритих", kpi_open: "Відкрито зараз", kpi_pf: "Profit factor",
+    kpi_total_usd: "Загальний PNL, $", kpi_total_pct: "Загальний PNL, %", kpi_avg_win: "Сер. прибуток, $", kpi_avg_loss: "Сер. збиток, $",
+    sec5_title: "Бібліотека скріншотів", empty_library: "Немає збережених скріншотів.",
+    sec6_title: "По місяцях", th_month: "Місяць", th_count: "Угод", th_total: "Разом",
+    modal_close_title: "Закрити угоду", lbl_exit_price: "Ціна виходу", lbl_exit_reason_modal: "Причина виходу",
+    modal_ai_title: "ІІ Аналіз угоди", modal_ai_loading: "Отримую актуальну ціну та новини...", modal_ai_curr_price: "Поточна ціна", modal_ai_gathering_news: "Збираю новини...", modal_ai_analyzing: "Аналізую угоду, ціну та фундаментал...", btn_close_modal: "Закрити вікно",
+    modal_api_title: "Налаштування ІІ (Безкоштовно)", modal_api_desc: "Для роботи ІІ-аналітика потрібна реєстрація на", modal_api_desc2: "(безкоштовно) та вставка ключа сюди.",
+    lbl_api_key: "API Ключ", lbl_api_model: "Модель", btn_save: "Зберегти",
+    alert_no_api: "Будь ласка, налаштуйте API ключ ІІ в налаштуваннях (іконка шестерні).", alert_api_saved: "Налаштування ІІ збережено!",
+    alert_storage_error: "Помилка збереження. Можливо, перевищено ліміт localStorage (забагато фото).", alert_radio_error: "На жаль, потік радіо недоступний або заблокований у вашому регіоні.",
+    hint_price: "Поточна ціна:", hint_click: "(натисни, щоб вставити)", hint_not_found: "Ціну не знайдено (перевір тікер, напр. BTCUSDT)",
+    live_loading: "завантаження...", live_na: "Н/Д",
+    months: ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'],
+    lang_name: "українській",
+    emo_calm: "Спокій", emo_confidence: "Впевненість", emo_greed: "Жадібність", emo_fear: "Страх", emo_excitement: "Азарт", emo_irritation: "Роздратування", emo_impatience: "Нетерпіння", emo_pride: "Гордість", emo_disappointment: "Розчарування",
+    pl_trade_1: "угода", pl_trade_2: "угоди", pl_trade_5: "угод",
+    export_json: "Експорт JSON", export_csv: "Експорт CSV", import_json: "Імпорт JSON",
+    val_required: "Обов'язкове поле", val_positive: "Повинно бути додатним числом",
+  },
+  cs: {
+    nav_new: "Nový obchod", nav_trades: "Obchody", nav_calendar: "Kalendář", nav_stats: "Statistiky", nav_library: "Screenshoty", nav_monthly: "Měsíčně",
+    hero_eyebrow: "Osobní obchodní deník", hero_desc: "Všechny obchody, PNL a statistiky se počítají automaticky. Připojeny živé ceny z burzy Binance.",
+    equity_lbl: "Křivka kapitálu", stat_total: "Celkem obchodů", stat_winrate: "Win rate", stat_totalpnl: "Celkový PNL",
+    sec1_title: "Nový obchod", autosave_note: "Ukládá se automaticky",
+    lbl_ticker: "Ticker", lbl_date: "Datum", lbl_side: "Long / Short", lbl_status: "Stav", opt_closed: "Uzavřený", opt_open: "Otevřený",
+    lbl_deposit: "Vklad, $", lbl_entry: "Vstupní cena", lbl_exit: "Výstupní cena (pokud existuje)", lbl_volume: "Objem",
+    lbl_emotion: "Emoce", lbl_entry_reason: "Důvod vstupu", lbl_exit_reason: "Důvod výstupu", lbl_notes: "Závěr / lekce",
+    lbl_screens: "Screenshoty (Ctrl+V nebo vyberte soubor)", dropzone_text: "Vložte ze schránky (Ctrl+V) nebo klikněte pro výběr", btn_add: "Přidat obchod",
+    sec2_title: "Obchody", sub_open: "Otevřené", sub_closed: "Uzavřené",
+    th_date: "Datum", th_ticker: "Ticker", th_side: "Strana", th_deposit: "Vklad", th_entry: "Vstup", th_exit: "Výstup", th_current: "Aktuální cena",
+    th_volume: "Objem", th_pnl_usd: "PNL $", th_pnl_pct: "PNL %", th_emotion: "Emoce", th_screens: "Screenshoty", th_actions: "Akce",
+    empty_open: "Žádné otevřené obchody.", empty_closed: "Zatím nejsou žádné uzavřené obchody — přidejte první výše.",
+    sec3_calendar: "Kalendář", cal_view_month: "Měsíc", cal_view_year: "Rok", pnl_chart_title: "Měsíční PNL",
+    sec4_title: "Statistiky", kpi_closed: "Celkem uzavřených", kpi_open: "Otevřeno nyní", kpi_pf: "Profit factor",
+    kpi_total_usd: "Celkový PNL, $", kpi_total_pct: "Celkový PNL, %", kpi_avg_win: "Prům. zisk, $", kpi_avg_loss: "Prům. ztráta, $",
+    sec5_title: "Knihovna screenshotů", empty_library: "Žádné uložené screenshoty.",
+    sec6_title: "Měsíčně", th_month: "Měsíc", th_count: "Obchodů", th_total: "Celkem",
+    modal_close_title: "Zavřít obchod", lbl_exit_price: "Výstupní cena", lbl_exit_reason_modal: "Důvod výstupu",
+    modal_ai_title: "AI Analýza obchodu", modal_ai_loading: "Získávám aktuální cenu a zprávy...", modal_ai_curr_price: "Aktuální cena", modal_ai_gathering_news: "Shromážďuji zprávy...", modal_ai_analyzing: "Analyzuji obchod, cenu a fundamenty...", btn_close_modal: "Zavřít okno",
+    modal_api_title: "Nastavení AI (Zdarma)", modal_api_desc: "Pro použití AI analýzy se zaregistrujte na", modal_api_desc2: "(zdarma) a vložte klíč sem.",
+    lbl_api_key: "API Klíč", lbl_api_model: "Model", btn_save: "Uložit",
+    alert_no_api: "Nakonfigurujte prosím AI API klíč v nastavení (ikonka ozubeného kola).", alert_api_saved: "Nastavení AI uloženo!",
+    alert_storage_error: "Chyba ukládání. Pravděpodobně byl překročen limit localStorage (příliš mnoho fotek).", alert_radio_error: "Bohužel, rádiový stream je nedostupný nebo blokován ve vašem regionu.",
+    hint_price: "Aktuální cena:", hint_click: "(klikněte pro vložení)", hint_not_found: "Cena nebyla nalezena (zkontrolujte ticker, např. BTCUSDT)",
+    live_loading: "načítání...", live_na: "N/A",
+    months: ['Leden','Únor','Březen','Duben','Květen','Červen','Červenec','Srpen','Září','Říjen','Listopad','Prosinec'],
+    lang_name: "češtině",
+    emo_calm: "Klid", emo_confidence: "Jistota", emo_greed: "Chamtivost", emo_fear: "Strach", emo_excitement: "Vzrušení", emo_irritation: "Irritace", emo_impatience: "Nětrpělivost", emo_pride: "Hrdost", emo_disappointment: "Zklamání",
+    pl_trade_1: "obchod", pl_trade_2: "obchody", pl_trade_5: "obchodů",
+    export_json: "Export JSON", export_csv: "Export CSV", import_json: "Import JSON",
+    val_required: "Povinné pole", val_positive: "Musí být kladné číslo",
+  },
+};
+
+let currentLang = localStorage.getItem(STORAGE_KEYS.LANG) || 'ru';
+
+/** Apply text content to all [data-i18n] elements and trigger re-render. */
+function applyTranslations() {
+  const t = translations[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key]) el.textContent = t[key];
+  });
+  if (typeof renderAll === 'function') renderAll();
+}
+
+/** Pluralisation helper for Slavic languages. */
+function pluralTrades(n, t) {
+  if (currentLang === 'en') {
+    return n === 1 ? t.pl_trade_1 : t.pl_trade_2;
+  }
+  const mod10 = n % 10, mod100 = n % 100;
+  if (mod10 === 1 && mod100 !== 11) return t.pl_trade_1;
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) return t.pl_trade_2;
+  return t.pl_trade_5;
+}
