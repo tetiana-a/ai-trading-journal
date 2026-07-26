@@ -11,7 +11,7 @@ const radioBtn = document.getElementById('radioBtn');
 const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas.getContext('2d');
 let animationId = null;
-const streamUrl = 'https://online.kissfm.ua/KissFM';
+const streamUrl = 'https://icecast4.play.cz/kiss128.mp3';
 
 const colorPalette = [
   '201, 136, 125',  // Rose gold (accent)

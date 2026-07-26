@@ -32,11 +32,18 @@ document.getElementById('langSelect').addEventListener('change', (e) => {
   applyTranslations();
 });
 
-/* ===== Resize Handler ===== */
+/* ===== Resize Handler =====
+ * Debouncing prevents expensive canvas redraws from firing continuously while
+ * a browser window is resized or a mobile device changes orientation.
+ */
+let resizeTimer;
 window.addEventListener('resize', () => {
-  drawEquity();
-  drawPnlBarChart();
-});
+  window.clearTimeout(resizeTimer);
+  resizeTimer = window.setTimeout(() => {
+    drawEquity();
+    drawPnlBarChart();
+  }, 120);
+}, { passive: true });
 
 /* ===== Init ===== */
 applyTranslations();

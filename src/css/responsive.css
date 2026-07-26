@@ -1,2 +1,702 @@
-@media(max-width:900px){.wrap{padding:0 18px}.nav-links{display:none}.radio-btn span{display:none}.kpi-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:repeat(2,1fr)}.hero-bottom{grid-template-columns:1fr;gap:24px}.sec{padding:40px 0}.sec-head{margin-bottom:24px}.cal-year-grid{grid-template-columns:repeat(2,1fr)}.cal-day{min-height:56px;padding:4px 5px}.cal-day-detail{display:none}}
-@media(max-width:600px){.cal-year-grid{grid-template-columns:1fr}.cal-day{min-height:44px;padding:3px 2px}.cal-day-pnl{font-size:8px}.sec{padding:28px 0}.sec-head{margin-bottom:20px}}
+/* ==========================================================================
+   Responsive layout
+   Breakpoints:
+   1180px — compact desktop / landscape tablet
+    900px — tablet
+    680px — phone
+    420px — small phone
+   ========================================================================== */
+
+/* Prevent media and long values from widening the viewport. */
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
+}
+
+.tbl-wrap,
+.month-table {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line2) transparent;
+}
+
+/* Compact desktop and landscape tablet. */
+@media (max-width: 1180px) {
+  .nav-in,
+  .wrap {
+    padding-right: 22px;
+    padding-left: 22px;
+  }
+
+  .nav-links a {
+    padding-right: 9px;
+    padding-left: 9px;
+    font-size: 11px;
+  }
+
+  .hero {
+    min-height: 68vh;
+  }
+}
+
+/* Tablet. */
+@media (max-width: 900px) {
+  .wrap,
+  .nav-in {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .nav-controls {
+    margin-left: auto;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 112px;
+    padding-bottom: 44px;
+  }
+
+  .hero-bottom {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .hero-stats {
+    gap: 28px;
+  }
+
+  .equity-box {
+    min-width: 0;
+  }
+
+  .kpi-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sec {
+    padding: 42px 0;
+  }
+
+  .sec-head {
+    margin-bottom: 26px;
+  }
+
+  .cal-year-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cal-day {
+    min-height: 60px;
+    padding: 5px 6px;
+  }
+
+  .cal-day-detail {
+    display: none;
+  }
+
+  .pnl-chart-wrap {
+    padding: 20px;
+  }
+}
+
+/* Phone and portrait tablet. */
+@media (max-width: 680px) {
+  html {
+    scroll-padding-top: 72px;
+  }
+
+  body {
+    font-size: 14px;
+  }
+
+  .wrap,
+  .nav-in {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .nav-in {
+    min-height: 58px;
+    height: auto;
+    gap: 8px;
+  }
+
+  .nav-logo {
+    min-width: 26px;
+    font-size: 15px;
+  }
+
+  .nav-logo span,
+  .radio-btn span {
+    display: none;
+  }
+
+  .nav-controls {
+    gap: 7px;
+  }
+
+  .radio-btn {
+    width: 36px;
+    min-width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .radio-dot {
+    width: 7px;
+    height: 7px;
+  }
+
+  .lang-select,
+  .nav-icon {
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .lang-select {
+    width: 54px;
+    padding: 0 7px;
+  }
+
+  .theme-tog {
+    width: 42px;
+    height: 24px;
+  }
+
+  .theme-tog::before {
+    top: 4px;
+  }
+
+  [data-theme="light"] .theme-tog::before {
+    transform: translateX(20px);
+  }
+
+  .hero {
+    padding-top: 102px;
+    padding-bottom: 36px;
+  }
+
+  .hero-title {
+    font-size: clamp(38px, 13vw, 58px);
+    line-height: 1.02;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-desc {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  .hero-bottom {
+    gap: 24px;
+    margin-top: 30px;
+    padding-top: 24px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 16px;
+  }
+
+  .stat-n {
+    font-size: clamp(25px, 8vw, 32px);
+    overflow-wrap: anywhere;
+  }
+
+  #equityCanvas {
+    height: 120px;
+  }
+
+  .sec {
+    padding: 34px 0;
+  }
+
+  .sec-head {
+    align-items: flex-start;
+    margin-bottom: 22px;
+  }
+
+  .sec-head,
+  .sec-head-l {
+    min-width: 0;
+  }
+
+  .sec-title {
+    font-size: clamp(23px, 7vw, 28px);
+    overflow-wrap: anywhere;
+  }
+
+  .autosave-note {
+    width: 100%;
+  }
+
+  .form-card {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 13px;
+  }
+
+  .f-field.span2 {
+    grid-column: span 1;
+  }
+
+  .f-input,
+  .f-select,
+  .f-textarea {
+    min-height: 44px;
+    /* Prevent iOS Safari from zooming when an input receives focus. */
+    font-size: 16px;
+  }
+
+  .f-textarea {
+    min-height: 88px;
+  }
+
+  .form-actions,
+  .export-bar {
+    width: 100%;
+  }
+
+  .form-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 10px 14px;
+    white-space: normal;
+  }
+
+  .export-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .export-bar .btn {
+    min-height: 42px;
+  }
+
+  .ss-dropzone {
+    min-height: 96px;
+    justify-content: center;
+  }
+
+  .ss-thumb {
+    width: 72px;
+    height: 72px;
+  }
+
+  .kpi-grid {
+    gap: 10px;
+  }
+
+  .kpi-cell {
+    min-width: 0;
+    padding: 18px 15px;
+    border-radius: 14px;
+  }
+
+  .kpi-val {
+    font-size: clamp(21px, 7vw, 27px);
+    overflow-wrap: anywhere;
+  }
+
+  .tbl-wrap {
+    position: relative;
+    margin-right: -16px;
+    margin-left: -16px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+  }
+
+  .tk-table {
+    min-width: 820px;
+  }
+
+  .tk-table th,
+  .tk-table td {
+    padding: 11px 12px;
+  }
+
+  .row-btn {
+    min-height: 36px;
+    padding: 7px 11px;
+  }
+
+  .row-ss img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .month-table {
+    display: block;
+    width: calc(100% + 32px);
+    margin-right: -16px;
+    margin-left: -16px;
+    overflow-x: auto;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    white-space: nowrap;
+  }
+
+  .month-table thead,
+  .month-table tbody {
+    display: table;
+    width: 100%;
+    min-width: 540px;
+    table-layout: fixed;
+  }
+
+  .ss-library-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .cal-header {
+    margin-bottom: 14px;
+  }
+
+  .cal-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .cal-nav-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cal-month-label {
+    min-width: 0;
+    font-size: 18px;
+  }
+
+  .cal-dow {
+    padding: 9px 2px;
+    font-size: 8px;
+  }
+
+  .cal-day {
+    min-width: 0;
+    min-height: 48px;
+    padding: 4px 2px;
+    overflow: hidden;
+  }
+
+  .cal-day-num {
+    margin-bottom: 2px;
+    font-size: 11px;
+  }
+
+  .cal-day.today .cal-day-num {
+    width: 22px;
+    height: 22px;
+  }
+
+  .cal-day-pnl {
+    display: block;
+    max-width: 100%;
+    padding: 1px 2px;
+    overflow: hidden;
+    font-size: 8px;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .cal-day-trades {
+    display: none;
+  }
+
+  .cal-year-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-year-card {
+    padding: 14px;
+  }
+
+  .pnl-chart-wrap {
+    margin-top: 18px;
+    padding: 18px 12px;
+  }
+
+  #pnlBarChart {
+    height: 210px;
+  }
+
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 12px;
+  }
+
+  .modal-box,
+  .modal-box.large {
+    width: 100%;
+    max-width: none;
+    max-height: calc(100dvh - 24px);
+    padding: 24px 18px max(20px, env(safe-area-inset-bottom));
+    border-radius: 18px;
+  }
+
+  .modal-title {
+    padding-right: 38px;
+    font-size: 20px;
+  }
+
+  .modal-close {
+    width: 40px;
+    height: 40px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .modal-footer .btn {
+    width: 100%;
+  }
+
+  .img-viewer {
+    max-width: 100%;
+    max-height: calc(100dvh - 24px);
+    border-radius: 12px;
+  }
+
+  footer {
+    padding: 28px 0 max(28px, env(safe-area-inset-bottom));
+  }
+
+  .foot-in {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Small phones, including 320–390 px wide screens. */
+@media (max-width: 420px) {
+  .wrap,
+  .nav-in {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .nav-in {
+    gap: 5px;
+  }
+
+  .nav-controls {
+    gap: 5px;
+  }
+
+  .nav-logo span {
+    display: none;
+  }
+
+  .lang-select {
+    width: 48px;
+  }
+
+  .hero {
+    padding-top: 92px;
+  }
+
+  .hero-eyebrow {
+    align-items: flex-start;
+  }
+
+  .eye-line {
+    flex: 0 0 18px;
+    margin-top: 8px;
+  }
+
+  .hero-title {
+    font-size: clamp(35px, 14vw, 48px);
+  }
+
+  .hero-stats {
+    gap: 20px 12px;
+  }
+
+  .sec {
+    padding: 30px 0;
+  }
+
+  .sec-head-l {
+    gap: 9px;
+  }
+
+  .form-card {
+    padding: 15px 12px;
+  }
+
+  .form-actions,
+  .export-bar {
+    grid-template-columns: 1fr;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tbl-wrap {
+    margin-right: -12px;
+    margin-left: -12px;
+  }
+
+  .month-table {
+    width: calc(100% + 24px);
+    margin-right: -12px;
+    margin-left: -12px;
+  }
+
+  .ss-library-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-view-toggle {
+    width: 100%;
+  }
+
+  .cal-view-btn {
+    flex: 1;
+    min-height: 40px;
+  }
+
+  .cal-dow {
+    font-size: 7px;
+    letter-spacing: 0;
+  }
+
+  .cal-day {
+    min-height: 44px;
+  }
+
+  .modal-overlay {
+    padding: 8px;
+  }
+
+  .modal-box,
+  .modal-box.large {
+    max-height: calc(100dvh - 16px);
+  }
+}
+
+/* Short landscape screens: keep dialogs and hero content reachable. */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero {
+    min-height: 100svh;
+    padding-top: 86px;
+  }
+
+  .modal-overlay {
+    align-items: flex-start;
+    overflow-y: auto;
+  }
+
+  .modal-box,
+  .modal-box.large {
+    max-height: none;
+  }
+}
+
+/* Touch devices should not depend on hover-only feedback. */
+@media (hover: none) and (pointer: coarse) {
+  .btn,
+  .nav-icon,
+  .radio-btn,
+  .row-btn,
+  .cal-nav-btn,
+  .cal-view-btn,
+  .theme-tog {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .kpi-cell:hover,
+  .cal-year-card:hover,
+  .ss-lib-item:hover img,
+  .row-ss img:hover,
+  .btn-primary:hover {
+    transform: none;
+  }
+}
+
+/* Respect accessibility preferences and reduce work on low-power devices. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Basic print support for exporting a clean journal overview. */
+@media print {
+  nav,
+  #bgCanvas,
+  .form-actions,
+  .export-bar,
+  .row-actions,
+  .radio-btn,
+  .modal-overlay {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+    color: #111;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-top: 24px;
+  }
+
+  .sec,
+  .hero-bottom {
+    break-inside: avoid;
+  }
+
+  .tbl-wrap {
+    overflow: visible;
+  }
+}
