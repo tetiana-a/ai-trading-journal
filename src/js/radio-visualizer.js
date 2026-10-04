@@ -14,16 +14,16 @@ let analyser = null;
 let source = null;
 let animationId = null;
 let isPlaying = false;
-let isLoading = false, requestId = 0, cancelAttempt = null;
+let isLoading = false, requestId = 0, cancelAttempt = null, bufferTimer = null;
 
 const radioBtn = document.getElementById('radioBtn');
 const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas?.getContext('2d');
 
 const stations = [
- {id:'jazz',name:'Sonic Universe',country:'US',genre:'Jazz',url:'https://ice2.somafm.com/sonicuniverse-128-mp3'},
- {id:'lush',name:'Lush',country:'US',genre:'Electronic',url:'https://ice2.somafm.com/lush-128-mp3'},
- {id:'beat',name:'Beat Blender',country:'US',genre:'House',url:'https://ice2.somafm.com/beatblender-128-mp3'},
+ {id:'jazz',name:'Sonic Universe',country:'US',genre:'Jazz',url:'https://ice2.somafm.com/sonicuniverse-128-mp3',alt:'https://ice5.somafm.com/sonicuniverse-128-mp3'},
+ {id:'lush',name:'Lush',country:'US',genre:'Electronic',url:'https://ice2.somafm.com/lush-128-mp3',alt:'https://ice5.somafm.com/lush-128-mp3'},
+ {id:'beat',name:'Beat Blender',country:'US',genre:'House',url:'https://ice2.somafm.com/beatblender-128-mp3',alt:'https://ice5.somafm.com/beatblender-128-mp3'},
   {
     id:'kiss',
     name:'Radio Kiss',
@@ -95,7 +95,7 @@ const colorPalette = [
 ];
 
 function readPreference(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch (_) { return fallback; } }
-function savePreference(key, value) { try { savePreference(key, String(value)); } catch (_) {} }
+function savePreference(key, value) { try { localStorage.setItem(key, String(value)); } catch (_) {} }
 let currentStationId = readPreference('tk_radio_station','soma');
 if (!stations.some(s => s.id === currentStationId)) currentStationId = 'soma';
 
@@ -357,14 +357,16 @@ function playAttempt(audio) {
     Promise.resolve(audio.play()).then(() => finish(),finish);
   });
 }
-async function startRadio() {
+async function startRadio(recovery = false) {
   if (!radioBtn) return;
   stopRadio(); const token = requestId; isLoading = true; updateDock();
-  setDockStatus(message('Connecting · ','Подключение · ')+selectedStation().name,'loading');
+  setDockStatus((recovery ? message('Reconnecting · ','Восстановление · ') : message('Connecting · ','Подключение · '))+selectedStation().name,'loading');
   let direct = false;
   try {
     let audio, lastError;
-    for (const url of [selectedStation().url,selectedStation().alt].filter(Boolean)) {
+    const station = selectedStation();
+    const candidates = (recovery ? [station.alt,station.url] : [station.url,station.alt]).filter(Boolean);
+    for (const url of candidates) {
       try {
         direct = false; audio = createAudio(true,url);
         try { await playAttempt(audio); }
@@ -384,12 +386,26 @@ async function startRadio() {
     if (token !== requestId) return;
     isLoading = false; isPlaying = true;
     if (!direct) setupAudioContext();
-    audio.addEventListener('error', () => {
-      if (token !== requestId) return; stopRadio();
-      setDockStatus(message('Stream unavailable. Try another station.','Поток недоступен. Выберите другую станцию.'),'error');
+    const recover = () => {
+      if (token !== requestId) return;
+      // One bounded recovery, using only this station's official candidates.
+      if (!recovery) { startRadio(true); return; }
+      stopRadio();
+      setDockStatus(message('Station disconnected. Press Play to retry.','Связь со станцией потеряна. Нажмите Play для повтора.'),'error');
+    };
+    audio.addEventListener('error', recover);
+    audio.addEventListener('ended', recover);
+    const buffering = () => {
+      if (token !== requestId || !isPlaying) return;
+      setDockStatus(message('Buffering…','Буферизация…'),'loading');
+      if (bufferTimer === null) bufferTimer = setTimeout(recover,12000);
+    };
+    audio.addEventListener('waiting', buffering);
+    audio.addEventListener('stalled', buffering);
+    audio.addEventListener('playing', () => {
+      if (token !== requestId) return;
+      clearTimeout(bufferTimer); bufferTimer = null; playbackStatus(direct);
     });
-    audio.addEventListener('waiting', () => { if (token === requestId && isPlaying) setDockStatus(message('Buffering…','Буферизация…'),'loading'); });
-    audio.addEventListener('playing', () => { if (token === requestId) playbackStatus(direct); });
     playbackStatus(direct); updateDock(); animateBackground();
   } catch (error) {
     if (token !== requestId) return; stopRadio();
@@ -400,6 +416,7 @@ function playbackStatus(direct) {
   setDockStatus(message('Live · ','В эфире · ')+selectedStation().name+(direct ? message(' · Ambient canvas',' · Фоновая анимация') : ''),'live');
 }
 function stopRadio() {
+  clearTimeout(bufferTimer); bufferTimer = null;
   requestId++; isPlaying = false; isLoading = false; releaseAudio();
   if (animationId) cancelAnimationFrame(animationId); animationId = null;
   updateDock(); drawIdleBg(); setDockStatus(message('Paused · ','Пауза · ')+selectedStation().name);
