@@ -150,7 +150,10 @@
       '<b>Max loss room:</b> $'+fmt(m.maxRemaining)+bar(m.maxUsedPct)+
       '<b>Profit target left:</b> $'+fmt(m.targetRemaining);
     localStorage.setItem('tk_prop_guard', JSON.stringify({
+      accountSize:m.size,
       personalDailyStopPct:m.personalPct,
+      firmDailyLossPct:m.dailyPct,
+      maxLossPct:m.maxPct,
       dayStartBalance:m.dayStart,
       currentEquity:m.equity,
       blocked:m.blocked || m.firmBreach
@@ -185,7 +188,26 @@
     async canAddTrade() {
       try {
         const saved = JSON.parse(localStorage.getItem('tk_prop_guard') || '{}');
-        if (saved.blocked) return { ok:false, reason:T('Personal/firm daily stop уже достигнут. Новые сделки на сегодня заблокированы системой риска.','Personal/firm daily stop has been reached. New trades are blocked for today by the risk guard.') };
+        const raw = localStorage.getItem('tk_journal_trades_v2');
+        const list = raw ? JSON.parse(raw) : [];
+        const today = new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+        const closedToday = list.filter(x => x.date === today && x.status !== 'open');
+        const dayPnl = closedToday.reduce((s,x)=>s+pnlOfTrade(x),0);
+        const personalLimit = Number(saved.dayStartBalance || saved.accountSize || 0) * Number(saved.personalDailyStopPct || 0) / 100;
+
+        let lossStreak = 0;
+        for (const t of [...list].reverse()) {
+          if (t.status === 'open') continue;
+          if (pnlOfTrade(t) < 0) lossStreak++;
+          else break;
+        }
+
+        if (saved.blocked || (personalLimit > 0 && dayPnl <= -personalLimit)) {
+          return { ok:false, reason:T('Personal/firm daily stop уже достигнут. Новые сделки на сегодня заблокированы системой риска.','Personal/firm daily stop has been reached. New trades are blocked for today by the risk guard.') };
+        }
+        if (lossStreak >= 2) {
+          return { ok:false, reason:T('Два убытка подряд: включён STOP DAY. Новая сделка заблокирована до следующего торгового дня.','Two consecutive losses: STOP DAY is active. A new trade is blocked until the next trading day.') };
+        }
       } catch (_) {}
       return { ok:true };
     }
