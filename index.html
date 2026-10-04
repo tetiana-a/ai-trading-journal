@@ -26,7 +26,10 @@
       <a href="#calendar" data-i18n="nav_calendar">Календарь</a>
       <a href="#stats" data-i18n="nav_stats">Статистика</a>
       <a href="#library" data-i18n="nav_library">Скрины</a>
-      <a href="#monthly" data-i18n="nav_monthly">Месяцы</a>\n      <a href="learning.html">Learning</a>\n      <a href="prop-firms.html">Prop Firms</a>
+      <a href="#monthly" data-i18n="nav_monthly">Месяцы</a>
+      <a href="learning.html">Learning</a>
+      <a href="prop-firms.html">Prop Firms</a>
+      <a href="system.html">System</a>
     </div>
     <div class="nav-controls">
       <button class="radio-btn" id="radioBtn" type="button" aria-label="Play or pause Radio Kiss">
@@ -285,7 +288,9 @@
   </div>
 </div>
 
-<!-- ===== JS Modules (order matters: dependencies first) ===== -->
+<!-- ===== Cloud + JS Modules ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="src/js/cloud-sync.js"></script>
 <script src="src/js/storage.js"></script>
 <script src="src/js/i18n.js"></script>
 <script src="src/js/analytics.js"></script>
