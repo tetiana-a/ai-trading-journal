@@ -20,7 +20,7 @@ Track trades. Calculate risk. Review decisions. Sync your knowledge. Keep the pr
 <br>
 
 **Built as a real working tool, not a mockup.**  
-Vanilla JavaScript on the frontend, Supabase for cloud data, Binance for live market data, optional AI analysis, prop-risk controls and Telegram-ready automation.
+Vanilla JavaScript on the frontend, Supabase for cloud data, official public market feeds from Binance / Bybit / OKX / Kraken, optional AI analysis, prop-risk controls, broker-history import and Telegram-ready automation.
 
 </div>
 
@@ -108,6 +108,66 @@ flowchart LR
     A --> M[Local Analyst]
     A -. optional .-> N[Groq / OpenAI / Claude API]
 ```
+
+---
+
+## 🧩 Personalized Prop-Trading OS
+
+This project is intentionally built as a **personal trading operating system**, not a generic signal bot.
+
+The target architecture is:
+
+> **Official Market Data → Risk Plan → Trade Execution → Broker History → Journal → Supabase → Strategy Analytics → Knowledge Base → AI Review → Alerts → Telegram**
+
+The system is designed to adapt to **my own prop-firm accounts, strategies, learning materials, rules and review process**.
+
+### What is personalized
+
+- 🧠 **My Knowledge Base** — strategy rules, study notes, prop-firm rules, psychology and post-trade conclusions;
+- 🛡️ **My Prop Rules** — FTMO / The5ers / iTrade / custom daily-loss and max-loss limits;
+- 📊 **My Strategy Analytics** — performance grouped by strategy, setup, timeframe and session;
+- 📱 **My Telegram Bot** — status, risk, open trades, daily PnL, review and weekly-report commands;
+- ☁️ **My Supabase** — private authenticated storage for trades, screenshots, knowledge, reviews, alerts and account metadata;
+- 🔌 **My Broker / Platform layer** — read-only-first integrations and history imports;
+- 🤖 **My AI review layer** — local rule-based review now, external LLM providers optional later;
+- 🧰 **My codebase** — every rule, workflow and UI component can be changed as the trading process evolves.
+
+### Official / read-only-first integrations
+
+| Platform | Integration | Current status |
+|---|---|---|
+| **Binance** | Official public candles / prices | ✅ Live |
+| **Bybit** | Official V5 public market API | ✅ Live |
+| **OKX** | Official V5 public market API | ✅ Live |
+| **Kraken** | Official public OHLC API | ✅ Live |
+| **MetaTrader 5** | Universal broker CSV history import | ✅ Working |
+| **cTrader** | Official OAuth, `accounts` read-only scope | 🟡 Backend flow prepared; app credentials required |
+| **FTMO** | Import through MT5 / cTrader / platform used by the account | ✅ Supported via history import |
+| **The5ers** | Import through the underlying trading platform | ✅ Supported via history import |
+| **iTrade** | Import through the underlying trading platform | ✅ Supported via history import |
+| **FundedNext** | Import through the underlying trading platform | ✅ Supported via history import |
+
+> Analytics integrations should use **public data, OAuth, read-only keys or statement import**.  
+> The journal does not need trading or withdrawal permissions.
+
+### Daily operating workflow
+
+```text
+1. Check prop-account limits
+2. Define setup + invalidation + risk
+3. Calculate position size and planned R:R
+4. Execute the trade in the broker / prop platform
+5. Log or import the trade
+6. Attach screenshot + strategy + setup + timeframe + session
+7. Close the trade and preserve broker-reported PNL / fees
+8. Run local or AI review
+9. Compare strategy expectancy and rule compliance
+10. Receive only useful alerts / Telegram summaries
+```
+
+The goal is not to make AI “guess the market”.
+
+The goal is to build a system that **knows the rules, measures execution quality, catches repeated mistakes and makes risk visible before the next trade**.
 
 ---
 
@@ -359,6 +419,13 @@ ai-trading-journal/
 - [x] RU / EN system pages
 - [x] Telegram backend architecture
 - [ ] Finish production Telegram activation flow
+- [x] Multi-exchange public market adapter: Binance / Bybit / OKX / Kraken
+- [x] Universal broker CSV importer with broker-reported PNL support
+- [x] Strategy / setup / timeframe / session metadata
+- [x] Strategy expectancy analytics
+- [x] cTrader read-only OAuth backend scaffold
+- [ ] Register cTrader Open API app and enable production OAuth connection
+- [ ] Add automatic MT5 read-only history sync bridge
 - [x] Add richer strategy tags & setup analytics
 - [x] Add public exchange adapters + broker CSV importer
 - [x] Add basic expectancy by strategy / timeframe / session
