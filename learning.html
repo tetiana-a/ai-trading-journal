@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Trading Learning Hub — Tetiana Kotolup</title>
+<meta name="description" content="Structured trading study notes: market structure, technical analysis, risk management, fundamentals, Smart Money concepts and trading workflow.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/variables.css">
+<link rel="stylesheet" href="src/css/base.css">
+<link rel="stylesheet" href="src/css/components.css">
+<link rel="stylesheet" href="src/css/responsive.css">
+<style>
+.learning-hero{min-height:64vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.learning-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.learning-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:880px}
+.learning-title em{font-style:normal;color:var(--accent)}
+.learning-lead{margin-top:18px;max-width:680px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
+.learning-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.learning-chip{border:1px solid var(--line2);background:var(--card-bg);padding:8px 12px;border-radius:999px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.learning-card{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--card-shadow)}
+.learning-card h3{font-size:21px;margin:8px 0 10px}
+.learning-card p{color:var(--txt2);font-size:13px;line-height:1.7;font-weight:300}
+.learning-card ul{margin:14px 0 0;padding-left:18px;color:var(--txt2);font-size:12px;line-height:1.8}
+.learning-card .num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
+.learning-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}
+.learning-step{border:1px solid var(--line);background:var(--card-bg);border-radius:14px;padding:16px;min-height:120px}
+.learning-step b{display:block;font-size:11px;color:var(--accent);margin-bottom:8px}
+.learning-step span{font-size:12px;color:var(--txt2);line-height:1.5}
+.learning-note{margin-top:18px;border-left:2px solid var(--accent);padding:14px 18px;background:var(--tag);border-radius:0 12px 12px 0;color:var(--txt2);font-size:12px;line-height:1.7}
+.learning-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+@media(max-width:900px){.learning-grid{grid-template-columns:1fr}.learning-flow{grid-template-columns:1fr 1fr}.learning-hero{min-height:auto}}
+@media(max-width:560px){.learning-flow{grid-template-columns:1fr}.learning-card{padding:20px}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
+    <div class="nav-links">
+      <a href="index.html">Journal</a>
+      <a href="#curriculum">Curriculum</a>
+      <a href="#workflow">Workflow</a>
+      <a href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">GitHub Notes</a>
+    </div>
+    <div class="nav-controls">
+      <button class="theme-tog" id="themeTog" aria-label="Theme"></button>
+    </div>
+  </div>
+</nav>
+
+<header class="learning-hero">
+  <div class="wrap">
+    <div class="learning-kicker">Trading Learning Hub · Personal Study System</div>
+    <h1 class="learning-title">Learn the market. Build the process. <em>Review the evidence.</em></h1>
+    <p class="learning-lead">A structured learning space connected to AI Trading Journal: market structure, technical analysis, risk management, fundamentals, Smart Money concepts and a repeatable pre-trade / post-trade workflow.</p>
+    <div class="learning-meta">
+      <span class="learning-chip">7 study modules</span>
+      <span class="learning-chip">Risk-first approach</span>
+      <span class="learning-chip">Smart Money concepts</span>
+      <span class="learning-chip">Journal-driven review</span>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="#curriculum">Explore curriculum</a>
+      <a class="btn btn-ghost" href="index.html#add">Open trading journal</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="sec" id="curriculum">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-l"><span class="sec-num">01</span><h2 class="sec-title">Curriculum</h2></div>
+    </div>
+    <div class="learning-grid">
+      <article class="learning-card"><span class="num">01 / FOUNDATIONS</span><h3>Market Foundations</h3><p>Build the chart-reading base before adding indicators or complex setups.</p><ul><li>Uptrend, downtrend and range</li><li>Support, resistance, breakout and retest</li><li>Chart structures and candle patterns</li><li>Higher-timeframe context</li></ul></article>
+      <article class="learning-card"><span class="num">02 / TECHNICAL</span><h3>Technical Analysis</h3><p>Use indicators as confirmation, not as a substitute for price structure.</p><ul><li>SMA and directional context</li><li>RSI and overbought / oversold</li><li>MACD and momentum</li><li>Divergence and two-scenario planning</li></ul></article>
+      <article class="learning-card"><span class="num">03 / RISK</span><h3>Risk Management</h3><p>Protect capital first. Every trade needs invalidation, size and planned risk.</p><ul><li>Predefined risk per trade</li><li>Stop loss and position sizing</li><li>Risk / reward planning</li><li>Emotional and revenge-trading controls</li></ul></article>
+      <article class="learning-card"><span class="num">04 / FUNDAMENTALS</span><h3>Fundamental Analysis</h3><p>Connect chart setups with macro, project news and market-wide risk context.</p><ul><li>Economic calendar</li><li>Crypto market headlines</li><li>Token / project fundamentals</li><li>News-driven volatility and liquidations</li></ul></article>
+      <article class="learning-card"><span class="num">05 / SMC</span><h3>Smart Money Concepts</h3><p>Study liquidity and structure as a framework for understanding where reactions may occur.</p><ul><li>POI and order blocks</li><li>Liquidity pools and sweeps</li><li>Imbalance, BOS and CHOCH</li><li>Supply / demand, Fibonacci and Wyckoff</li></ul></article>
+      <article class="learning-card"><span class="num">06 / PROCESS</span><h3>Trading Workflow</h3><p>Turn analysis into a repeatable decision process that can be measured and improved.</p><ul><li>Macro → asset → chart context</li><li>Bullish and bearish scenarios</li><li>Entry, stop, target and sizing</li><li>Journal and weekly review</li></ul></article>
+      <article class="learning-card"><span class="num">07 / READING</span><h3>Reading Notes</h3><p>Personal summaries from trading literature and coursework, organized around execution and discipline.</p><ul><li>Trend and levels</li><li>Trading systems</li><li>Stop loss / take profit</li><li>Discipline, review and risk</li></ul></article>
+      <article class="learning-card"><span class="num">PRACTICE</span><h3>Chart Drills</h3><p>Learning becomes useful only when concepts are annotated and reviewed on real charts.</p><ul><li>Mark POIs and order blocks</li><li>Find liquidity sweeps</li><li>Identify BOS / CHOCH</li><li>Review A+ and failed setups</li></ul></article>
+    </div>
+  </div>
+</section>
+
+<section class="sec" id="workflow">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title">Trading Workflow</h2></div>
+    </div>
+    <div class="learning-flow">
+      <div class="learning-step"><b>01 · Context</b><span>Macro events, market sentiment, project-specific news.</span></div>
+      <div class="learning-step"><b>02 · Structure</b><span>Trend, levels, liquidity, supply / demand, structure.</span></div>
+      <div class="learning-step"><b>03 · Plan</b><span>Entry, stop, target, position size and invalidation.</span></div>
+      <div class="learning-step"><b>04 · Execute</b><span>Wait for confirmation. Avoid forcing trades.</span></div>
+      <div class="learning-step"><b>05 · Review</b><span>Journal the trade, screenshot it, review process quality.</span></div>
+    </div>
+    <div class="learning-note">Core principle: <strong>good process ≠ guaranteed profit</strong>. The journal exists to separate decision quality from short-term outcome and to make recurring mistakes visible.</div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head"><div class="sec-head-l"><span class="sec-num">03</span><h2 class="sec-title">Use it with the Journal</h2></div></div>
+    <div class="learning-grid">
+      <article class="learning-card"><h3>Before the trade</h3><p>Write the thesis, define the invalidation point, calculate risk and save the setup screenshot.</p></article>
+      <article class="learning-card"><h3>After the trade</h3><p>Record the result, emotion and lesson. Then use AI analysis as a second opinion on process quality — not as a signal service.</p></article>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="index.html#add">Log a trade</a>
+      <a class="btn btn-ghost" href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Open full notes on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="learning-note"><strong>Educational only.</strong> These materials are personal study notes and do not constitute financial advice, investment recommendations or a promise of profitability. Third-party paid course files and books are not redistributed here.</div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot-in"><span>Trading Learning Hub · Tetiana Kotolup</span><a href="index.html">Back to Journal</a></div>
+</footer>
+<script>
+const savedTheme = localStorage.getItem('tk_theme') || localStorage.getItem('theme') || 'dark';
+document.documentElement.dataset.theme = savedTheme;
+const themeTog = document.getElementById('themeTog');
+themeTog.addEventListener('click', () => {
+  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next;
+  localStorage.setItem('tk_theme', next);
+  localStorage.setItem('theme', next);
+});
+</script>
+</body>
+</html>
