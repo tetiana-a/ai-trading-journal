@@ -48,7 +48,7 @@ The system keeps the workflow visible and measurable instead of turning trading 
 | 🧮 **Automatic PnL** | Calculates long/short PnL, return %, averages and performance metrics |
 | 🟢 **Open & closed trades** | Open a trade first, close it later with exit price, emotion and exit reason |
 | 📸 **Trade screenshots** | Paste with Ctrl+V or upload images and attach them to each trade |
-| 💹 **Live market prices** | Pull current market data from Binance public APIs |
+| 💹 **Live market prices** | Pull candle data from Binance, Bybit, OKX and Kraken public APIs |
 | 📊 **Statistics dashboard** | Win rate, profit factor, average win/loss, best trade and trading activity |
 | 📈 **Equity curve** | Visualizes account performance from closed trades |
 | 📅 **Calendar & monthly review** | See trading days, monthly PnL and monthly win rate |
@@ -74,7 +74,7 @@ The project has grown beyond a journal into a small personal trading workstation
 
 It includes:
 
-- 📉 **TradingView Lightweight Charts™** rendering with Binance public candle data;
+- 📉 **TradingView Lightweight Charts™** rendering with Binance, Bybit, OKX and Kraken public candle data;
 - 🧮 **position-size & R:R calculator**;
 - 🛡️ **prop-account dashboard** with FTMO, The5ers, iTrade and custom presets;
 - ☁️ **Supabase login and cloud sync**;
@@ -82,6 +82,8 @@ It includes:
 - 🔔 **price alerts**;
 - 🤖 **free local trade-review logic**;
 - 📱 **Telegram automation layer**;
+- 🔌 **universal Broker CSV importer** for common MT5/cTrader/exchange statement formats;
+- 📊 **strategy / timeframe / session analytics** with expectancy and win rate;
 - 🎧 **radio player + audio-reactive UI animation**.
 
 ### System architecture
@@ -89,7 +91,7 @@ It includes:
 ```mermaid
 flowchart LR
     A[Trading Journal UI] --> B[Risk & PnL Engine]
-    A --> C[Binance Public API]
+    A --> C[Official Market APIs]
     A --> D[Supabase Auth]
 
     D --> E[(Postgres)]
@@ -175,6 +177,9 @@ The learning section contains original study notes and practical summaries on:
   <img src="https://img.shields.io/badge/Supabase-3FCF8E?style=flat-square&logo=supabase&logoColor=white" alt="Supabase">
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL">
   <img src="https://img.shields.io/badge/Binance-F0B90B?style=flat-square&logo=binance&logoColor=111" alt="Binance">
+  <img src="https://img.shields.io/badge/Bybit-111111?style=flat-square" alt="Bybit">
+  <img src="https://img.shields.io/badge/OKX-111111?style=flat-square" alt="OKX">
+  <img src="https://img.shields.io/badge/Kraken-5741D9?style=flat-square" alt="Kraken">
   <img src="https://img.shields.io/badge/TradingView%20Lightweight%20Charts-131722?style=flat-square" alt="TradingView Lightweight Charts">
   <img src="https://img.shields.io/badge/Supabase%20Edge%20Functions-3FCF8E?style=flat-square" alt="Supabase Edge Functions">
 </p>
@@ -324,12 +329,14 @@ ai-trading-journal/
 │   └── js/
 │       ├── trades.js
 │       ├── market-api.js
-│       ├── binance-chart.js
+│       ├── market-terminal.js
 │       ├── cloud-sync.js
 │       ├── cloud-tools.js
+│       ├── import-tools.js
 │       ├── trade-tools.js
 │       ├── ai-service.js
 │       └── radio-visualizer.js
+├── integrations/               # official read-only connection matrix
 ├── supabase/
 │   └── migrations/
 └── preview.png.png
@@ -352,9 +359,9 @@ ai-trading-journal/
 - [x] RU / EN system pages
 - [x] Telegram backend architecture
 - [ ] Finish production Telegram activation flow
-- [ ] Add richer strategy tags & setup analytics
-- [ ] Add exchange / broker adapters
-- [ ] Add historical expectancy by strategy
+- [x] Add richer strategy tags & setup analytics
+- [x] Add public exchange adapters + broker CSV importer
+- [x] Add basic expectancy by strategy / timeframe / session
 - [ ] Add configurable AI provider routing
 - [ ] Add automated weekly review dashboard
 
