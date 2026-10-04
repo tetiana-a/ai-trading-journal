@@ -242,6 +242,15 @@
     return data || [];
   };
 
+  cloud.connectCTrader = async function connectCTrader() {
+    const session = await cloud.session();
+    if (!session) throw new Error('Sign in to Supabase first');
+    const { data, error } = await client.functions.invoke('ctrader-connect', { body: {} });
+    if (error) throw error;
+    if (!data?.url) throw new Error(data?.error || 'cTrader connection is not configured');
+    location.href = data.url;
+  };
+
   cloud.activateTelegram = async function activateTelegram() {
     const session = await cloud.session();
     if (!session) throw new Error('Sign in to Supabase first');
