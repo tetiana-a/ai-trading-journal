@@ -264,3 +264,411 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--nav-bg);ba
 }
 @media(max-width:980px){.advanced-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:560px){.advanced-grid{grid-template-columns:1fr}}
+
+
+/* ===== 2026 Trading Workspace refinement ===== */
+:root{
+  --workspace-glow:rgba(var(--gold),.08);
+  --workspace-cyan:rgba(115,188,198,.16);
+}
+body{
+  background:
+    radial-gradient(circle at 82% 12%,rgba(160,140,200,.07),transparent 30%),
+    radial-gradient(circle at 12% 82%,rgba(var(--gold),.05),transparent 28%),
+    var(--bg);
+}
+nav{
+  background:color-mix(in srgb,var(--nav-bg) 92%,transparent);
+  box-shadow:0 10px 35px rgba(0,0,0,.08);
+}
+.nav-in{max-width:1280px;height:58px}
+.nav-logo{font-size:15px}
+.nav-links a{padding:7px 12px}
+.nav-controls{gap:8px}
+
+.form-card,.tbl-wrap,.kpi-cell,.month-table,.learning-teaser{
+  backdrop-filter:blur(16px);
+}
+.form-card{
+  border-color:color-mix(in srgb,var(--line) 84%,var(--accent) 16%);
+  box-shadow:0 18px 50px rgba(0,0,0,.08);
+}
+.kpi-cell{
+  position:relative;
+  overflow:hidden;
+}
+.kpi-cell::after{
+  content:'';
+  position:absolute;
+  inset:auto -20% -55% auto;
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  background:radial-gradient(circle,var(--workspace-glow),transparent 70%);
+  pointer-events:none;
+}
+.tk-table tbody tr{transition:background .2s ease,transform .2s ease}
+.tk-table tbody tr:hover{transform:translateX(2px)}
+
+.advanced-trade{
+  background:linear-gradient(180deg,color-mix(in srgb,var(--card-bg) 92%,var(--accent) 8%),var(--card-bg));
+}
+.advanced-trade summary{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.advanced-trade summary::before{
+  content:'◈';
+  color:var(--accent);
+  font-size:10px;
+}
+.advanced-trade summary::after{margin-left:auto}
+
+/* ===== Professional Audio Deck ===== */
+.radio-launcher{
+  min-width:154px;
+  max-width:205px;
+  height:34px;
+  padding:0 10px;
+  border-radius:10px;
+  text-transform:none;
+  letter-spacing:0;
+  background:linear-gradient(180deg,var(--card-bg),color-mix(in srgb,var(--card-bg) 92%,var(--accent) 8%));
+  box-shadow:inset 0 1px rgba(255,255,255,.03);
+}
+.radio-launcher:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 22px rgba(0,0,0,.12);
+}
+.radio-launcher.on{
+  background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 88%,#fff 12%),var(--accent2));
+  color:#fff;
+  box-shadow:0 8px 28px rgba(var(--gold),.20);
+}
+.radio-nav-icon{
+  width:19px;height:19px;
+  display:grid;place-items:center;
+  border-radius:6px;
+  background:var(--tag);
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  flex:0 0 auto;
+}
+.radio-launcher.on .radio-nav-icon{background:rgba(255,255,255,.16)}
+.radio-nav-label{
+  min-width:0;
+  flex:1;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:left;
+  font-size:10px;
+  font-weight:500;
+}
+.radio-nav-state{
+  font-family:'JetBrains Mono',monospace;
+  font-size:8px;
+  letter-spacing:.08em;
+  opacity:.62;
+  flex:0 0 auto;
+}
+.radio-launcher.on .radio-nav-state{opacity:1}
+
+.radio-dock{
+  position:fixed;
+  right:24px;
+  bottom:24px;
+  z-index:1200;
+  width:min(360px,calc(100vw - 32px));
+  padding:16px;
+  border:1px solid color-mix(in srgb,var(--line2) 75%,var(--accent) 25%);
+  border-radius:20px;
+  background:
+    linear-gradient(160deg,color-mix(in srgb,var(--card-bg) 96%,var(--accent) 4%),var(--card-bg));
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.25),
+    inset 0 1px rgba(255,255,255,.04);
+  backdrop-filter:blur(24px) saturate(1.18);
+  transform:translateY(18px) scale(.97);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .24s ease,transform .24s cubic-bezier(.22,.8,.25,1),visibility .24s;
+}
+.radio-dock.open{
+  transform:translateY(0) scale(1);
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+}
+.radio-dock::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(255,255,255,.10),transparent 32%,rgba(var(--gold),.12));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;
+  pointer-events:none;
+}
+.radio-dock-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+.radio-live-mark{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font:500 9px/1 'JetBrains Mono',monospace;
+  letter-spacing:.12em;
+  color:var(--txt3);
+}
+.radio-live-mark span{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--pos);
+  box-shadow:0 0 0 4px rgba(126,184,138,.08);
+}
+.radio-close{
+  width:28px;height:28px;
+  border-radius:9px;
+  border:1px solid var(--line2);
+  background:var(--bg2);
+  color:var(--txt2);
+  cursor:pointer;
+  font-size:17px;
+  line-height:1;
+}
+.radio-close:hover{border-color:var(--accent);color:var(--accent)}
+
+.radio-now{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(var(--gold),.09),transparent 42%),
+    var(--bg2);
+}
+.radio-now-copy{min-width:0}
+.radio-now-label{
+  margin-bottom:4px;
+  color:var(--txt3);
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+.radio-now strong{
+  display:block;
+  color:var(--txt);
+  font-size:16px;
+  font-weight:500;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.radio-now span{
+  display:block;
+  margin-top:3px;
+  color:var(--txt3);
+  font-size:10px;
+}
+.radio-eq{
+  width:58px;height:34px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:3px;
+  flex:0 0 auto;
+}
+.radio-eq i{
+  display:block;
+  width:3px;
+  height:28px;
+  transform-origin:bottom;
+  transform:scaleY(.2);
+  border-radius:6px;
+  background:linear-gradient(180deg,var(--accent),var(--pos));
+  transition:opacity .12s linear;
+  opacity:.28;
+}
+
+.radio-main-controls{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:16px 0 12px;
+}
+.radio-play,.radio-skip{
+  display:grid;
+  place-items:center;
+  border:1px solid var(--line2);
+  background:var(--bg2);
+  color:var(--txt);
+  cursor:pointer;
+  transition:transform .2s,border-color .2s,background .2s,box-shadow .2s;
+}
+.radio-skip{
+  width:42px;height:42px;
+  border-radius:13px;
+  font-size:23px;
+  font-weight:200;
+}
+.radio-play{
+  width:58px;height:58px;
+  border-radius:18px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-color:transparent;
+  color:#fff;
+  box-shadow:0 12px 30px rgba(var(--gold),.20);
+}
+.radio-play:hover,.radio-skip:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent);
+}
+.radio-play.playing{
+  box-shadow:0 0 0 5px rgba(var(--gold),.08),0 14px 34px rgba(var(--gold),.25);
+}
+.play-glyph{font-size:15px;transform:translateX(1px)}
+.pause-glyph{font:600 16px/1 'JetBrains Mono',monospace;letter-spacing:-3px;transform:translateX(-1px)}
+
+.radio-tuning{
+  display:grid;
+  grid-template-columns:58px 1fr;
+  align-items:center;
+  gap:10px;
+  margin-top:2px;
+}
+.radio-tuning label{
+  color:var(--txt3);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.radio-station-select{
+  min-width:0;
+  width:100%;
+  height:38px;
+  border:1px solid var(--line2);
+  border-radius:11px;
+  padding:0 11px;
+  outline:none;
+  background:var(--bg);
+  color:var(--txt);
+  font:400 11px 'Outfit',sans-serif;
+}
+.radio-station-select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(var(--gold),.08);
+}
+
+.radio-volume-row{
+  display:grid;
+  grid-template-columns:34px 1fr 42px;
+  align-items:center;
+  gap:10px;
+  margin-top:13px;
+}
+.radio-volume-row>span{
+  color:var(--txt3);
+  font:500 8px 'JetBrains Mono',monospace;
+  letter-spacing:.06em;
+}
+.radio-volume-row>span:last-child{text-align:right}
+.radio-volume-row input[type=range]{
+  width:100%;
+  accent-color:var(--accent);
+  cursor:pointer;
+}
+.radio-dock-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid var(--line);
+}
+.radio-mode{
+  border:1px solid var(--line2);
+  border-radius:9px;
+  padding:6px 9px;
+  background:var(--bg2);
+  color:var(--txt3);
+  cursor:pointer;
+  font:500 8px 'JetBrains Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+}
+.radio-mode.active{
+  color:var(--accent);
+  border-color:color-mix(in srgb,var(--accent) 52%,var(--line2));
+}
+#radioDockStatus{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  color:var(--txt3);
+  font-size:9px;
+}
+#radioDockStatus[data-kind="live"]{color:var(--pos)}
+#radioDockStatus[data-kind="error"]{color:var(--neg)}
+
+body.radio-on #bgCanvas{
+  opacity:.48;
+  filter:saturate(1.05);
+}
+
+/* ===== System Hub polish ===== */
+.sys-card,.chart-shell{
+  position:relative;
+  overflow:hidden;
+}
+.sys-card::before,.chart-shell::before{
+  content:'';
+  position:absolute;
+  inset:0 0 auto 0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(var(--gold),.42),transparent);
+  opacity:.36;
+}
+.sys-card{
+  transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+}
+.sys-card:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--line2) 72%,var(--accent) 28%);
+  box-shadow:0 18px 50px rgba(0,0,0,.09);
+}
+.arch div{
+  position:relative;
+  overflow:hidden;
+  transition:transform .22s ease,border-color .22s ease;
+}
+.arch div:hover{
+  transform:translateY(-2px);
+  border-color:color-mix(in srgb,var(--line2) 70%,var(--accent) 30%);
+}
+
+@media(max-width:1120px){
+  .radio-launcher{min-width:42px;width:42px;padding:0;justify-content:center}
+  .radio-nav-label,.radio-nav-state{display:none}
+}
+@media(max-width:760px){
+  .nav-in{padding:0 14px}
+  .radio-dock{right:12px;bottom:12px;width:calc(100vw - 24px);border-radius:17px}
+  .radio-now{padding:14px}
+  .radio-now strong{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){
+  .radio-dock,.radio-launcher,.radio-play,.radio-skip,.sys-card,.arch div{transition:none!important}
+}
