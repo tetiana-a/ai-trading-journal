@@ -4,6 +4,8 @@
  */
 (() => {
   const $ = id => document.getElementById(id);
+  const isEn = (document.documentElement.lang || '').toLowerCase().startsWith('en');
+  const T = (ru, en) => isEn ? en : ru;
   const num = id => Number($(id)?.value || 0);
   const fmt = (n, d=2) => Number.isFinite(n) ? n.toLocaleString('ru-RU',{maximumFractionDigits:d}) : '—';
 
@@ -29,21 +31,21 @@
     const pct = deposit ? pnl / deposit * 100 : 0;
     const emotion = String(t.emotion || '').toLowerCase();
     const reasons = [];
-    if (!t.entryReason) reasons.push('Причина входа не зафиксирована — это снижает качество последующего анализа.');
-    if (!t.exitReason && t.status !== 'open') reasons.push('Для закрытой сделки не указана причина выхода.');
-    if (/fomo|жад|азарт|страх|раздраж|нетерп/.test(emotion)) reasons.push('Эмоциональный фактор мог влиять на решение; перед следующим входом нужен короткий pre-trade checklist.');
-    if (Math.abs(pct) > 2) reasons.push('Движение PNL относительно депозита крупное — проверь, не был ли размер позиции завышен.');
-    if (!reasons.length) reasons.push('По журналу критических нарушений не видно; продолжай собирать выборку, а не оценивать стратегию по одной сделке.');
+    if (!t.entryReason) reasons.push(T('Причина входа не зафиксирована — это снижает качество последующего анализа.','Entry reason is missing, which weakens post-trade analysis.'));
+    if (!t.exitReason && t.status !== 'open') reasons.push(T('Для закрытой сделки не указана причина выхода.','Exit reason is missing for a closed trade.'));
+    if (/fomo|жад|азарт|страх|раздраж|нетерп/.test(emotion)) reasons.push(T('Эмоциональный фактор мог влиять на решение; перед следующим входом нужен короткий pre-trade checklist.','Emotion may have affected execution; use a short pre-trade checklist before the next entry.'));
+    if (Math.abs(pct) > 2) reasons.push(T('Движение PNL относительно депозита крупное — проверь, не был ли размер позиции завышен.','PNL is large relative to the stated balance; verify that position size was not oversized.'));
+    if (!reasons.length) reasons.push(T('По журналу критических нарушений не видно; продолжай собирать выборку, а не оценивать стратегию по одной сделке.','No critical process violation is visible from the journal entry; evaluate the strategy over a sample, not one trade.'));
     return [
-      'FREE LOCAL REVIEW',
+      T('БЕСПЛАТНЫЙ ЛОКАЛЬНЫЙ АНАЛИЗ','FREE LOCAL REVIEW'),
       '',
-      'Результат: ' + (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ' USD' + (deposit ? ' (' + pct.toFixed(2) + '% от указанного депозита)' : ''),
-      'Сделка: ' + (t.side || '—') + ' ' + (t.ticker || '—') + (entry ? ' @ ' + entry : '') + (exit ? ' → ' + exit : ''),
+      T('Результат: ','Result: ') + (pnl >= 0 ? '+' : '') + pnl.toFixed(2) + ' USD' + (deposit ? ' (' + pct.toFixed(2) + '% от указанного депозита)' : ''),
+      T('Сделка: ','Trade: ') + (t.side || '—') + ' ' + (t.ticker || '—') + (entry ? ' @ ' + entry : '') + (exit ? ' → ' + exit : ''),
       '',
-      'Контроль процесса:',
+      T('Контроль процесса:','Process control:'),
       ...reasons.map(x => '• ' + x),
       '',
-      'Следующий шаг: повторяй один сетап, заранее определяй invalidation и риск, затем сравни минимум 20–30 однотипных сделок.'
+      T('Следующий шаг: повторяй один сетап, заранее определяй invalidation и риск, затем сравни минимум 20–30 однотипных сделок.','Next step: repeat one setup, define invalidation and risk before entry, then compare at least 20–30 similar trades.')
     ].join('\n');
   }
   window.localTradeReview = localReview;
@@ -68,7 +70,7 @@
     const invalid = side === 'Long' ? stop >= entry || target <= entry : stop <= entry || target >= entry;
     if ($('calcResult')) {
       $('calcResult').innerHTML = invalid
-        ? '<strong style="color:var(--neg)">Проверь направление Stop/Target.</strong>'
+        ? T('<strong style="color:var(--neg)">Проверь направление Stop/Target.</strong>','<strong style="color:var(--neg)">Check Stop/Target direction.</strong>')
         : [
             '<b>Risk:</b> $' + fmt(riskUsd),
             '<b>Position size:</b> ' + fmt(qty,8),
@@ -174,8 +176,8 @@
         personalDailyStopPct: num('propPersonalPct'),
         metadata: { preset: $('propPreset')?.value || 'custom' }
       });
-      state.textContent = 'Сохранено в Supabase · ' + saved.firm + ' ' + (saved.program || '');
-    } catch (e) { state.textContent = 'Ошибка: ' + e.message; }
+      state.textContent = T('Сохранено в Supabase · ','Saved to Supabase · ') + saved.firm + ' ' + (saved.program || '');
+    } catch (e) { state.textContent = T('Ошибка: ','Error: ') + e.message; }
   });
   applyPreset();
 
@@ -183,7 +185,7 @@
     async canAddTrade() {
       try {
         const saved = JSON.parse(localStorage.getItem('tk_prop_guard') || '{}');
-        if (saved.blocked) return { ok:false, reason:'Personal/firm daily stop уже достигнут. Новые сделки на сегодня заблокированы системой риска.' };
+        if (saved.blocked) return { ok:false, reason:T('Personal/firm daily stop уже достигнут. Новые сделки на сегодня заблокированы системой риска.','Personal/firm daily stop has been reached. New trades are blocked for today by the risk guard.') };
       } catch (_) {}
       return { ok:true };
     }
@@ -193,13 +195,13 @@
   async function renderKnowledge() {
     const box = $('kbResults');
     if (!box || !window.TradingCloud?.searchKnowledge) return;
-    box.innerHTML = '<span class="cloud-state">Загрузка…</span>';
+    box.innerHTML = T('<span class="cloud-state">Загрузка…</span>','<span class="cloud-state">Loading…</span>');
     try {
       const docs = await window.TradingCloud.searchKnowledge($('kbSearch')?.value || '');
       box.innerHTML = docs.length ? docs.map(d =>
         '<article class="kb-item"><b>'+escapeHtmlSafe(d.title)+'</b><span>'+escapeHtmlSafe(d.category || '')+'</span><p>'+escapeHtmlSafe(d.content).slice(0,600)+'</p></article>'
-      ).join('') : '<span class="cloud-state">Пока нет записей.</span>';
-    } catch (e) { box.innerHTML = '<span class="cloud-state">Войди в Supabase: '+escapeHtmlSafe(e.message)+'</span>'; }
+      ).join('') : T('<span class="cloud-state">Пока нет записей.</span>','<span class="cloud-state">No records yet.</span>');
+    } catch (e) { box.innerHTML = T('<span class="cloud-state">Войди в Supabase: ','<span class="cloud-state">Sign in to Supabase: ')+escapeHtmlSafe(e.message)+'</span>'; }
   }
   function escapeHtmlSafe(s) {
     return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -208,7 +210,7 @@
     const st = $('kbState');
     try {
       const title = $('kbTitle').value.trim(), content = $('kbContent').value.trim();
-      if (!title || !content) throw new Error('Нужны title и content');
+      if (!title || !content) throw new Error(T('Нужны title и content','Title and content are required'));
       await window.TradingCloud.saveKnowledge({
         title,
         category: $('kbCategory').value.trim() || 'notes',
@@ -216,7 +218,7 @@
         source:'system-hub'
       });
       $('kbTitle').value=''; $('kbContent').value='';
-      st.textContent='Сохранено в Knowledge Base';
+      st.textContent=T('Сохранено в Knowledge Base','Saved to Knowledge Base');
       renderKnowledge();
     } catch(e) { st.textContent='Ошибка: '+e.message; }
   });
@@ -233,13 +235,13 @@
       const symbol = $('alertSymbol').value.trim().toUpperCase();
       const price = Number($('alertPrice').value);
       const direction = $('alertDirection').value;
-      if (!symbol || !price) throw new Error('Укажи symbol и price');
+      if (!symbol || !price) throw new Error(T('Укажи symbol и price','Enter symbol and price'));
       await window.TradingCloud.createAlert({
         symbol,
         ruleType:'price',
         rule:{ direction, price }
       });
-      st.textContent='Alert сохранён. Backend monitor можно активировать после Telegram webhook.';
+      st.textContent=T('Alert сохранён. Backend monitor можно активировать после Telegram webhook.','Alert saved. The backend monitor can be activated after the Telegram webhook is configured.');
     } catch(e) { st.textContent='Ошибка: '+e.message; }
   });
 
@@ -248,6 +250,6 @@
     const raw = localStorage.getItem('tk_journal_trades_v2');
     const trades = raw ? JSON.parse(raw) : [];
     const last = trades.filter(t => t.status !== 'open').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
-    $('localReviewOutput').textContent = last ? localReview(last) : 'Нет закрытых сделок для разбора.';
+    $('localReviewOutput').textContent = last ? localReview(last) : T('Нет закрытых сделок для разбора.','No closed trades to review.');
   });
 })();
