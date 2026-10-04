@@ -131,11 +131,15 @@
       title: doc.title,
       category: doc.category || 'notes',
       source: doc.source || 'manual',
+      source_key: doc.sourceKey || null,
       content: doc.content,
       metadata: doc.metadata || {},
       updated_at: new Date().toISOString()
     };
-    const { data, error } = await client.from('knowledge_documents').insert(row).select().single();
+    const query = doc.sourceKey
+      ? client.from('knowledge_documents').upsert(row, { onConflict: 'user_id,source_key' }).select().single()
+      : client.from('knowledge_documents').insert(row).select().single();
+    const { data, error } = await query;
     if (error) throw error;
     return data;
   };
