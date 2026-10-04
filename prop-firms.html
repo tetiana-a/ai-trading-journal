@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Prop Firms Guide — Чехия, правила, стратегии и выплаты</title>
+<meta name="description" content="Практический гид по prop firms для трейдера в Чехии: выбор компании, KYC, выплаты, OSVČ, документы, правила FTMO, The5ers, FundedNext и рабочие стратегии под drawdown.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/variables.css">
+<link rel="stylesheet" href="src/css/base.css">
+<link rel="stylesheet" href="src/css/components.css">
+<link rel="stylesheet" href="src/css/responsive.css">
+<style>
+.prop-hero{min-height:68vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.prop-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.prop-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:980px}
+.prop-title em{font-style:normal;color:var(--accent)}
+.prop-lead{margin-top:18px;max-width:790px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
+.prop-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.prop-chip{border:1px solid var(--line2);background:var(--card-bg);padding:8px 12px;border-radius:999px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.prop-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.prop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.prop-card{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--card-shadow)}
+.prop-card h3{font-size:21px;margin:7px 0 10px}
+.prop-card h4{font-size:15px;margin:16px 0 8px}
+.prop-card p,.prop-card li{color:var(--txt2);font-size:12.5px;line-height:1.72;font-weight:300}
+.prop-card ul,.prop-card ol{padding-left:18px;margin-top:8px}
+.prop-card strong{color:var(--txt)}
+.prop-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
+.prop-table{width:100%;border-collapse:collapse;background:var(--card-bg);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.prop-table th,.prop-table td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.prop-table th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3)}
+.prop-table td{font-size:12px;color:var(--txt2);line-height:1.55}
+.prop-table tr:last-child td{border-bottom:none}
+.prop-table strong{color:var(--txt)}
+.rule{padding:16px 18px;border-left:2px solid var(--accent);background:var(--tag);border-radius:0 12px 12px 0;margin-top:14px}
+.rule b{display:block;color:var(--accent);font-size:11px;margin-bottom:6px}
+.rule p,.rule li{font-size:12px;color:var(--txt2);line-height:1.7}
+.rule ul{padding-left:18px}
+.warn{padding:16px 18px;border:1px solid rgba(217,122,122,.25);background:rgba(217,122,122,.05);border-radius:12px;color:var(--txt2);font-size:12px;line-height:1.7;margin-top:14px}
+.good{padding:16px 18px;border:1px solid rgba(126,184,138,.22);background:rgba(126,184,138,.05);border-radius:12px;color:var(--txt2);font-size:12px;line-height:1.7;margin-top:14px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.flow-item{border:1px solid var(--line);background:var(--card-bg);border-radius:14px;padding:16px}
+.flow-item b{display:block;color:var(--accent);font-size:10px;margin-bottom:8px}
+.flow-item span{font-size:12px;color:var(--txt2);line-height:1.5}
+.src-list a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.radio-note{display:flex;align-items:center;gap:8px;color:var(--txt3);font-size:11px;margin-top:12px}
+.radio-note::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+@media(max-width:980px){.flow{grid-template-columns:1fr 1fr}.prop-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.nav-links a:not(:first-child){display:none}.flow{grid-template-columns:1fr}.prop-card{padding:20px}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
+    <div class="nav-links">
+      <a href="index.html">Журнал</a>
+      <a href="learning.html">Обучение</a>
+      <a href="#firms">Prop Firms</a>
+      <a href="#czechia">Чехия</a>
+      <a href="#strategy">Стратегии</a>
+    </div>
+    <div class="nav-controls">
+      <button class="radio-btn" id="radioBtn" type="button" aria-label="Включить или выключить Radio Kiss"><div class="radio-dot"></div><span>Radio Kiss</span></button>
+      <button class="theme-tog" id="themeTog" aria-label="Тема"></button>
+    </div>
+  </div>
+</nav>
+
+<header class="prop-hero">
+<div class="wrap">
+  <div class="prop-kicker">Prop Trading · Czechia · 2026</div>
+  <h1 class="prop-title">Prop firms без хаоса: <em>правила, Чехия, выплаты и стратегия.</em></h1>
+  <p class="prop-lead">Практический раздел для трейдера, который хочет работать через проп-компании системно: понимать challenge, drawdown, KYC, выплаты, документы в Чехии, выбирать подходящий стиль торговли и не терять аккаунт из-за технического нарушения правил.</p>
+  <div class="prop-meta">
+    <span class="prop-chip">FTMO</span><span class="prop-chip">The5ers</span><span class="prop-chip">FundedNext</span>
+    <span class="prop-chip">OSVČ / документы</span><span class="prop-chip">Risk-first</span><span class="prop-chip">M15 / M5 execution</span>
+  </div>
+  <div class="prop-actions"><a class="btn btn-primary" href="#firms">Сравнить компании</a><a class="btn btn-ghost" href="#strategy">Стратегия под challenge</a></div>
+  <div class="radio-note">Radio Kiss и аудио-анимация работают так же, как в основном журнале.</div>
+</div>
+</header>
+
+<main>
+<section class="sec" id="firms"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">01</span><h2 class="sec-title">Какие prop firms использовать</h2></div></div>
+<div class="prop-grid">
+  <article class="prop-card"><span class="prop-code">FTMO · CZECH REPUBLIC</span><h3>FTMO — лучший первый ориентир для Чехии</h3><p>Сильный вариант для трейдера из Чехии: местная компания, понятные правила, крупная история бренда и подробная документация.</p><h4>1-Step</h4><ul><li>Profit Target: <strong>10%</strong></li><li>Max Daily Loss: <strong>3%</strong></li><li>Max Loss: <strong>10%</strong></li><li>Trading period: без лимита времени</li><li>Best Day Rule: один лучший день не должен составлять более 50% положительной прибыли для выполнения соответствующего условия.</li></ul><h4>Когда выбирать Swing</h4><p>Если стратегия держит позиции несколько дней, работает на H1/H4 или зависит от новостей. У FTMO Swing нет ограничений на news trading и weekend/overnight holding, но Swing доступен в 2-Step.</p></article>
+  <article class="prop-card"><span class="prop-code">THE5ERS</span><h3>The5ers — удобно для дисциплинированного Forex / indices</h3><p>Подходит тем, кто любит более спокойное прохождение и строго считает drawdown.</p><ul><li>2-Step New: target 10% → 5%</li><li>2-Step Classic: target 8% → 5%</li><li>Maximum Loss: 10%</li><li>Daily Loss Limit: 3%</li><li>На funded-счёте действует consistency requirement.</li></ul><p>В High Stakes исполнение новых ордеров вокруг high-impact news ограничено окном примерно 2 минуты до/после новости.</p></article>
+  <article class="prop-card"><span class="prop-code">FUNDEDNEXT</span><h3>FundedNext — только после проверки актуальной программы</h3><p>У компании много программ, и правила меняются чаще. Поэтому нельзя покупать challenge по старому YouTube-обзору: перед оплатой проверь текущий target, drawdown, consistency, news и payout.</p><p>Например, в 2026 FundedNext Futures Rapid имел фиксированный target и max loss без daily loss/consistency в challenge, но эта программа перестала быть доступна для новых покупок с июля 2026.</p></article>
+  <article class="prop-card"><span class="prop-code">SELECTION</span><h3>Как выбирать фирму</h3><ul><li>Сначала правила drawdown, потом цена challenge.</li><li>Смотри, fixed или trailing drawdown.</li><li>Проверяй daily loss reset time.</li><li>Отдельно news / weekend / overnight.</li><li>Смотри payout cycle и minimum payout.</li><li>Проверяй KYC до покупки, если документы нестандартные.</li><li>Не покупай несколько challenge одновременно до стабильной статистики.</li></ul></article>
+</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title">Сравнение ключевых правил</h2></div></div>
+<div style="overflow-x:auto">
+<table class="prop-table">
+<thead><tr><th>Компания</th><th>Challenge</th><th>Daily loss</th><th>Max loss</th><th>News / weekend</th><th>Для кого</th></tr></thead>
+<tbody>
+<tr><td><strong>FTMO 1-Step</strong></td><td>10% target</td><td>3%</td><td>10%</td><td>Evaluation свободнее; funded Standard имеет news/holding ограничения. Swing — без этих ограничений.</td><td>Intraday / systematic</td></tr>
+<tr><td><strong>The5ers 2-Step</strong></td><td>8–10% → 5%</td><td>3%</td><td>10%</td><td>High Stakes: ограничения исполнения около high-impact news.</td><td>Forex / indices, умеренный темп</td></tr>
+<tr><td><strong>FundedNext</strong></td><td>Зависит от текущей программы</td><td>Зависит</td><td>Зависит</td><td>Нужно проверять текущую программу перед покупкой</td><td>Только после сверки rules page</td></tr>
+</tbody>
+</table>
+</div>
+<div class="warn"><strong>Правило №1 prop trading:</strong> правила компании важнее твоего торгового сигнала. Даже прибыльная сделка может привести к fail, если нарушен Daily Loss, news window, overnight restriction или forbidden strategy.</div>
+</div></section>
+
+<section class="sec" id="czechia"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">03</span><h2 class="sec-title">Как правильно оформить выплаты в Чехии</h2></div></div>
+<div class="prop-grid">
+<article class="prop-card"><span class="prop-code">LEGAL / TAX</span><h3>1. Сначала понять, что именно тебе платит prop firm</h3><p>В большинстве современных prop-моделей ты не управляешь собственным инвестиционным счётом клиента и не оказываешь инвестиционные услуги публике. Обычно ты проходишь evaluation на simulated account, затем получаешь договорную reward/payout за результат.</p><p>В Чехии регулярный самостоятельный доход по такой договорной деятельности может попадать в <strong>příjmy ze samostatné činnosti (§7)</strong>. Finanční správa прямо относит к самостоятельной деятельности также независимую деятельность и предпринимательский доход.</p><div class="warn"><strong>Не регистрируйся как поставщик криптоуслуг только потому, что торгуешь crypto/CFD.</strong> С 2025 услуги, связанные с кryptoaktivy, регулируются отдельно; это другое, чем торговля в prop challenge. Точную классификацию конкретного контракта стоит подтвердить у чешского налогового консультанта или Finanční správa до первого существенного payout.</div></article>
+<article class="prop-card"><span class="prop-code">OSVČ</span><h3>2. OSVČ: hlavní или vedlejší</h3><p><strong>Vedlejší OSVČ</strong> существует только если есть законное основание — например, подходящее zaměstnání, учёба, пенсия и т.п. Нельзя просто выбрать vedlejší потому, что так дешевле.</p><p>Если prop payouts становятся регулярной самостоятельной деятельностью, практический вариант — вести их как OSVČ и хранить договоры, payout statements и подтверждение расходов.</p><p>С 2026 ČSSZ публикует отдельные минимальные параметры для hlavní и vedlejší SVČ. Конкретная обязанность по авансам зависит от статуса и истории деятельности.</p></article>
+<article class="prop-card"><span class="prop-code">DOCUMENTS</span><h3>3. Документы, которые нужно хранить</h3><ul><li>Паспорт / ID и proof of address для KYC.</li><li>Prop Firm Agreement / Trader Agreement.</li><li>Подтверждение успешного challenge.</li><li>Payout statements / reward confirmations.</li><li>Invoice, если компания просит выставлять invoice.</li><li>Банковская выписка / Rise / Skrill / crypto payout record.</li><li>Challenge fee и другие подтверждённые расходы.</li><li>Курс CZK для учёта иностранной валюты.</li><li>История переписки при споре по payout.</li><li>Годовой отчёт по доходам/расходам.</li></ul></article>
+<article class="prop-card"><span class="prop-code">ADMIN</span><h3>4. Чехия: практический workflow</h3><ol><li>Прочитать contract prop firm.</li><li>Определить налоговую квалификацию дохода.</li><li>Если это регулярная самostatná činnost — оформить соответствующий статус OSVČ.</li><li>Не выбирать регулируемую финансовую/крипто-лицензию без необходимости.</li><li>Вести evidenci příjmů a výdajů.</li><li>Хранить договор + payout proof на каждый вывод.</li><li>Проверить zdravotní pojišťovna и ČSSZ.</li><li>При datová schránka подавать обязательные formulářová podání электронно.</li></ol><p>С 2024 физическое лицо-предприниматель обычно не подаёт отдельную общую регистрацию к налогу на доход только из-за старта деятельности; но налоговые и страховые обязанности всё равно остаются.</p></article>
+</div>
+<div class="good"><strong>Практично:</strong> отдельный банковский счёт для prop payouts не всегда юридически обязателен, но очень полезен для прозрачной evidenci. Не смешивай payout, challenge fees и личные переводы в одну неразборчивую историю.</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">04</span><h2 class="sec-title">KYC и payout: что подготовить</h2></div></div>
+<div class="prop-grid">
+<article class="prop-card"><h3>FTMO</h3><p>KYC проходит после успешной evaluation перед funded/sim-funded этапом. Подготовь действительный ID и данные, совпадающие с профилем и payout method.</p><p>Для CFD/prop отношений всегда сохраняй подписанный договор и payout confirmation.</p></article>
+<article class="prop-card"><h3>The5ers</h3><p>После challenge требуется KYC. На официальной странице перечислены: имя, адрес, дата рождения, Passport/National ID, proof of address и при необходимости дополнительные документы.</p><p>Платёж за challenge делай картой/методом на своё имя — The5ers прямо требует совпадение владельца.</p></article>
+<article class="prop-card"><h3>Payout hygiene</h3><ul><li>Имя в KYC = имя на payout account.</li><li>Не меняй страну/VPN хаотично.</li><li>Не используй чужие карты.</li><li>Не создавай несколько личностей/аккаунтов.</li><li>Сохраняй payout receipt сразу после выплаты.</li></ul></article>
+<article class="prop-card"><h3>Перед первым payout</h3><ul><li>Contract сохранён.</li><li>KYC завершён.</li><li>Tax residence указана корректно.</li><li>Есть отдельная папка «Prop Payouts».</li><li>Понятно, как доход отражается в чешском учёте.</li></ul></article>
+</div>
+</div></section>
+
+<section class="sec" id="strategy"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">05</span><h2 class="sec-title">Стратегии, которые лучше подходят для prop firms</h2></div></div>
+<div class="prop-grid">
+<article class="prop-card"><span class="prop-code">A · STRUCTURE PULLBACK</span><h3>Trend + Pullback + Confirmation</h3><p>Одна из самых prop-friendly моделей, потому что легко определить invalidation и держать небольшой risk.</p><ol><li>H4/H1: определить направление.</li><li>Отметить H1/M15 support/demand или resistance/supply.</li><li>Ждать возврат цены.</li><li>M15/M5: CHOCH/BOS + rejection.</li><li>Stop за structural invalidation.</li><li>Target к следующей liquidity/level.</li></ol><p><strong>Типичный R:R:</strong> 1:1.5–1:3.</p></article>
+<article class="prop-card"><span class="prop-code">B · SESSION BREAKOUT RETEST</span><h3>Breakout + Retest</h3><p>Подходит для London / New York, если не ловить первую свечу импульса.</p><ol><li>Определить pre-session range.</li><li>Дождаться пробоя с displacement.</li><li>Не входить в первую свечу.</li><li>Ждать retest уровня.</li><li>Подтверждение на M5/M15.</li></ol><p>Лучше избегать прямо перед CPI/NFP/FOMC, если правила или твоя статистика не поддерживают news trading.</p></article>
+<article class="prop-card"><span class="prop-code">C · LIQUIDITY SWEEP</span><h3>Liquidity Sweep + Structure Shift</h3><p>Рабочая SMC-модель для ограниченного drawdown.</p><ol><li>Найти очевидные equal highs/lows.</li><li>Ждать sweep.</li><li>Ждать возврат внутрь диапазона.</li><li>M5/M15 CHOCH/BOS.</li><li>Entry на retest / FVG / order block.</li><li>Stop за sweep.</li></ol></article>
+<article class="prop-card"><span class="prop-code">D · SWING</span><h3>H4/H1 swing — только на подходящем account type</h3><p>Подходит для FTMO Swing и программ, где разрешён overnight/weekend. Не подходит, если правила требуют закрывать позиции.</p><p>Преимущество: меньше overtrading. Недостаток: news gaps, swaps, широкий stop и более медленное прохождение.</p></article>
+</div>
+<div class="warn"><strong>Худшие модели для challenge:</strong> martingale, averaging down без жёсткого лимита, grid без defined stop, all-in, попытка «отбить» loss, news straddle, latency arbitrage, HFT/эксплойты simulated feed. Многие из этих практик прямо запрещены фирмами.</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">06</span><h2 class="sec-title">Таймфреймы, время и лимиты</h2></div></div>
+<div class="prop-grid">
+<article class="prop-card"><h3>Таймфрейм-модель</h3><ul><li><strong>H4:</strong> общий режим и major levels.</li><li><strong>H1:</strong> рабочая структура.</li><li><strong>M15:</strong> setup / confirmation.</li><li><strong>M5:</strong> точка исполнения.</li><li><strong>M1:</strong> только если стратегия протестирована; для challenge часто создаёт шум и overtrading.</li></ul></article>
+<article class="prop-card"><h3>Лучшее время по Чехии</h3><p>Для Forex/indices обычно самые ликвидные окна:</p><ul><li><strong>London:</strong> примерно 09:00–12:00 по Праге.</li><li><strong>New York open:</strong> примерно 15:30–18:00 по Праге большую часть года.</li><li><strong>Overlap London/NY:</strong> часто лучшее окно по ликвидности.</li></ul><p>Переходы DST могут временно сдвигать взаимное время США/Европы, поэтому проверяй календарь.</p></article>
+<article class="prop-card"><h3>Risk model для challenge</h3><div class="rule"><b>Консервативный baseline</b><ul><li>Risk/trade: 0.25–0.50%</li><li>Daily stop: 0.75–1.0%</li><li>2–3 сделки максимум</li><li>После 2 losses подряд — stop day</li><li>Не увеличивать size после loss</li><li>Не рисковать до лимита prop firm</li></ul></div></article>
+<article class="prop-card"><h3>Почему нельзя использовать весь Daily Loss</h3><p>Если фирма разрешает, например, 3% daily loss, это <strong>аварийный лимит компании</strong>, а не твой рабочий risk budget.</p><p>Твой личный daily stop должен быть заметно меньше. Иначе один плохой день завершает challenge.</p></article>
+</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">07</span><h2 class="sec-title">План прохождения challenge</h2></div></div>
+<div class="flow">
+<div class="flow-item"><b>1 · FREE TRIAL</b><span>Сначала пройти бесплатный trial/демо с теми же правилами.</span></div>
+<div class="flow-item"><b>2 · RULE SHEET</b><span>Выписать daily loss, max loss, reset, news, weekend, consistency.</span></div>
+<div class="flow-item"><b>3 · ONE SETUP</b><span>Торговать один проверенный сетап, а не пять систем.</span></div>
+<div class="flow-item"><b>4 · LOW RISK</b><span>0.25–0.5% на сделку, stop day раньше лимита фирмы.</span></div>
+<div class="flow-item"><b>5 · JOURNAL</b><span>Каждый trade в AI Trading Journal + screenshot + причина.</span></div>
+</div>
+<div class="good"><strong>Цель challenge — не сделать 10% как можно быстрее.</strong> Цель — доказать, что ты можешь выполнить target, не приближаясь постоянно к drawdown. Чем скучнее и повторяемее процесс, тем лучше он подходит prop trading.</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">08</span><h2 class="sec-title">Официальные источники и дата проверки</h2></div></div>
+<div class="prop-card src-list">
+<p><strong>Проверено: 4 октября 2026.</strong> Prop rules меняются, поэтому перед покупкой challenge всегда открывай официальную страницу программы.</p>
+<ul>
+<li><a href="https://ftmo.com/en/faq/" target="_blank" rel="noopener">FTMO FAQ</a></li>
+<li><a href="https://promo.ftmo.com/new-1-step-challenge/" target="_blank" rel="noopener">FTMO 1-Step objectives</a></li>
+<li><a href="https://www.the5ers.com/faqs/2-step-plan-rules-specifications/" target="_blank" rel="noopener">The5ers 2-Step rules</a></li>
+<li><a href="https://the5ers.com/faqs/what-is-the-kyc-verification-who-has-to-do-one-and-what-documents-are-needed/" target="_blank" rel="noopener">The5ers KYC</a></li>
+<li><a href="https://financnisprava.gov.cz/cs/dane/dane/dan-z-prijmu/fyzicke-osoby/podnikatel-osvc" target="_blank" rel="noopener">Finanční správa — OSVČ</a></li>
+<li><a href="https://financnisprava.gov.cz/cs/dane/danovy-system-cr/postup-v-danovem-rizeni/registrace-zahajeni-podnikani" target="_blank" rel="noopener">Finanční správa — zahájení podnikání</a></li>
+<li><a href="https://www.cssz.cz/" target="_blank" rel="noopener">ČSSZ</a></li>
+<li><a href="https://mpo.gov.cz/cz/podnikani/zivnostenske-podnikani/" target="_blank" rel="noopener">MPO — živnostenské podnikání</a></li>
+</ul>
+</div>
+<div class="warn"><strong>Правовой дисклеймер:</strong> это практический образовательный гид, а не персональная налоговая/юридическая консультация. Для точного obor činnosti и классификации конкретного prop payout решающим является твой реальный договор и фактический характер деятельности.</div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot-in"><span>Prop Firms Guide · Tetiana Kotolup</span><a href="index.html">Вернуться в журнал</a></div></footer>
+
+<script>
+const savedTheme=localStorage.getItem('tk_theme')||localStorage.getItem('theme')||'dark';
+document.documentElement.dataset.theme=savedTheme;
+document.getElementById('themeTog').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('tk_theme',next);localStorage.setItem('theme',next);});
+const currentLang='ru';
+const translations={ru:{alert_radio_error:'Радиопоток сейчас недоступен или заблокирован в вашем регионе.'}};
+</script>
+<script src="src/js/radio-visualizer.js"></script>
+</body>
+</html>
