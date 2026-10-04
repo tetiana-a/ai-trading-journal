@@ -84,6 +84,25 @@ Everything — trades, screenshots, settings — lives in your browser's local s
 
 No accounts, no tracking, no server storing your trades.
 
+## 📚 Trading Learning Hub
+
+The repository now also includes a structured learning section based on my trading study notes and practice.
+
+**Start here:** [learning/README.md](learning/README.md)
+
+Topics include:
+
+- market structure, trends, support/resistance and candlestick patterns;
+- RSI, MACD, divergence and technical-analysis workflow;
+- risk management and position planning;
+- fundamental and news analysis;
+- Smart Money concepts: liquidity, order blocks, POI, imbalance, BOS/CHOCH, supply/demand;
+- Fibonacci and Wyckoff study notes;
+- a repeatable workflow from market context to post-trade review;
+- reading notes from trading literature and coursework.
+
+The learning hub is intentionally written as **original study notes and summaries**. Third-party books and paid course files are not redistributed in this public repository.
+
 ## 🗺 Roadmap
 
 - [ ] Optional cloud sync across devices
