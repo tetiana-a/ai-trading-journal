@@ -106,7 +106,7 @@
 <li><strong>MetaTrader 5</strong> — историю уже можно импортировать CSV; позже можно добавить локальный read-only bridge</li>
 <li><strong>cTrader</strong> — официальный Open API поддерживает OAuth scope <em>accounts</em> только для просмотра</li>
 <li><strong>FTMO / The5ers / iTrade / FundedNext</strong> — синхронизация через фактическую торговую платформу, если API доступен; иначе statement/CSV import</li>
-</ul><p>Приватные ключи нельзя вставлять в GitHub Pages. Подключения аккаунтов — только OAuth или backend read-only credentials.</p></div>
+</ul><p>Приватные ключи нельзя вставлять в GitHub Pages. Подключения аккаунтов — только OAuth или backend read-only credentials.</p><button class="btn btn-ghost" id="ctraderConnect" style="margin-top:10px">Подключить cTrader read-only</button><div id="ctraderState" class="cloud-state">Нужна одобренная cTrader Open API application.</div></div>
 </div>
 <div class="note">Система специально <strong>не отправляет ордера автоматически</strong>. Она импортирует, считает, контролирует риск и предупреждает — это отделяет аналитику от исполнения и уменьшает операционный риск.</div>
 <div style="margin-top:12px"><a class="btn btn-primary" href="index.html#add">Открыть Journal → Import Broker CSV</a></div>
