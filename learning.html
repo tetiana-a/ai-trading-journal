@@ -3,35 +3,54 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Trading Learning Hub — Tetiana Kotolup</title>
-<meta name="description" content="Structured trading study notes: market structure, technical analysis, risk management, fundamentals, Smart Money concepts and trading workflow.">
+<title>Trading Learning Hub — Complete Study Materials</title>
+<meta name="description" content="Complete original trading study materials connected to AI Trading Journal: crypto foundations, market structure, technical analysis, risk, fundamentals, Smart Money, Wyckoff, Fibonacci and trading workflow.">
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/css/variables.css">
 <link rel="stylesheet" href="src/css/base.css">
 <link rel="stylesheet" href="src/css/components.css">
 <link rel="stylesheet" href="src/css/responsive.css">
 <style>
-.learning-hero{min-height:64vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.learning-hero{min-height:68vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
 .learning-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
-.learning-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:880px}
+.learning-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:980px}
 .learning-title em{font-style:normal;color:var(--accent)}
-.learning-lead{margin-top:18px;max-width:680px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
+.learning-lead{margin-top:18px;max-width:760px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
 .learning-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
 .learning-chip{border:1px solid var(--line2);background:var(--card-bg);padding:8px 12px;border-radius:999px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
-.learning-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.learning-card{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:var(--card-shadow)}
-.learning-card h3{font-size:21px;margin:8px 0 10px}
-.learning-card p{color:var(--txt2);font-size:13px;line-height:1.7;font-weight:300}
-.learning-card ul{margin:14px 0 0;padding-left:18px;color:var(--txt2);font-size:12px;line-height:1.8}
-.learning-card .num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
-.learning-flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:18px}
-.learning-step{border:1px solid var(--line);background:var(--card-bg);border-radius:14px;padding:16px;min-height:120px}
-.learning-step b{display:block;font-size:11px;color:var(--accent);margin-bottom:8px}
-.learning-step span{font-size:12px;color:var(--txt2);line-height:1.5}
-.learning-note{margin-top:18px;border-left:2px solid var(--accent);padding:14px 18px;background:var(--tag);border-radius:0 12px 12px 0;color:var(--txt2);font-size:12px;line-height:1.7}
 .learning-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
-@media(max-width:900px){.learning-grid{grid-template-columns:1fr}.learning-flow{grid-template-columns:1fr 1fr}.learning-hero{min-height:auto}}
-@media(max-width:560px){.learning-flow{grid-template-columns:1fr}.learning-card{padding:20px}}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.toc a{display:block;background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--txt2);font-size:12px;line-height:1.4;transition:.2s}
+.toc a:hover{border-color:var(--accent);color:var(--txt);transform:translateY(-2px)}
+.toc a b{display:block;color:var(--accent);font-size:9px;letter-spacing:.08em;margin-bottom:6px}
+.chapter{background:var(--card-bg);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--card-shadow);margin-bottom:18px}
+.chapter-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.chapter-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
+.chapter h3{font-size:clamp(24px,3vw,34px);margin-top:5px}
+.chapter-intro{max-width:620px;color:var(--txt2);font-size:13px;line-height:1.7}
+.lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lesson{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:20px}
+.lesson h4{font-size:16px;margin-bottom:10px}
+.lesson p,.lesson li{color:var(--txt2);font-size:12.5px;line-height:1.72;font-weight:300}
+.lesson ul,.lesson ol{padding-left:18px;margin-top:8px}
+.lesson strong{color:var(--txt)}
+.formula{font-family:'JetBrains Mono',monospace;background:var(--tag);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0;color:var(--txt);font-size:11px;overflow:auto}
+.checklist{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--tag)}
+.checklist h4{font-size:13px;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+.checklist ul{columns:2;column-gap:28px;padding-left:18px}
+.checklist li{color:var(--txt2);font-size:12px;line-height:1.7}
+.practice{margin-top:14px;border-left:2px solid var(--accent);padding:15px 18px;background:var(--tag);border-radius:0 12px 12px 0}
+.practice b{display:block;color:var(--accent);font-size:11px;margin-bottom:6px}
+.practice p,.practice li{font-size:12px;color:var(--txt2);line-height:1.7}
+.practice ul{padding-left:18px}
+.warning{margin-top:18px;padding:16px 18px;border:1px solid rgba(217,122,122,.25);background:rgba(217,122,122,.05);border-radius:12px;color:var(--txt2);font-size:12px;line-height:1.7}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.flow-item{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg)}
+.flow-item b{display:block;color:var(--accent);font-size:10px;margin-bottom:8px}
+.flow-item span{font-size:12px;color:var(--txt2);line-height:1.55}
+@media(max-width:1000px){.toc{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.lesson-grid{grid-template-columns:1fr}.chapter-head{display:block}.chapter-intro{margin-top:12px}.checklist ul{columns:1}}
+@media(max-width:560px){.toc,.flow{grid-template-columns:1fr}.chapter{padding:20px}.learning-hero{min-height:auto}}
 </style>
 </head>
 <body>
@@ -41,103 +60,191 @@
     <a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
     <div class="nav-links">
       <a href="index.html">Journal</a>
-      <a href="#curriculum">Curriculum</a>
+      <a href="#contents">Contents</a>
       <a href="#workflow">Workflow</a>
       <a href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">GitHub Notes</a>
     </div>
-    <div class="nav-controls">
-      <button class="theme-tog" id="themeTog" aria-label="Theme"></button>
-    </div>
+    <div class="nav-controls"><button class="theme-tog" id="themeTog" aria-label="Theme"></button></div>
   </div>
 </nav>
 
 <header class="learning-hero">
   <div class="wrap">
-    <div class="learning-kicker">Trading Learning Hub · Personal Study System</div>
-    <h1 class="learning-title">Learn the market. Build the process. <em>Review the evidence.</em></h1>
-    <p class="learning-lead">A structured learning space connected to AI Trading Journal: market structure, technical analysis, risk management, fundamentals, Smart Money concepts and a repeatable pre-trade / post-trade workflow.</p>
+    <div class="learning-kicker">Complete Trading Learning Hub · Original Study Materials</div>
+    <h1 class="learning-title">From crypto basics to disciplined execution. <em>One complete learning system.</em></h1>
+    <p class="learning-lead">A full, portfolio-ready study system built from personal coursework, chart practice and trading notes. The material is organized to move from foundations to execution, then into journaling and review.</p>
     <div class="learning-meta">
-      <span class="learning-chip">7 study modules</span>
-      <span class="learning-chip">Risk-first approach</span>
-      <span class="learning-chip">Smart Money concepts</span>
-      <span class="learning-chip">Journal-driven review</span>
+      <span class="learning-chip">8 complete modules</span>
+      <span class="learning-chip">Crypto + Technical + SMC</span>
+      <span class="learning-chip">Risk-first framework</span>
+      <span class="learning-chip">Practice checklists</span>
+      <span class="learning-chip">Journal integration</span>
     </div>
     <div class="learning-actions">
-      <a class="btn btn-primary" href="#curriculum">Explore curriculum</a>
+      <a class="btn btn-primary" href="#contents">Start learning</a>
       <a class="btn btn-ghost" href="index.html#add">Open trading journal</a>
     </div>
   </div>
 </header>
 
 <main>
-<section class="sec" id="curriculum">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-num">01</span><h2 class="sec-title">Curriculum</h2></div>
-    </div>
-    <div class="learning-grid">
-      <article class="learning-card"><span class="num">01 / FOUNDATIONS</span><h3>Market Foundations</h3><p>Build the chart-reading base before adding indicators or complex setups.</p><ul><li>Uptrend, downtrend and range</li><li>Support, resistance, breakout and retest</li><li>Chart structures and candle patterns</li><li>Higher-timeframe context</li></ul></article>
-      <article class="learning-card"><span class="num">02 / TECHNICAL</span><h3>Technical Analysis</h3><p>Use indicators as confirmation, not as a substitute for price structure.</p><ul><li>SMA and directional context</li><li>RSI and overbought / oversold</li><li>MACD and momentum</li><li>Divergence and two-scenario planning</li></ul></article>
-      <article class="learning-card"><span class="num">03 / RISK</span><h3>Risk Management</h3><p>Protect capital first. Every trade needs invalidation, size and planned risk.</p><ul><li>Predefined risk per trade</li><li>Stop loss and position sizing</li><li>Risk / reward planning</li><li>Emotional and revenge-trading controls</li></ul></article>
-      <article class="learning-card"><span class="num">04 / FUNDAMENTALS</span><h3>Fundamental Analysis</h3><p>Connect chart setups with macro, project news and market-wide risk context.</p><ul><li>Economic calendar</li><li>Crypto market headlines</li><li>Token / project fundamentals</li><li>News-driven volatility and liquidations</li></ul></article>
-      <article class="learning-card"><span class="num">05 / SMC</span><h3>Smart Money Concepts</h3><p>Study liquidity and structure as a framework for understanding where reactions may occur.</p><ul><li>POI and order blocks</li><li>Liquidity pools and sweeps</li><li>Imbalance, BOS and CHOCH</li><li>Supply / demand, Fibonacci and Wyckoff</li></ul></article>
-      <article class="learning-card"><span class="num">06 / PROCESS</span><h3>Trading Workflow</h3><p>Turn analysis into a repeatable decision process that can be measured and improved.</p><ul><li>Macro → asset → chart context</li><li>Bullish and bearish scenarios</li><li>Entry, stop, target and sizing</li><li>Journal and weekly review</li></ul></article>
-      <article class="learning-card"><span class="num">07 / READING</span><h3>Reading Notes</h3><p>Personal summaries from trading literature and coursework, organized around execution and discipline.</p><ul><li>Trend and levels</li><li>Trading systems</li><li>Stop loss / take profit</li><li>Discipline, review and risk</li></ul></article>
-      <article class="learning-card"><span class="num">PRACTICE</span><h3>Chart Drills</h3><p>Learning becomes useful only when concepts are annotated and reviewed on real charts.</p><ul><li>Mark POIs and order blocks</li><li>Find liquidity sweeps</li><li>Identify BOS / CHOCH</li><li>Review A+ and failed setups</li></ul></article>
-    </div>
+<section class="sec" id="contents"><div class="wrap">
+  <div class="sec-head"><div class="sec-head-l"><span class="sec-num">00</span><h2 class="sec-title">Course Contents</h2></div></div>
+  <div class="toc">
+    <a href="#m1"><b>MODULE 01</b>Crypto & Market Foundations</a>
+    <a href="#m2"><b>MODULE 02</b>Technical Analysis</a>
+    <a href="#m3"><b>MODULE 03</b>Risk Management</a>
+    <a href="#m4"><b>MODULE 04</b>Fundamental Analysis</a>
+    <a href="#m5"><b>MODULE 05</b>Smart Money Concepts</a>
+    <a href="#m6"><b>MODULE 06</b>Fibonacci & Wyckoff</a>
+    <a href="#m7"><b>MODULE 07</b>Trading Strategy & Workflow</a>
+    <a href="#m8"><b>MODULE 08</b>Journal, Psychology & Review</a>
   </div>
-</section>
+</div></section>
 
-<section class="sec" id="workflow">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title">Trading Workflow</h2></div>
+<section class="sec" id="m1"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 01</span><h3>Crypto & Market Foundations</h3></div><p class="chapter-intro">Understand what you are trading before learning entries. This module covers the role of Bitcoin, altcoins, market cycles, trend structure and the psychology behind crowd behavior.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Cryptocurrency basics</h4><p>Crypto assets are digital assets secured by distributed ledger technology. Price is driven by liquidity, demand, narrative, adoption, regulation, token supply and market-wide risk appetite.</p><ul><li><strong>Bitcoin:</strong> benchmark crypto asset and dominant liquidity anchor.</li><li><strong>Altcoins:</strong> assets other than Bitcoin, often with higher volatility and narrative sensitivity.</li><li><strong>Stablecoins:</strong> instruments designed to track fiat value and commonly used as quote assets.</li><li><strong>Spot:</strong> buying/selling the underlying asset.</li><li><strong>Futures:</strong> derivatives that allow leveraged long/short exposure and carry liquidation risk.</li></ul></div>
+      <div class="lesson"><h4>2. Bitcoin, altcoins & dominance</h4><p>Bitcoin often sets the broader crypto risk regime. Altcoins can outperform during periods of expanding liquidity, but may underperform sharply when Bitcoin volatility increases.</p><ul><li>Watch BTC trend and volatility before altcoin trades.</li><li>Compare asset strength versus BTC and versus USD/USDT.</li><li>Use dominance as context, not as a direct signal.</li><li>Remember that correlations rise during panic.</li></ul></div>
+      <div class="lesson"><h4>3. Market psychology & hype</h4><p>Markets repeatedly cycle through fear, uncertainty, greed and euphoria. Narrative strength can temporarily dominate fundamentals.</p><ul><li><strong>FOMO:</strong> entering because price is moving without a plan.</li><li><strong>Confirmation bias:</strong> only reading information that supports your position.</li><li><strong>Recency bias:</strong> assuming the latest move will continue indefinitely.</li><li><strong>Herd behavior:</strong> following crowd positioning without independent analysis.</li></ul></div>
+      <div class="lesson"><h4>4. Trend & range</h4><p>Classify the market first:</p><ul><li><strong>Uptrend:</strong> higher highs + higher lows.</li><li><strong>Downtrend:</strong> lower highs + lower lows.</li><li><strong>Range:</strong> repeated rotation between support and resistance.</li><li><strong>Long-term vs short-term:</strong> a local move can oppose the higher-timeframe trend.</li></ul></div>
     </div>
-    <div class="learning-flow">
-      <div class="learning-step"><b>01 · Context</b><span>Macro events, market sentiment, project-specific news.</span></div>
-      <div class="learning-step"><b>02 · Structure</b><span>Trend, levels, liquidity, supply / demand, structure.</span></div>
-      <div class="learning-step"><b>03 · Plan</b><span>Entry, stop, target, position size and invalidation.</span></div>
-      <div class="learning-step"><b>04 · Execute</b><span>Wait for confirmation. Avoid forcing trades.</span></div>
-      <div class="learning-step"><b>05 · Review</b><span>Journal the trade, screenshot it, review process quality.</span></div>
-    </div>
-    <div class="learning-note">Core principle: <strong>good process ≠ guaranteed profit</strong>. The journal exists to separate decision quality from short-term outcome and to make recurring mistakes visible.</div>
-  </div>
-</section>
+    <div class="practice"><b>PRACTICE</b><ul><li>Open BTCUSDT on 1D, 4H and 1H.</li><li>Label trend/range on each timeframe.</li><li>Write one sentence describing current market psychology.</li><li>Compare BTC structure with one altcoin.</li></ul></div>
+  </article>
+</div></section>
 
-<section class="sec">
-  <div class="wrap">
-    <div class="sec-head"><div class="sec-head-l"><span class="sec-num">03</span><h2 class="sec-title">Use it with the Journal</h2></div></div>
-    <div class="learning-grid">
-      <article class="learning-card"><h3>Before the trade</h3><p>Write the thesis, define the invalidation point, calculate risk and save the setup screenshot.</p></article>
-      <article class="learning-card"><h3>After the trade</h3><p>Record the result, emotion and lesson. Then use AI analysis as a second opinion on process quality — not as a signal service.</p></article>
+<section class="sec" id="m2"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 02</span><h3>Technical Analysis</h3></div><p class="chapter-intro">Technical analysis is a framework for organizing price information. The priority is structure and levels first, indicators second.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Support, resistance & levels</h4><ul><li>Support: area where buying pressure previously appeared.</li><li>Resistance: area where selling pressure previously appeared.</li><li>Psychological levels: round numbers or widely watched prices.</li><li>Breakout level: prior boundary that price has moved through.</li><li>Retest level: former boundary revisited after breakout.</li></ul><p>A level is an area of interest, not an automatic entry.</p></div>
+      <div class="lesson"><h4>2. Classical patterns</h4><ul><li>Head and Shoulders</li><li>Double Top</li><li>Double Bottom</li><li>Ascending Triangle</li><li>Flag</li></ul><p>Patterns gain value when they occur at a meaningful level with supporting structure and volume behavior.</p></div>
+      <div class="lesson"><h4>3. Candlestick patterns</h4><ul><li>Hammer</li><li>Hanging Man</li><li>Engulfing</li><li>Doji</li><li>Morning Star</li></ul><p>The location of a candle matters more than its name. A reversal pattern in the middle of noise is weaker than the same pattern at a major level.</p></div>
+      <div class="lesson"><h4>4. Moving Average (SMA 30)</h4><p>SMA 30 can help visualize short-term direction and dynamic support/resistance. It should not be used alone.</p><ul><li>Price above rising SMA → supportive bullish context.</li><li>Price below falling SMA → supportive bearish context.</li><li>Flat SMA → possible range/noisy regime.</li></ul></div>
+      <div class="lesson"><h4>5. RSI</h4><p>Basic reference zones:</p><div class="formula">RSI &gt; 70 → overbought context
+RSI &lt; 30 → oversold context</div><p>Overbought does not guarantee a drop. Oversold does not guarantee a bounce. Strong trends can remain extended.</p></div>
+      <div class="lesson"><h4>6. MACD & divergence</h4><p>Use MACD to observe momentum shifts and trend acceleration. Divergence can highlight weakening momentum, but it is stronger when aligned with structure and key levels.</p><ul><li>Price higher high + indicator lower high → bearish divergence context.</li><li>Price lower low + indicator higher low → bullish divergence context.</li></ul></div>
+    </div>
+    <div class="checklist"><h4>Technical setup checklist</h4><ul><li>Higher-timeframe trend identified</li><li>Key support/resistance marked</li><li>Local structure clear</li><li>Entry trigger defined</li><li>Indicator is confirmation only</li><li>Invalidation level defined</li><li>Risk/reward acceptable</li><li>No major news immediately ahead</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m3"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 03</span><h3>Risk Management</h3></div><p class="chapter-intro">Risk management is the survival layer of trading. A good setup with uncontrolled risk can destroy an account; an average setup with disciplined risk can be studied safely.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Risk per trade</h4><p>Study example:</p><div class="formula">Account = $100
+Risk = 1–2%
+Maximum planned loss = $1–$2</div><p>This is an educational example, not a universal rule.</p></div>
+      <div class="lesson"><h4>2. Stop loss</h4><p>A stop should be placed where the original thesis becomes invalid, not at a random distance that simply feels comfortable.</p><ul><li>Do not trade without predefined invalidation.</li><li>Do not widen a stop because of fear of taking a loss.</li><li>Position size should adapt to stop distance.</li></ul></div>
+      <div class="lesson"><h4>3. Risk / Reward</h4><div class="formula">R:R = potential reward / potential risk</div><p>Study target: minimum 1:2 when the setup supports it, with 1:3 preferred in higher-quality conditions. A high R:R is meaningless if the target is unrealistic.</p></div>
+      <div class="lesson"><h4>4. Position size</h4><div class="formula">Position size ≈ allowed $ risk / stop distance</div><p>Always consider contract specifications, leverage and fees for the actual instrument.</p></div>
+      <div class="lesson"><h4>5. Managing winners</h4><ul><li>Partial profit taking.</li><li>Move stop to break-even when justified by structure.</li><li>Trail behind market structure.</li><li>Do not improvise management because of greed.</li></ul></div>
+      <div class="lesson"><h4>6. After a losing trade</h4><ul><li>Do not revenge trade.</li><li>Do not immediately increase size.</li><li>Separate bad process from bad outcome.</li><li>Record the loss in the journal.</li><li>Identify whether the rule or the setup failed.</li></ul></div>
+    </div>
+    <div class="warning"><strong>Important:</strong> leverage amplifies both profit and loss. A small price move can liquidate an oversized futures position. Never treat leverage as free buying power.</div>
+  </article>
+</div></section>
+
+<section class="sec" id="m4"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 04</span><h3>Fundamental Analysis</h3></div><p class="chapter-intro">Fundamentals provide context for why volatility may expand, why capital rotates and why technical levels can suddenly fail.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Economic calendar</h4><p>Before trading, check high-impact US macro events such as inflation, labor data, central-bank decisions and major speeches. Crypto often reacts to changes in rates, liquidity and risk appetite.</p></div>
+      <div class="lesson"><h4>2. Market-wide crypto news</h4><ul><li>Regulatory decisions</li><li>ETF / institutional flow news</li><li>Exchange incidents</li><li>Security exploits</li><li>Stablecoin stress</li><li>Major liquidation events</li></ul></div>
+      <div class="lesson"><h4>3. Project fundamentals</h4><ul><li>Problem solved</li><li>Token utility</li><li>Supply and unlock schedule</li><li>Development activity</li><li>Users / adoption</li><li>Partnerships</li><li>Competitors</li><li>Liquidity</li></ul></div>
+      <div class="lesson"><h4>4. News cascade</h4><ol><li>Unexpected news or macro data appears.</li><li>Large players reduce or increase risk.</li><li>Key levels break.</li><li>Stops trigger.</li><li>Futures liquidations accelerate movement.</li><li>After liquidity is taken, price may stabilize or reverse.</li></ol></div>
+    </div>
+    <div class="practice"><b>PRE-TRADE NEWS ROUTINE</b><p>Check economic calendar → broad crypto headlines → project-specific news → return to chart → decide whether volatility risk changes the setup.</p></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m5"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 05</span><h3>Smart Money Concepts</h3></div><p class="chapter-intro">SMC concepts are used here as a structured way to study liquidity, displacement and market structure — not as guaranteed institutional footprints.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. POI — Point of Interest</h4><p>A POI is a price area worth monitoring because a meaningful reaction or strong displacement previously occurred there. Treat it as a zone for observation, not a blind entry.</p></div>
+      <div class="lesson"><h4>2. Order Block</h4><p>Study definition: a candle or compact price area associated with strong displacement. Quality improves when the move breaks structure and creates imbalance.</p></div>
+      <div class="lesson"><h4>3. Liquidity</h4><ul><li>Equal highs / equal lows</li><li>Previous swing highs / lows</li><li>Obvious breakout points</li><li>Clusters of stops around clean structure</li><li>Liquidity sweep before reversal/continuation</li></ul></div>
+      <div class="lesson"><h4>4. Imbalance</h4><p>Fast directional movement can leave an inefficiently traded zone. Price may later partially or fully revisit it. An imbalance is a context tool, not a promise of a fill.</p></div>
+      <div class="lesson"><h4>5. BOS & CHOCH</h4><ul><li><strong>BOS:</strong> break of structure that supports continuation.</li><li><strong>CHOCH:</strong> change of character suggesting the previous structure may be weakening.</li></ul><p>Always define the swing points consistently.</p></div>
+      <div class="lesson"><h4>6. Supply & Demand</h4><p><strong>Demand:</strong> area from which price left strongly upward.<br><strong>Supply:</strong> area from which price left strongly downward.</p><p>Execution rule: <strong>zone → confirmation → trade</strong>, not zone → instant entry.</p></div>
+    </div>
+    <div class="practice"><b>CHART DRILLS</b><ul><li>Find 4 order blocks.</li><li>Find 4 POIs.</li><li>Mark 5 liquidity pools.</li><li>Find 5 liquidity sweeps.</li><li>Mark 5 imbalances.</li><li>Identify BOS/CHOCH on two timeframes.</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m6"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 06</span><h3>Fibonacci & Wyckoff</h3></div><p class="chapter-intro">These tools help organize retracements and range behavior. They are frameworks for observation, not deterministic prediction systems.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Fibonacci retracement</h4><p>Use Fibonacci to map potential retracement zones after a clear directional move. It works best when it overlaps with existing structure, liquidity or supply/demand.</p><ul><li>Draw from clear swing to swing.</li><li>Do not force the anchor points.</li><li>Look for confluence rather than one exact ratio.</li><li>Wait for price confirmation.</li></ul></div>
+      <div class="lesson"><h4>2. Wyckoff logic</h4><p>Focus on behavior inside ranges:</p><ul><li>Accumulation</li><li>Distribution</li><li>Expansion</li><li>Re-accumulation / redistribution</li></ul><p>Observe failed breakouts, liquidity grabs and the transition from balance to directional movement.</p></div>
+      <div class="lesson"><h4>3. Effort vs result</h4><p>One useful Wyckoff idea is to compare effort with result. Large effort with little price progress may suggest absorption; strong result with clean displacement may show imbalance.</p></div>
+      <div class="lesson"><h4>4. Combining tools</h4><p>Example confluence:</p><ul><li>Higher-timeframe demand</li><li>Liquidity sweep</li><li>Fibonacci retracement zone</li><li>CHOCH on lower timeframe</li><li>Defined stop below invalidation</li></ul></div>
+    </div>
+  </article>
+</div></section>
+
+<section class="sec" id="m7"><div class="wrap">
+  <article class="chapter" id="workflow">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 07</span><h3>Trading Strategy & Workflow</h3></div><p class="chapter-intro">A strategy is not one indicator. It is a complete decision process that defines context, trigger, invalidation, risk and review.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>01 · CONTEXT</b><span>Economic calendar, market news, project news, higher-timeframe trend.</span></div>
+      <div class="flow-item"><b>02 · STRUCTURE</b><span>Levels, liquidity, supply/demand, trend, BOS/CHOCH.</span></div>
+      <div class="flow-item"><b>03 · SCENARIOS</b><span>Write bullish and bearish conditions before price reaches the area.</span></div>
+      <div class="flow-item"><b>04 · RISK</b><span>Entry, stop, target, position size, maximum loss.</span></div>
+      <div class="flow-item"><b>05 · REVIEW</b><span>Screenshot, result, emotion, rule compliance and lesson.</span></div>
+    </div>
+    <div class="lesson-grid" style="margin-top:16px">
+      <div class="lesson"><h4>Two-scenario planning</h4><p><strong>Bullish scenario:</strong> what must happen to validate a long?<br><strong>Bearish scenario:</strong> what must happen to validate a short?</p><p>Set alerts and let price come to your conditions instead of chasing movement.</p></div>
+      <div class="lesson"><h4>Demo account progression</h4><ol><li>Use a demo account.</li><li>Take a small sample of planned trades.</li><li>Record every trade.</li><li>Review 20–30 trades before changing the strategy.</li><li>Change one variable at a time.</li></ol></div>
+    </div>
+    <div class="checklist"><h4>Pre-trade checklist</h4><ul><li>Macro calendar checked</li><li>Market news checked</li><li>Trend identified</li><li>Key level marked</li><li>Liquidity context clear</li><li>Entry trigger defined</li><li>Invalidation defined</li><li>Stop and target set</li><li>Position size calculated</li><li>R:R acceptable</li><li>Emotion stable</li><li>Trade logged</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m8"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODULE 08</span><h3>Journal, Psychology & Review</h3></div><p class="chapter-intro">The purpose of a journal is not only to record PnL. It should reveal whether your process is improving and which mistakes repeat.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. What to record</h4><ul><li>Date and ticker</li><li>Long / Short</li><li>Timeframe</li><li>Setup</li><li>Entry, stop, target</li><li>Position size</li><li>Screenshot</li><li>Emotion</li><li>Entry thesis</li><li>Exit reason</li><li>Lesson</li></ul></div>
+      <div class="lesson"><h4>2. Process vs outcome</h4><p>Classify every trade:</p><ul><li>Good process / good outcome</li><li>Good process / bad outcome</li><li>Bad process / good outcome</li><li>Bad process / bad outcome</li></ul><p>A profitable rule-breaking trade is still a process failure.</p></div>
+      <div class="lesson"><h4>3. Psychology</h4><p>Common emotional risks:</p><ul><li>Greed</li><li>Fear</li><li>FOMO</li><li>Impatience</li><li>Overconfidence</li><li>Revenge trading</li></ul><p>If emotion is too strong, the correct decision may be no trade.</p></div>
+      <div class="lesson"><h4>4. Weekly review</h4><ul><li>Win rate</li><li>Average R</li><li>Profit factor</li><li>Average win / loss</li><li>Best setup</li><li>Most common mistake</li><li>Rule violations</li><li>Emotional mistakes</li><li>A+ setup screenshots</li></ul></div>
+      <div class="lesson"><h4>5. Reading notes</h4><p>Personal study from Alexander Gerchik's trading literature focuses on:</p><ul><li>trend and levels,</li><li>trading systems,</li><li>stop loss / take profit,</li><li>liquidity,</li><li>long / short mechanics,</li><li>risk management and discipline.</li></ul><p>The central idea: a trading system is <strong>setup + risk + execution + discipline + review</strong>.</p></div>
+      <div class="lesson"><h4>6. Using AI responsibly</h4><p>AI can help summarize the trade, challenge the thesis and identify inconsistencies. It should not be treated as a guaranteed signal generator.</p><ul><li>Use AI as a second opinion.</li><li>Keep your original thesis.</li><li>Compare AI comments with actual outcomes over time.</li><li>Never outsource risk decisions blindly.</li></ul></div>
+    </div>
+    <div class="practice"><b>WEEKLY REVIEW TEMPLATE</b><p>What worked? What failed? Which rule was broken most often? Which setup had the best expectancy? What emotional pattern repeated? What one behavior will I change next week?</p></div>
+  </article>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">FINAL</span><h3>Study Path</h3></div><p class="chapter-intro">Do not attempt to trade every concept at once. Complexity should be added only after evidence shows that the previous layer is understood.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>STEP 1</b><span>Trend + levels</span></div>
+      <div class="flow-item"><b>STEP 2</b><span>Risk + one setup</span></div>
+      <div class="flow-item"><b>STEP 3</b><span>20–30 demo trades</span></div>
+      <div class="flow-item"><b>STEP 4</b><span>Journal + review</span></div>
+      <div class="flow-item"><b>STEP 5</b><span>Add SMC / advanced tools only if useful</span></div>
     </div>
     <div class="learning-actions">
-      <a class="btn btn-primary" href="index.html#add">Log a trade</a>
-      <a class="btn btn-ghost" href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Open full notes on GitHub</a>
+      <a class="btn btn-primary" href="index.html#add">Open Trading Journal</a>
+      <a class="btn btn-ghost" href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Open source notes</a>
     </div>
+    <div class="warning"><strong>Educational only.</strong> This learning hub contains original study notes and educational summaries. It is not financial advice. Paid third-party course PDFs and full copyrighted books are not republished on this public site.</div>
   </div>
-</section>
-
-<section class="sec">
-  <div class="wrap">
-    <div class="learning-note"><strong>Educational only.</strong> These materials are personal study notes and do not constitute financial advice, investment recommendations or a promise of profitability. Third-party paid course files and books are not redistributed here.</div>
-  </div>
-</section>
+</div></section>
 </main>
 
-<footer>
-  <div class="wrap foot-in"><span>Trading Learning Hub · Tetiana Kotolup</span><a href="index.html">Back to Journal</a></div>
-</footer>
+<footer><div class="wrap foot-in"><span>Trading Learning Hub · Tetiana Kotolup</span><a href="index.html">Back to Journal</a></div></footer>
 <script>
-const savedTheme = localStorage.getItem('tk_theme') || localStorage.getItem('theme') || 'dark';
-document.documentElement.dataset.theme = savedTheme;
-const themeTog = document.getElementById('themeTog');
-themeTog.addEventListener('click', () => {
-  const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = next;
-  localStorage.setItem('tk_theme', next);
-  localStorage.setItem('theme', next);
-});
+const savedTheme=localStorage.getItem('tk_theme')||localStorage.getItem('theme')||'dark';
+document.documentElement.dataset.theme=savedTheme;
+document.getElementById('themeTog').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('tk_theme',next);localStorage.setItem('theme',next);});
 </script>
 </body>
 </html>
