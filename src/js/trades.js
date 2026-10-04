@@ -17,12 +17,50 @@ async function loadTrades() {
     console.error('[trades] Failed to load trades:', e);
     trades = [];
   }
+  try {
+    if (window.TradingCloud) {
+      const session = await window.TradingCloud.session();
+      if (session) {
+        const remote = await window.TradingCloud.pullTrades();
+        const byId = new Map(trades.map(t => [String(t.id), t]));
+        remote.forEach(r => {
+          const id = String(r.external_id || r.id);
+          const local = byId.get(id);
+          const mapped = {
+            id,
+            ticker: r.ticker || '',
+            date: r.trade_date || '',
+            side: r.side || 'Long',
+            status: r.status || 'closed',
+            deposit: r.deposit == null ? '' : String(r.deposit),
+            entry: r.entry == null ? '' : String(r.entry),
+            exit: r.exit == null ? '' : String(r.exit),
+            volume: r.volume == null ? '' : String(r.volume),
+            emotion: r.emotion || '',
+            entryReason: r.entry_reason || '',
+            exitReason: r.exit_reason || '',
+            notes: r.notes || '',
+            screenshots: local?.screenshots || []
+          };
+          byId.set(id, { ...(local || {}), ...mapped });
+        });
+        trades = Array.from(byId.values());
+        await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
+      }
+    }
+  } catch (e) {
+    console.warn('[trades] Cloud pull skipped:', e);
+  }
   renderAll();
 }
 
 async function saveTrades() {
   try {
     await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
+    if (window.TradingCloud) {
+      const session = await window.TradingCloud.session();
+      if (session) await window.TradingCloud.pushTrades(trades);
+    }
   } catch (e) {
     console.error('[trades] Storage error', e);
     alert(translations[currentLang].alert_storage_error);
