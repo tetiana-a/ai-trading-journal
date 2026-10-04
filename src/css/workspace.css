@@ -1,0 +1,38 @@
+/* Shared workspace layer: existing rose / graphite tokens, no integration changes. */
+body{font-weight:400;padding-bottom:110px}
+.wrap{max-width:1280px}
+.hero{min-height:0;padding:132px 0 40px}
+.hero-title,.sec-title,.sys-title,.modal-title{font-family:'Outfit','Segoe UI',sans-serif;font-weight:600;letter-spacing:-.035em}
+.hero-title{font-size:clamp(36px,5vw,58px)}
+.hero-desc{max-width:640px}
+.hero-bottom{gap:24px;margin-top:28px;padding-top:24px}
+.hero-stats{gap:12px;align-items:stretch}
+.hero-stats>div{flex:1;min-width:110px;padding:18px;background:var(--card-bg);border:1px solid var(--line2);border-radius:14px}
+.stat-n{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:500;font-variant-numeric:tabular-nums}
+.stat-l,.f-lbl,.tool-field label,.cloud-state{color:var(--txt2)}
+.sec{padding:36px 0;scroll-margin-top:112px}
+.sec-head{margin-bottom:20px}
+.sec-title{font-size:26px}
+.form-card,.sys-card,.chart-shell,.pnl-chart-wrap,.equity-box{border:1px solid var(--line2);border-radius:16px;box-shadow:var(--card-shadow)}
+.equity-box{background:var(--card-bg);padding:18px}
+.f-input,.f-select,.tool-input,.tool-select,.tool-area{min-height:42px;font-size:14px}
+.btn{min-height:42px;border-radius:10px;font-weight:500}
+.tk-table th{background:var(--bg2);color:var(--txt2);font-weight:500}
+.tk-table td{font-weight:400;font-variant-numeric:tabular-nums}
+.tk-table td:nth-child(n+4){font-family:'JetBrains Mono',monospace;font-size:12px}
+.sys-hero{padding:132px 0 36px}
+.sys-title{font-size:clamp(34px,4.5vw,54px);max-width:1000px;line-height:1.12}
+.sys-lead{font-size:15px;line-height:1.7}
+.sys-card h3{font-size:20px;letter-spacing:-.02em}
+.sys-card p,.sys-card li{font-size:14px}
+.sys-card,.chart-shell,.kb-grid>*{min-width:0}
+.workspace-shortcuts{display:flex;flex-wrap:wrap;gap:8px;margin-top:24px}
+.workspace-shortcuts a{padding:10px 16px;border:1px solid var(--line2);border-radius:10px;background:var(--card-bg);font-size:13px}
+.workspace-shortcuts a:first-child{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.workspace-shortcuts a:hover{box-shadow:var(--btn-shadow);border-color:var(--accent)}
+:where(a,button,input,select,textarea,summary):focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+@media(max-width:900px){.nav-in{height:auto;flex-wrap:wrap;gap:12px;padding:12px 20px}.nav-links{display:flex;order:3;width:100%;overflow-x:auto;white-space:nowrap;padding-bottom:4px;gap:18px}.hero,.sys-hero{padding-top:148px}.hero-bottom{grid-template-columns:1fr}.arch{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.wrap{padding:0 18px}.hero,.sys-hero{padding-top:138px}.sec{padding:26px 0}.sys-title{font-size:34px}.chart-toolbar>*{max-width:100%;min-width:0}.connect input{min-width:0}.tool-grid{grid-template-columns:1fr}.workspace-shortcuts a{flex:1;text-align:center;white-space:nowrap}.hero-stats>div{min-width:calc(50% - 12px)}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.rv{opacity:1;transform:none}}
+
+.radio-dock{max-height:calc(100dvh - 32px);overflow-y:auto;padding-bottom:max(16px,env(safe-area-inset-bottom))}.radio-dock-footer{flex-wrap:wrap}#radioDockStatus{white-space:normal;overflow-wrap:anywhere}.radio-station-select{display:block!important}

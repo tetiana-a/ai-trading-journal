@@ -14,13 +14,16 @@ let analyser = null;
 let source = null;
 let animationId = null;
 let isPlaying = false;
-let activeUrl = '';
+let isLoading = false, requestId = 0, cancelAttempt = null;
 
 const radioBtn = document.getElementById('radioBtn');
 const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas?.getContext('2d');
 
 const stations = [
+ {id:'jazz',name:'Sonic Universe',country:'US',genre:'Jazz',url:'https://ice2.somafm.com/sonicuniverse-128-mp3'},
+ {id:'lush',name:'Lush',country:'US',genre:'Electronic',url:'https://ice2.somafm.com/lush-128-mp3'},
+ {id:'beat',name:'Beat Blender',country:'US',genre:'House',url:'https://ice2.somafm.com/beatblender-128-mp3'},
   {
     id:'kiss',
     name:'Radio Kiss',
@@ -91,14 +94,17 @@ const colorPalette = [
   '212,162,154'
 ];
 
-let currentStationId = localStorage.getItem('tk_radio_station') || 'soma';
+function readPreference(key, fallback) { try { return localStorage.getItem(key) ?? fallback; } catch (_) { return fallback; } }
+function savePreference(key, value) { try { savePreference(key, String(value)); } catch (_) {} }
+let currentStationId = readPreference('tk_radio_station','soma');
 if (!stations.some(s => s.id === currentStationId)) currentStationId = 'soma';
 
-let volume = Number(localStorage.getItem('tk_radio_volume') || 0.52);
+let volume = Number(readPreference('tk_radio_volume','0.52'));
 if (!Number.isFinite(volume)) volume = 0.52;
+volume = Math.min(1,Math.max(0,volume));
 
-let dockOpen = localStorage.getItem('tk_radio_dock_open') === '1';
-let visualizerEnabled = localStorage.getItem('tk_radio_visualizer') !== '0';
+let dockOpen = readPreference('tk_radio_dock_open','0') === '1';
+let visualizerEnabled = readPreference('tk_radio_visualizer','1') !== '0';
 let reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
 
 function $(id) { return document.getElementById(id); }
@@ -132,8 +138,9 @@ function updateDock() {
 
   if (play) {
     play.classList.toggle('playing', isPlaying);
-    play.setAttribute('aria-label', isPlaying ? 'Pause radio' : 'Play radio');
-    play.innerHTML = isPlaying ? '<span class="pause-glyph">Ⅱ</span>' : '<span class="play-glyph">▶</span>';
+    play.setAttribute('aria-label', isLoading ? 'Cancel connection' : isPlaying ? 'Pause radio' : 'Play radio');
+    play.setAttribute('aria-pressed',String(isPlaying));
+    play.innerHTML = isLoading ? '<span>×</span>' : isPlaying ? '<span class="pause-glyph">Ⅱ</span>' : '<span class="play-glyph">▶</span>';
   }
 
   if (radioBtn) {
@@ -151,6 +158,7 @@ function updateDock() {
   const viz = $('radioVizToggle');
   if (viz) {
     viz.classList.toggle('active', visualizerEnabled);
+    viz.setAttribute('aria-pressed',String(visualizerEnabled));
     viz.textContent = visualizerEnabled ? 'Visualizer on' : 'Visualizer off';
   }
 
@@ -172,6 +180,7 @@ function buildControls() {
   dock.id = 'radioDock';
   dock.className = 'radio-dock';
   dock.setAttribute('aria-label', 'Audio Deck');
+  radioBtn.setAttribute('aria-controls','radioDock');
   dock.innerHTML = `
     <div class="radio-dock-top">
       <div class="radio-live-mark"><span></span> AUDIO DECK</div>
@@ -208,7 +217,7 @@ function buildControls() {
 
     <div class="radio-dock-footer">
       <button class="radio-mode" id="radioVizToggle" type="button">Visualizer on</button>
-      <span id="radioDockStatus">Ready</span>
+      <span id="radioDockStatus" role="status" aria-live="polite">Ready</span>
     </div>
   `;
 
@@ -228,18 +237,18 @@ function buildControls() {
 
   radioBtn.addEventListener('click', () => {
     dockOpen = !dockOpen;
-    localStorage.setItem('tk_radio_dock_open', dockOpen ? '1' : '0');
+    savePreference('tk_radio_dock_open', dockOpen ? '1' : '0');
     updateDock();
   });
 
   $('radioDockClose').addEventListener('click', () => {
     dockOpen = false;
-    localStorage.setItem('tk_radio_dock_open', '0');
+    savePreference('tk_radio_dock_open', '0');
     updateDock();
   });
 
   $('radioPlayBtn').addEventListener('click', async () => {
-    if (isPlaying) stopRadio();
+    if (isPlaying || isLoading) stopRadio();
     else await startRadio();
   });
 
@@ -247,23 +256,25 @@ function buildControls() {
   $('radioNextBtn').addEventListener('click', () => changeStation(1));
 
   select.addEventListener('change', async () => {
-    currentStationId = select.value;
-    localStorage.setItem('tk_radio_station', currentStationId);
+    const selectedId = select.value;
+    const resume = isPlaying || isLoading; stopRadio();
+    currentStationId = selectedId;
+    savePreference('tk_radio_station', currentStationId);
     setDockStatus('Tuning…');
     updateDock();
-    if (isPlaying) await startRadio(true);
+    if (resume) await startRadio(); else setDockStatus('Ready');
   });
 
   $('radioVolume').addEventListener('input', e => {
     volume = Number(e.target.value);
-    localStorage.setItem('tk_radio_volume', String(volume));
+    savePreference('tk_radio_volume', String(volume));
     if (audioElement) audioElement.volume = volume;
     $('radioVolumeValue').textContent = Math.round(volume * 100) + '%';
   });
 
   $('radioVizToggle').addEventListener('click', () => {
     visualizerEnabled = !visualizerEnabled;
-    localStorage.setItem('tk_radio_visualizer', visualizerEnabled ? '1' : '0');
+    savePreference('tk_radio_visualizer', visualizerEnabled ? '1' : '0');
     updateDock();
     if (isPlaying && visualizerEnabled) animateBackground();
     else if (!visualizerEnabled) drawIdleBg();
@@ -272,7 +283,7 @@ function buildControls() {
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && dockOpen) {
       dockOpen = false;
-      localStorage.setItem('tk_radio_dock_open', '0');
+      savePreference('tk_radio_dock_open', '0');
       updateDock();
     }
   });
@@ -283,11 +294,12 @@ function buildControls() {
 async function changeStation(direction) {
   const idx = stations.findIndex(s => s.id === currentStationId);
   const next = (idx + direction + stations.length) % stations.length;
+  const resume = isPlaying || isLoading; stopRadio();
   currentStationId = stations[next].id;
-  localStorage.setItem('tk_radio_station', currentStationId);
+  savePreference('tk_radio_station', currentStationId);
   setDockStatus('Tuning…');
   updateDock();
-  if (isPlaying) await startRadio(true);
+  if (resume) await startRadio(); else setDockStatus('Ready');
 }
 
 function resizeBg() {
@@ -302,124 +314,106 @@ function resizeBg() {
 window.addEventListener('resize', resizeBg);
 resizeBg();
 
+function english() { return typeof currentLang !== 'undefined' ? currentLang === 'en' : document.documentElement.lang === 'en'; }
+function message(en, ru) { return english() ? en : ru; }
 function teardownAudioContext() {
-  analyser = null;
-  source = null;
-  if (audioCtx) {
-    try { audioCtx.close(); } catch (_) {}
-  }
-  audioCtx = null;
+  analyser = null; source = null;
+  if (audioCtx) audioCtx.close().catch(() => {}); audioCtx = null;
 }
-
-function createAudio(url, useCors = true) {
-  if (audioElement) {
-    try { audioElement.pause(); } catch (_) {}
-  }
+function releaseAudio() {
+  if (cancelAttempt) { cancelAttempt(); cancelAttempt = null; }
+  if (audioElement) { audioElement.pause(); audioElement.removeAttribute('src'); audioElement.load(); audioElement = null; }
   teardownAudioContext();
-
-  audioElement = new Audio();
-  if (useCors) audioElement.crossOrigin = 'anonymous';
-  audioElement.preload = 'none';
-  audioElement.src = url;
-  activeUrl = url;
-  audioElement.volume = volume;
-
-  audioElement.addEventListener('waiting', () => setDockStatus('Buffering…'));
-  audioElement.addEventListener('playing', () => setDockStatus('Live', 'live'));
-  audioElement.addEventListener('stalled', () => setDockStatus('Network delay'));
-  audioElement.addEventListener('error', () => setDockStatus('Stream unavailable', 'error'));
-
-  return audioElement;
 }
-
+function createAudio(useCors, url = selectedStation().url) {
+  releaseAudio(); const audio = new Audio();
+  if (useCors) audio.crossOrigin = 'anonymous';
+  audio.preload = 'none'; audio.src = url; audio.volume = volume; audioElement = audio;
+  return audio;
+}
 function setupAudioContext() {
-  if (!audioElement || audioCtx || !audioElement.crossOrigin) return;
-
   try {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 512;
-    analyser.smoothingTimeConstant = 0.84;
-
-    source = audioCtx.createMediaElementSource(audioElement);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-  } catch (e) {
-    console.warn('[radio] WebAudio analyser unavailable, keeping playback only', e);
+    const Context = window.AudioContext || window.webkitAudioContext; if (!Context) return;
+    audioCtx = new Context(); analyser = audioCtx.createAnalyser(); analyser.fftSize = 512; analyser.smoothingTimeConstant = .82;
+    source = audioCtx.createMediaElementSource(audioElement); source.connect(analyser); analyser.connect(audioCtx.destination);
+    audioCtx.resume().catch(() => {});
+  } catch (_) {
+    // A connected source must still reach the destination if analysis fails.
+    if (source && audioCtx) { try { source.disconnect(); source.connect(audioCtx.destination); } catch (_) {} }
     analyser = null;
   }
 }
-
-async function tryPlay(url, useCors) {
-  createAudio(url, useCors);
-  await audioElement.play();
-  isPlaying = true;
-  if (useCors) setupAudioContext();
-  return true;
+function playAttempt(audio) {
+  return new Promise((resolve,reject) => {
+    let settled = false;
+    const finish = (error) => {
+      if (settled) return; settled = true; clearTimeout(timer); audio.removeEventListener('error',failed);
+      cancelAttempt = null; error ? reject(error) : resolve();
+    };
+    const failed = () => finish(new Error('Stream unavailable'));
+    const timer = setTimeout(() => finish(new Error('Connection timed out')),12000);
+    cancelAttempt = () => finish(new DOMException('Cancelled','AbortError'));
+    audio.addEventListener('error',failed);
+    Promise.resolve(audio.play()).then(() => finish(),finish);
+  });
 }
-
-async function startRadio(forceReload = false) {
-  const station = selectedStation();
-  setDockStatus('Connecting…');
-
-  if (!forceReload && audioElement && activeUrl && isPlaying) {
-    try {
-      await audioElement.play();
-      setDockStatus('Live', 'live');
-      updateDock();
-      return;
-    } catch (_) {}
-  }
-
-  const candidates = [station.url, station.alt].filter(Boolean);
-  let lastError = null;
-
-  for (const url of candidates) {
-    try {
-      await tryPlay(url, true);
-      break;
-    } catch (corsError) {
-      lastError = corsError;
+async function startRadio() {
+  if (!radioBtn) return;
+  stopRadio(); const token = requestId; isLoading = true; updateDock();
+  setDockStatus(message('Connecting · ','Подключение · ')+selectedStation().name,'loading');
+  let direct = false;
+  try {
+    let audio, lastError;
+    for (const url of [selectedStation().url,selectedStation().alt].filter(Boolean)) {
       try {
-        await tryPlay(url, false);
-        analyser = null;
-        break;
-      } catch (playError) {
-        lastError = playError;
-        isPlaying = false;
+        direct = false; audio = createAudio(true,url);
+        try { await playAttempt(audio); }
+        catch (error) {
+          if (token !== requestId) return;
+          if (error.name === 'NotAllowedError' || error.name === 'AbortError') throw error;
+          direct = true; audio = createAudio(false,url); await playAttempt(audio);
+        }
+        lastError = null; break;
+      } catch (error) {
+        if (token !== requestId) return;
+        lastError = error;
+        if (error.name === 'NotAllowedError' || error.name === 'AbortError') break;
       }
     }
+    if (lastError) throw lastError;
+    if (token !== requestId) return;
+    isLoading = false; isPlaying = true;
+    if (!direct) setupAudioContext();
+    audio.addEventListener('error', () => {
+      if (token !== requestId) return; stopRadio();
+      setDockStatus(message('Stream unavailable. Try another station.','Поток недоступен. Выберите другую станцию.'),'error');
+    });
+    audio.addEventListener('waiting', () => { if (token === requestId && isPlaying) setDockStatus(message('Buffering…','Буферизация…'),'loading'); });
+    audio.addEventListener('playing', () => { if (token === requestId) playbackStatus(direct); });
+    playbackStatus(direct); updateDock(); animateBackground();
+  } catch (error) {
+    if (token !== requestId) return; stopRadio();
+    setDockStatus(error.name === 'NotAllowedError' ? message('Press Play to allow audio.','Нажмите Play для воспроизведения.') : message('Stream unavailable. Try another station.','Поток недоступен. Выберите другую станцию.'),'error');
   }
-
-  if (!isPlaying) {
-    console.error('[radio] all stream attempts failed', lastError);
-    setDockStatus('Unavailable — choose another station', 'error');
-    updateDock();
-    return;
-  }
-
-  setDockStatus(analyser ? 'Live · audio-reactive' : 'Live · generative visual', 'live');
-  updateDock();
-  if (visualizerEnabled) animateBackground();
 }
-
+function playbackStatus(direct) {
+  setDockStatus(message('Live · ','В эфире · ')+selectedStation().name+(direct ? message(' · Ambient canvas',' · Фоновая анимация') : ''),'live');
+}
 function stopRadio() {
-  if (audioElement) {
-    try { audioElement.pause(); } catch (_) {}
-  }
-  isPlaying = false;
-  if (animationId) cancelAnimationFrame(animationId);
-  animationId = null;
-  setDockStatus('Paused');
-  updateDock();
-  drawIdleBg();
+  requestId++; isPlaying = false; isLoading = false; releaseAudio();
+  if (animationId) cancelAnimationFrame(animationId); animationId = null;
+  updateDock(); drawIdleBg(); setDockStatus(message('Paused · ','Пауза · ')+selectedStation().name);
 }
+
+window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',e => { reducedMotion = e.matches; if (isPlaying) animateBackground(); });
+document.addEventListener('visibilitychange', () => { if (document.hidden) { cancelAnimationFrame(animationId); animationId = null; } else if (isPlaying) animateBackground(); });
+window.addEventListener('pagehide',stopRadio);
 
 function animateBackground() {
   if (!bgCanvas || !bgCtx || !visualizerEnabled) return;
   if (animationId) cancelAnimationFrame(animationId);
+  animationId = null;
+  if (reducedMotion || document.hidden) { drawIdleBg(); return; }
 
   const freq = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
   const wave = analyser ? new Uint8Array(analyser.fftSize) : null;

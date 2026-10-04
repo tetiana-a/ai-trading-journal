@@ -29,6 +29,7 @@
 @media(max-width:1000px){.sys-hero-grid{grid-template-columns:1fr}.sys-signal-board{max-width:720px}}
 @media(max-width:1000px){.sys-grid{grid-template-columns:1fr}.arch{grid-template-columns:repeat(2,1fr)}.kb-grid{grid-template-columns:1fr}}@media(max-width:560px){.arch{grid-template-columns:1fr}#marketChart{height:420px}.connect,.tool-grid{grid-template-columns:1fr}}
 </style>
+<link rel="stylesheet" href="src/css/workspace.css">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -40,7 +41,7 @@
     <div class="sys-kicker">Personal Prop-Trading OS · 2026</div>
     <h1 class="sys-title">Trading System Hub: <em>market, risk, cloud, AI and Telegram in one operating loop.</em></h1>
     <p class="sys-lead">A personal trading OS with official market feeds, TradingView-style charting, position sizing, prop limits, journal, broker-history import, Supabase knowledge base, strategy analytics, AI review and Telegram automation.</p>
-    <div class="sys-command-row">
+    <div class="workspace-shortcuts" aria-label="Workspace navigation"><a href="#chart">Market terminal</a><a href="#calculator">Position size</a><a href="#prop">Risk guard</a><a href="index.html#add">Open journal</a></div><div class="sys-command-row">
       <span class="sys-command-pill">Read-only first</span>
       <span class="sys-command-pill">Local-first</span>
       <span class="sys-command-pill">RLS protected</span>

@@ -483,3 +483,10 @@ Released under the **MIT License**.
 ⭐ **If this project is useful, consider giving it a star.**
 
 </div>
+
+
+### Workspace and playback hardening
+
+The shared workspace layer keeps the existing rose/graphite palette, adds direct links to market, position sizing, risk and journal, and improves form and table readability. The existing Audio Deck, station skipping, visualizer toggle and canvas are preserved. Sonic Universe, Lush and Beat Blender expand the selection to 11 stations. Official listings: [SomaFM](https://somafm.com/listen/) and [Radio France](https://developers.radiofrance.fr/doc/tutorial-by-example/list-locals-and-webradios).
+
+Connection attempts time out after 12 seconds per candidate, CORS failures retry direct playback with generative canvas, and switching or pausing cancels stale requests. A stream error stops playback and shows an inline message. Stored volume is clamped; local storage failure does not stop radio controls. Reduced motion and background tabs pause canvas rendering while audio continues. Supabase, charts, Telegram, broker import and prop guard modules are unchanged.
