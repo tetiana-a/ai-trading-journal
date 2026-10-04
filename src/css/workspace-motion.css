@@ -1,0 +1,26 @@
+/* Foreground motion only. The radio canvas and its styles stay independent. */
+.rv{opacity:1;transform:none}
+.motion-reveal{
+  transition:opacity .65s cubic-bezier(.22,1,.36,1),translate .65s cubic-bezier(.22,1,.36,1);
+  transition-delay:var(--reveal-delay,0ms);
+}
+.motion-reveal.is-pending{opacity:0;translate:0 18px}
+.motion-reveal.is-visible,.motion-reveal:focus-within{opacity:1;translate:0 0}
+.workspace-cursor{
+  position:fixed;left:0;top:0;width:0;height:0;z-index:2500;
+  pointer-events:none;opacity:0;transition:opacity .18s ease;
+}
+.workspace-cursor.is-visible{opacity:1}
+.workspace-cursor::before{
+  content:'';position:absolute;left:-15px;top:-15px;width:30px;height:30px;
+  border:1px solid rgba(var(--gold),.65);border-radius:50%;
+  background:rgba(var(--gold),.055);box-shadow:0 0 18px rgba(var(--gold),.1);
+  transition:scale .22s cubic-bezier(.22,1,.36,1),background .22s,border-color .22s;
+}
+.workspace-cursor.is-action::before{scale:1.55;background:rgba(var(--gold),.1);border-color:var(--accent)}
+.workspace-cursor.is-pressed::before{scale:.8}
+@media (hover:none),(pointer:coarse){.workspace-cursor{display:none}}
+@media (prefers-reduced-motion:reduce){
+  .motion-reveal,.motion-reveal.is-pending{opacity:1;translate:none;transition:none}
+  .workspace-cursor{display:none}
+}

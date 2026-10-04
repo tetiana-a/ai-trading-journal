@@ -30,6 +30,7 @@
 @media(max-width:1000px){.sys-grid{grid-template-columns:1fr}.arch{grid-template-columns:repeat(2,1fr)}.kb-grid{grid-template-columns:1fr}}@media(max-width:560px){.arch{grid-template-columns:1fr}#marketChart{height:420px}.connect,.tool-grid{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="src/css/workspace.css">
+<link rel="stylesheet" href="src/css/workspace-motion.css">
 </head>
 <body>
 <canvas id="bgCanvas"></canvas>
@@ -104,4 +105,5 @@ const savedTheme=localStorage.getItem('tk_theme')||localStorage.getItem('theme')
 <script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="src/js/cloud-sync.js"></script><script src="src/js/cloud-tools.js"></script><script src="src/js/market-terminal.js"></script><script src="src/js/trade-tools.js"></script><script src="src/js/knowledge-seed.js"></script><script src="src/js/radio-visualizer.js"></script>
+<script src="src/js/workspace-motion.js"></script>
 </body></html>
