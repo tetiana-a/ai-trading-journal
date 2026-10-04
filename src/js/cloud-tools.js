@@ -189,4 +189,13 @@
     if (error) throw error;
     return data || [];
   };
+
+  cloud.activateTelegram = async function activateTelegram() {
+    const session = await cloud.session();
+    if (!session) throw new Error('Sign in to Supabase first');
+    const { data, error } = await client.functions.invoke('telegram-register', { body: {} });
+    if (error) throw error;
+    if (!data?.ok) throw new Error(data?.error || 'Telegram activation failed');
+    return data;
+  };
 })();
