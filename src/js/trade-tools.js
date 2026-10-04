@@ -267,6 +267,22 @@
     } catch(e) { st.textContent='Ошибка: '+e.message; }
   });
 
+  // ===== Telegram activation =====
+  $('telegramActivate')?.addEventListener('click', async () => {
+    const st = $('telegramState');
+    try {
+      if (!window.TradingCloud?.activateTelegram) throw new Error(T('Cloud tools не загружены','Cloud tools are not loaded'));
+      if (st) st.textContent = T('Подключаю webhook и команды…','Registering webhook and commands…');
+      const result = await window.TradingCloud.activateTelegram();
+      if (st) st.textContent = T('Telegram подключён: @','Telegram connected: @') + (result.bot || 'bot');
+    } catch (e) {
+      if (st) st.textContent = T(
+        'Не подключено: проверь Edge Function Secrets и повтори.',
+        'Not connected: check Edge Function Secrets and try again.'
+      ) + ' ' + (e?.message || '');
+    }
+  });
+
   // ===== Free local review =====
   $('localReviewBtn')?.addEventListener('click', () => {
     const raw = localStorage.getItem('tk_journal_trades_v2');
