@@ -15,7 +15,7 @@ function exportJSON() {
 }
 
 function exportCSV() {
-  const headers = ['date', 'ticker', 'side', 'status', 'deposit', 'entry', 'exit', 'volume', 'emotion', 'entryReason', 'exitReason', 'notes', 'pnl_usd', 'pnl_pct'];
+  const headers = ['date','ticker','side','status','broker','account','strategy','setup','timeframe','session','deposit','entry','exit','volume','stop_loss','take_profit','planned_risk_pct','planned_rr','fees','realized_pnl','emotion','entryReason','exitReason','notes','tags','pnl_usd','pnl_pct'];
   const rows = trades.map(tr => {
     const { pnl, pct } = calcPnl(tr);
     return [
@@ -23,14 +23,27 @@ function exportCSV() {
       tr.ticker || '',
       tr.side || '',
       tr.status || '',
+      tr.broker || '',
+      tr.accountLabel || '',
+      tr.strategy || '',
+      tr.setup || '',
+      tr.timeframe || '',
+      tr.session || '',
       tr.deposit || '',
       tr.entry || '',
       tr.exit || '',
       tr.volume || '',
+      tr.stopLoss || '',
+      tr.takeProfit || '',
+      tr.plannedRiskPct || '',
+      tr.plannedRR || '',
+      tr.fees || '',
+      tr.realizedPnl || '',
       tr.emotion || '',
       `"${(tr.entryReason || '').replace(/"/g, '”“')}"`,
       `"${(tr.exitReason || '').replace(/"/g, '”“')}"`,
       `"${(tr.notes || '').replace(/"/g, '”“')}"`,
+      `"${(Array.isArray(tr.tags) ? tr.tags.join('|') : '').replace(/"/g, '”“')}"`,
       pnl.toFixed(2),
       (pct * 100).toFixed(2),
     ].join(',');

@@ -40,6 +40,23 @@ async function loadTrades() {
             entryReason: r.entry_reason || '',
             exitReason: r.exit_reason || '',
             notes: r.notes || '',
+            broker: r.broker || '',
+            accountLabel: r.account_label || '',
+            strategy: r.strategy || '',
+            setup: r.setup || '',
+            timeframe: r.timeframe || '',
+            session: r.session || '',
+            stopLoss: r.stop_loss == null ? '' : String(r.stop_loss),
+            takeProfit: r.take_profit == null ? '' : String(r.take_profit),
+            plannedRiskPct: r.planned_risk_pct == null ? '' : String(r.planned_risk_pct),
+            plannedRR: r.planned_rr == null ? '' : String(r.planned_rr),
+            fees: r.fees == null ? '' : String(r.fees),
+            realizedPnl: r.realized_pnl == null ? '' : String(r.realized_pnl),
+            importRef: r.import_ref || '',
+            openedAt: r.opened_at || '',
+            closedAt: r.closed_at || '',
+            tags: Array.isArray(r.tags) ? r.tags : [],
+            source: r.source || local?.source || 'journal',
             screenshots: (r.signed_screenshots && r.signed_screenshots.length) ? r.signed_screenshots : (local?.screenshots || []),
             screenshotPaths: r.screenshot_paths || local?.screenshotPaths || []
           };
@@ -126,6 +143,7 @@ function renderAll() {
   const t = translations[currentLang];
   renderTrades(t);
   renderStats(t);
+  renderStrategyStats(t);
   renderHero(t);
   renderMonthly(t);
   renderLibrary(t);
@@ -258,6 +276,26 @@ function renderStats(t) {
     </div>`).join('');
 }
 
+function renderStrategyStats(t) {
+  const body = document.getElementById('strategyStatsBody');
+  if (!body) return;
+  const rows = computeStrategyStats(trades);
+  if (!rows.length) {
+    body.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--txt3);padding:22px;">—</td></tr>';
+    return;
+  }
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td class="name">${escapeHtml(r.strategy)}</td>
+      <td>${escapeHtml(r.timeframe)}</td>
+      <td>${escapeHtml(r.session)}</td>
+      <td>${r.trades}</td>
+      <td>${fmtPct(r.winRate)}</td>
+      <td class="${r.expectancy >= 0 ? 'pos' : 'neg'}">${fmtMoney(r.expectancy)}</td>
+      <td class="${r.pnl >= 0 ? 'pnl pos' : 'pnl neg'}">${fmtMoney(r.pnl)}</td>
+    </tr>`).join('');
+}
+
 function renderHero(t) {
   const box = document.getElementById('heroStats');
   const s = computeStats(trades);
@@ -369,13 +407,29 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
     entryReason: document.getElementById('fEntryReason').value,
     exitReason:  document.getElementById('fExitReason').value,
     notes:       document.getElementById('fNotes').value,
+    broker:      document.getElementById('fBroker')?.value || '',
+    accountLabel:document.getElementById('fAccount')?.value || '',
+    strategy:    document.getElementById('fStrategy')?.value || '',
+    setup:       document.getElementById('fSetup')?.value || '',
+    timeframe:   document.getElementById('fTimeframe')?.value || '',
+    session:     document.getElementById('fSession')?.value || '',
+    stopLoss:    document.getElementById('fStopLoss')?.value || '',
+    takeProfit:  document.getElementById('fTakeProfit')?.value || '',
+    plannedRiskPct: document.getElementById('fPlannedRisk')?.value || '',
+    plannedRR:   document.getElementById('fPlannedRR')?.value || '',
+    fees:        document.getElementById('fFees')?.value || '',
+    tags:        (document.getElementById('fTags')?.value || '').split(',').map(x => x.trim()).filter(Boolean),
+    source:      'manual',
+    openedAt:    document.getElementById('fStatus').value === 'open' ? new Date().toISOString() : '',
+    closedAt:    document.getElementById('fStatus').value === 'closed' ? new Date().toISOString() : '',
     screenshots: currentScreenshots,
   };
   trades.push(tr);
   await saveTrades();
   renderAll();
 
-  ['fTicker', 'fDeposit', 'fEntry', 'fExit', 'fVolume', 'fEntryReason', 'fExitReason', 'fNotes'].forEach(id => {
+  ['fTicker', 'fDeposit', 'fEntry', 'fExit', 'fVolume', 'fEntryReason', 'fExitReason', 'fNotes',
+   'fAccount','fStrategy','fSetup','fStopLoss','fTakeProfit','fPlannedRisk','fPlannedRR','fFees','fTags'].forEach(id => {
     document.getElementById(id).value = '';
   });
   currentScreenshots = [];
@@ -393,6 +447,7 @@ document.getElementById('confirmCloseBtn').addEventListener('click', async () =>
     tr.status = 'closed';
     tr.exit = document.getElementById('closeExitPrice').value;
     tr.exitReason = document.getElementById('closeExitReason').value;
+    tr.closedAt = new Date().toISOString();
     await saveTrades();
     renderAll();
   }

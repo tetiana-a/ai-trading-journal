@@ -73,7 +73,23 @@
         exit_reason: t.exitReason || null,
         notes: t.notes || null,
         screenshot_paths: screenshotPaths,
-        source: 'github-pages-journal',
+        broker: t.broker || null,
+        account_label: t.accountLabel || null,
+        strategy: t.strategy || null,
+        setup: t.setup || null,
+        timeframe: t.timeframe || null,
+        session: t.session || null,
+        stop_loss: t.stopLoss === '' || t.stopLoss == null ? null : Number(t.stopLoss),
+        take_profit: t.takeProfit === '' || t.takeProfit == null ? null : Number(t.takeProfit),
+        planned_risk_pct: t.plannedRiskPct === '' || t.plannedRiskPct == null ? null : Number(t.plannedRiskPct),
+        planned_rr: t.plannedRR === '' || t.plannedRR == null ? null : Number(t.plannedRR),
+        fees: t.fees === '' || t.fees == null ? null : Number(t.fees),
+        realized_pnl: t.realizedPnl === '' || t.realizedPnl == null ? null : Number(t.realizedPnl),
+        import_ref: t.importRef || null,
+        opened_at: t.openedAt || null,
+        closed_at: t.closedAt || null,
+        tags: Array.isArray(t.tags) ? t.tags : [],
+        source: t.source || 'github-pages-journal',
         updated_at: new Date().toISOString()
       });
     }
@@ -192,6 +208,47 @@
     const { data, error } = await client.from('alerts').select('*').order('created_at', { ascending: false });
     if (error) throw error;
     return data || [];
+  };
+
+  cloud.saveBrokerConnection = async function saveBrokerConnection(payload) {
+    const session = await cloud.session();
+    if (!session) throw new Error('Sign in to Supabase first');
+    const row = {
+      user_id: session.user.id,
+      provider: payload.provider,
+      account_label: payload.accountLabel || null,
+      connection_type: payload.connectionType || 'read_only',
+      status: payload.status || 'configured',
+      last_sync_at: payload.lastSyncAt || null,
+      metadata: payload.metadata || {},
+      updated_at: new Date().toISOString()
+    };
+    const { data, error } = await client.from('broker_connections').insert(row).select().single();
+    if (error) throw error;
+    return data;
+  };
+
+  cloud.listBrokerConnections = async function listBrokerConnections() {
+    const { data, error } = await client.from('broker_connections')
+      .select('*').order('updated_at',{ascending:false});
+    if (error) throw error;
+    return data || [];
+  };
+
+  cloud.getStrategyMetrics = async function getStrategyMetrics() {
+    const { data, error } = await client.from('trade_strategy_metrics')
+      .select('*').order('trades',{ascending:false});
+    if (error) throw error;
+    return data || [];
+  };
+
+  cloud.connectCTrader = async function connectCTrader() {
+    const session = await cloud.session();
+    if (!session) throw new Error('Sign in to Supabase first');
+    const { data, error } = await client.functions.invoke('ctrader-connect', { body: {} });
+    if (error) throw error;
+    if (!data?.url) throw new Error(data?.error || 'cTrader connection is not configured');
+    location.href = data.url;
   };
 
   cloud.activateTelegram = async function activateTelegram() {

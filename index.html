@@ -96,6 +96,32 @@
             <option data-i18n="emo_irritation">Раздражение</option><option data-i18n="emo_impatience">Нетерпение</option><option data-i18n="emo_pride">Гордость</option><option data-i18n="emo_disappointment">Разочарование</option>
           </select>
         </div>
+        <details class="advanced-trade" style="grid-column:1/-1">
+          <summary data-i18n="advanced_context">Расширенный контекст сделки</summary>
+          <div class="advanced-grid">
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_broker">Брокер / платформа</label>
+              <select class="f-select" id="fBroker">
+                <option value="">—</option><option>Binance</option><option>Bybit</option><option>OKX</option><option>Kraken</option>
+                <option>MetaTrader 5</option><option>cTrader</option><option>FTMO</option><option>The5ers</option><option>iTrade</option><option>FundedNext</option><option>Other</option>
+              </select>
+            </div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_account">Аккаунт</label><input class="f-input" id="fAccount" placeholder="FTMO 100K / Binance Spot"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_strategy">Стратегия</label><input class="f-input" id="fStrategy" placeholder="Liquidity Sweep"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_setup">Сетап</label><input class="f-input" id="fSetup" placeholder="Sweep + CHOCH + retest"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_timeframe">Таймфрейм</label>
+              <select class="f-select" id="fTimeframe"><option value="">—</option><option>M1</option><option>M5</option><option>M15</option><option>M30</option><option>H1</option><option>H4</option><option>D1</option></select>
+            </div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_session">Сессия</label>
+              <select class="f-select" id="fSession"><option value="">—</option><option>Asia</option><option>London</option><option>New York</option><option>London/NY Overlap</option><option>Swing</option></select>
+            </div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_stop">Stop Loss</label><input class="f-input" id="fStopLoss" type="number" step="any"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_target">Take Profit</label><input class="f-input" id="fTakeProfit" type="number" step="any"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_risk">Плановый риск, %</label><input class="f-input" id="fPlannedRisk" type="number" step="0.05" min="0"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_rr">Плановый R:R</label><input class="f-input" id="fPlannedRR" type="number" step="0.1" min="0"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_fees">Комиссии / swap</label><input class="f-input" id="fFees" type="number" step="any"></div>
+            <div class="f-field"><label class="f-lbl" data-i18n="lbl_tags">Теги</label><input class="f-input" id="fTags" placeholder="A+, news-safe, pullback"></div>
+          </div>
+        </details>
         <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_entry_reason">Причина входа</label><input class="f-input" id="fEntryReason" placeholder="Пробой уровня + объём"></div>
         <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_exit_reason">Причина выхода</label><input class="f-input" id="fExitReason" placeholder="Тейк-профит по плану"></div>
         <div class="f-field" style="grid-column:1/-1"><label class="f-lbl" data-i18n="lbl_notes">Вывод / урок</label><textarea class="f-textarea" id="fNotes" placeholder="Что получилось, что улучшить в следующий раз"></textarea></div>
@@ -110,6 +136,7 @@
       </div>
       <div class="form-actions">
         <button class="btn btn-ghost" onclick="importJSON()" data-i18n="import_json">Импорт JSON</button>
+        <button class="btn btn-ghost" id="importBrokerCsvBtn" data-i18n="import_broker_csv">Импорт Broker CSV</button>
         <button class="btn btn-primary" id="btnAdd" data-i18n="btn_add">Добавить сделку</button>
       </div>
     </div>
@@ -184,6 +211,29 @@
     <div class="pnl-chart-wrap rv">
       <div class="pnl-chart-title" data-i18n="pnl_chart_title">PNL по месяцам</div>
       <canvas id="pnlBarChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Strategy Analytics ===== -->
+<section class="sec" id="strategy-stats">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">04A</span><h2 class="sec-title" data-i18n="sec_strategy">Стратегии</h2></div></div>
+    <div class="rv">
+      <div class="tbl-wrap">
+        <table class="tk-table">
+          <thead><tr>
+            <th data-i18n="th_strategy">Стратегия</th>
+            <th data-i18n="th_timeframe">ТФ</th>
+            <th data-i18n="th_session">Сессия</th>
+            <th data-i18n="th_trades">Сделок</th>
+            <th data-i18n="th_winrate">Win rate</th>
+            <th data-i18n="th_expectancy">Expectancy</th>
+            <th>PNL</th>
+          </tr></thead>
+          <tbody id="strategyStatsBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
@@ -304,6 +354,7 @@
 <script src="src/js/charts.js"></script>
 <script src="src/js/calendar.js"></script>
 <script src="src/js/trades.js"></script>
+<script src="src/js/import-tools.js"></script>
 <script src="src/js/radio-visualizer.js"></script>
 <script src="src/js/app.js"></script>
 </body>

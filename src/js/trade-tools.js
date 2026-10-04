@@ -267,6 +267,21 @@
     } catch(e) { st.textContent='Ошибка: '+e.message; }
   });
 
+  // ===== cTrader read-only OAuth =====
+  $('ctraderConnect')?.addEventListener('click', async () => {
+    const st = $('ctraderState');
+    try {
+      if (!window.TradingCloud?.connectCTrader) throw new Error(T('Cloud tools не загружены','Cloud tools are not loaded'));
+      if (st) st.textContent = T('Открываю cTrader OAuth…','Opening cTrader OAuth…');
+      await window.TradingCloud.connectCTrader();
+    } catch (e) {
+      if (st) st.textContent = T(
+        'cTrader пока не активирован: добавь CTRADER_CLIENT_ID / CTRADER_CLIENT_SECRET в Supabase Secrets после регистрации приложения.',
+        'cTrader is not active yet: add CTRADER_CLIENT_ID / CTRADER_CLIENT_SECRET in Supabase Secrets after registering the app.'
+      ) + ' ' + (e?.message || '');
+    }
+  });
+
   // ===== Telegram activation =====
   $('telegramActivate')?.addEventListener('click', async () => {
     const st = $('telegramState');

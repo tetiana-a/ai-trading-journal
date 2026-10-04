@@ -81,14 +81,35 @@
 <div class="sec-head"><div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title">Live Market Terminal</h2></div></div>
 <div class="chart-shell">
 <div class="chart-toolbar">
+<select id="chartProvider"><option value="binance">Binance</option><option value="bybit">Bybit</option><option value="okx">OKX</option><option value="kraken">Kraken</option></select>
 <input id="chartSymbol" value="BTCUSDT" aria-label="Symbol">
 <select id="chartInterval"><option value="1m">1m</option><option value="5m">5m</option><option value="15m" selected>15m</option><option value="1h">1H</option><option value="4h">4H</option><option value="1d">1D</option></select>
 <button class="btn btn-primary" id="chartLoad">Загрузить</button>
-<span id="chartStatus" class="cloud-state">Binance public market data · API key не нужен</span>
+<span id="chartStatus" class="cloud-state">Official public market data · API key не нужен</span>
 </div>
 <div id="marketChart"></div>
-<div class="tv-credit">Charts powered by <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> Lightweight Charts™ · market data from Binance public APIs.</div>
+<div class="tv-credit">Charts powered by <a href="https://www.tradingview.com/" target="_blank" rel="noopener">TradingView</a> Lightweight Charts™ · market data from official public exchange APIs.</div>
 </div>
+</div></section>
+
+
+<section class="sec" id="connections"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">02A</span><h2 class="sec-title">Официальные подключения</h2></div></div>
+<div class="sys-grid">
+<div class="sys-card"><div class="status">LIVE · БЕСПЛАТНО</div><h3>Публичные рыночные данные</h3><ul>
+<li><strong>Binance</strong> — свечи и цены через официальный public API</li>
+<li><strong>Bybit</strong> — V5 public market API</li>
+<li><strong>OKX</strong> — V5 public market API</li>
+<li><strong>Kraken</strong> — public OHLC API</li>
+</ul><p>Для графика приватные API-ключи биржи не нужны.</p></div>
+<div class="sys-card"><div class="status">READ-ONLY FIRST</div><h3>Аккаунты и prop-платформы</h3><ul>
+<li><strong>MetaTrader 5</strong> — историю уже можно импортировать CSV; позже можно добавить локальный read-only bridge</li>
+<li><strong>cTrader</strong> — официальный Open API поддерживает OAuth scope <em>accounts</em> только для просмотра</li>
+<li><strong>FTMO / The5ers / iTrade / FundedNext</strong> — синхронизация через фактическую торговую платформу, если API доступен; иначе statement/CSV import</li>
+</ul><p>Приватные ключи нельзя вставлять в GitHub Pages. Подключения аккаунтов — только OAuth или backend read-only credentials.</p><button class="btn btn-ghost" id="ctraderConnect" style="margin-top:10px">Подключить cTrader read-only</button><div id="ctraderState" class="cloud-state">Нужна одобренная cTrader Open API application.</div></div>
+</div>
+<div class="note">Система специально <strong>не отправляет ордера автоматически</strong>. Она импортирует, считает, контролирует риск и предупреждает — это отделяет аналитику от исполнения и уменьшает операционный риск.</div>
+<div style="margin-top:12px"><a class="btn btn-primary" href="index.html#add">Открыть Journal → Import Broker CSV</a></div>
 </div></section>
 
 <section class="sec" id="calculator"><div class="wrap">
@@ -223,7 +244,7 @@ const currentLang='ru'; const translations={ru:{alert_radio_error:'Радиоп�
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="src/js/cloud-sync.js"></script>
 <script src="src/js/cloud-tools.js"></script>
-<script src="src/js/binance-chart.js"></script>
+<script src="src/js/market-terminal.js"></script>
 <script src="src/js/trade-tools.js"></script><script src="src/js/knowledge-seed.js"></script>
 <script src="src/js/radio-visualizer.js"></script>
 </body>
