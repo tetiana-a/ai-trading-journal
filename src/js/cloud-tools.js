@@ -83,6 +83,14 @@
     return rows.length;
   };
 
+  cloud.deleteTrade = async function deleteTrade(externalId) {
+    const session = await cloud.session();
+    if (!session) return;
+    const { error } = await client.from('trades')
+      .delete().eq('user_id', session.user.id).eq('external_id', String(externalId));
+    if (error) throw error;
+  };
+
   cloud.savePropAccount = async function savePropAccount(payload) {
     const session = await cloud.session();
     if (!session) throw new Error('Сначала войди в Supabase');
