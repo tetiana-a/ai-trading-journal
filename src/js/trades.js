@@ -40,7 +40,8 @@ async function loadTrades() {
             entryReason: r.entry_reason || '',
             exitReason: r.exit_reason || '',
             notes: r.notes || '',
-            screenshots: local?.screenshots || []
+            screenshots: (r.signed_screenshots && r.signed_screenshots.length) ? r.signed_screenshots : (local?.screenshots || []),
+            screenshotPaths: r.screenshot_paths || local?.screenshotPaths || []
           };
           byId.set(id, { ...(local || {}), ...mapped });
         });
@@ -59,7 +60,10 @@ async function saveTrades() {
     await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
     if (window.TradingCloud) {
       const session = await window.TradingCloud.session();
-      if (session) await window.TradingCloud.pushTrades(trades);
+      if (session) {
+        await window.TradingCloud.pushTrades(trades);
+        await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
+      }
     }
   } catch (e) {
     console.error('[trades] Storage error', e);
@@ -193,7 +197,13 @@ function renderTrades(t) {
   // Wire delete buttons
   document.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', async () => {
-      trades = trades.filter(tr => tr.id !== btn.dataset.del);
+      const deletedId = btn.dataset.del;
+      trades = trades.filter(tr => tr.id !== deletedId);
+      try {
+        if (window.TradingCloud?.deleteTrade) await window.TradingCloud.deleteTrade(deletedId);
+      } catch (e) {
+        console.warn('[trades] Cloud delete skipped:', e);
+      }
       await saveTrades();
       renderAll();
     });
@@ -335,6 +345,14 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
   if (!valid) {
     showValidationErrors(errors);
     return;
+  }
+
+  if (window.TradingRiskGuard?.canAddTrade) {
+    const guard = await window.TradingRiskGuard.canAddTrade();
+    if (!guard.ok) {
+      alert(guard.reason);
+      return;
+    }
   }
 
   const tr = {

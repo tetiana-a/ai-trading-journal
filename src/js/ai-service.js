@@ -15,13 +15,44 @@ async function analyzeTrade(id) {
   const apiUrl = localStorage.getItem(STORAGE_KEYS.API_URL) || 'https://api.groq.com/openai/v1/chat/completions';
   const model  = localStorage.getItem(STORAGE_KEYS.API_MODEL) || 'llama-3.3-70b-versatile';
 
+  const tr = trades.find(x => x.id === id);
+  if (!tr) return;
+
   if (!apiKey) {
-    alert(t.alert_no_api);
-    document.getElementById('apiSettingsBtn').click();
+    const { pnl, pct } = calcPnl(tr);
+    const warnings = [];
+    if (!tr.entryReason) warnings.push('Не зафиксирована причина входа.');
+    if (tr.status !== 'open' && !tr.exitReason) warnings.push('Не зафиксирована причина выхода.');
+    if (/FOMO|Жадность|Азарт|Страх|Нетерпение|Раздражение/i.test(tr.emotion || '')) {
+      warnings.push('Эмоция могла влиять на исполнение — используй pre-trade checklist.');
+    }
+    if (Math.abs(pct) > 0.02) warnings.push('PNL относительно депозита крупный — перепроверь размер позиции и риск.');
+    if (!warnings.length) warnings.push('Критических нарушений по записи не видно; оценивай систему только по серии однотипных сделок.');
+
+    const local = [
+      'БЕСПЛАТНЫЙ ЛОКАЛЬНЫЙ АНАЛИЗ',
+      '',
+      'Сделка: ' + tr.ticker + ' · ' + tr.side,
+      'Результат: ' + fmtMoney(pnl) + ' · ' + fmtPct(pct),
+      '',
+      'Контроль процесса:',
+      ...warnings.map(x => '• ' + x),
+      '',
+      'Следующий шаг: заранее определить invalidation, Stop Loss, риск на сделку и после 20–30 однотипных сделок сравнить статистику.'
+    ].join('\n');
+
+    const aiContent = document.getElementById('aiContent');
+    document.getElementById('aiModalTitle').textContent = 'Free Analyst: ' + tr.ticker + ' (' + tr.date + ')';
+    aiContent.innerHTML = '<div style="color:var(--txt);line-height:1.65;">' + escapeHtml(local).replace(/\n/g,'<br>') + '</div>';
+    document.getElementById('aiModal').classList.add('show');
+    try {
+      if (window.TradingCloud?.saveAIReview) {
+        await window.TradingCloud.saveAIReview({ tradeId: tr.id, provider:'local-rules', model:'risk-review-v1', review:local });
+      }
+    } catch (e) { console.warn('[ai-service] local review cloud save skipped', e); }
     return;
   }
 
-  const tr = trades.find(x => x.id === id);
   if (!tr) return;
 
   const { pnl, pct } = calcPnl(tr);
@@ -115,6 +146,11 @@ async function analyzeTrade(id) {
     const data = await res.json();
     const analysisText = data.choices[0].message.content;
     aiContent.innerHTML = `<div style="color:var(--txt);line-height:1.6;">${escapeHtml(analysisText).replace(/\n/g, '<br>')}</div>`;
+    try {
+      if (window.TradingCloud?.saveAIReview) {
+        await window.TradingCloud.saveAIReview({ tradeId: tr.id, provider:'groq-compatible', model, review:analysisText });
+      }
+    } catch (e) { console.warn('[ai-service] cloud save skipped', e); }
   } catch (err) {
     if (err.name === 'AbortError') {
       aiContent.innerHTML = `<div style="color:var(--neg);">Request timed out. Try again.</div>`;
