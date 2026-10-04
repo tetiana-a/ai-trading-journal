@@ -84,7 +84,7 @@ It includes:
 - 📱 **Telegram automation layer**;
 - 🔌 **universal Broker CSV importer** for common MT5/cTrader/exchange statement formats;
 - 📊 **strategy / timeframe / session analytics** with expectancy and win rate;
-- 🎧 **radio player + audio-reactive UI animation**.
+- 🎧 **professional Audio Deck** with curated Czech, US, French and Swiss stations + audio-reactive / generative UI animation.
 
 ### System architecture
 
@@ -336,20 +336,34 @@ Telegram setup requires private Edge Function secrets and an allowed chat ID.
 
 ---
 
-## 🎧 Audio-reactive interface
+## 🎧 Professional Audio Deck
 
-One of the more experimental UX layers is the integrated radio player.
+The workspace includes a compact floating **Audio Deck** designed for long trading / review sessions without turning the navigation into a media-player UI.
 
-It combines:
+Current curated stations include:
 
-- multiple internet radio stations;
-- play / pause;
-- volume control;
-- Web Audio API analysis when available;
-- Canvas-based animated rings, grid, waveform and particles;
-- graceful visual fallback when a stream cannot expose frequency data through CORS.
+- 🇨🇿 **Radio Kiss** — pop / dance;
+- 🇨🇿 **Radio 1 CZ** — alternative / electronic;
+- 🇺🇸 **SomaFM Groove Salad** — chill / downtempo;
+- 🇺🇸 **SomaFM Drone Zone** — ambient / focus;
+- 🇺🇸 **SomaFM Secret Agent** — cinematic / lounge;
+- 🇫🇷 **FIP** — eclectic / jazz / world;
+- 🇺🇸 **KEXP** — indie / alternative;
+- 🇨🇭 **Radio Swiss Jazz** — jazz / soul / blues.
 
-The goal is not decoration for decoration's sake — it gives the project its own recognizable visual identity.
+The deck includes:
+
+- previous / play-pause / next controls;
+- station selector with country + genre metadata;
+- persistent volume and selected station;
+- responsive floating dock;
+- playback / buffering / error state;
+- optional visualizer toggle;
+- Web Audio spectrum analysis when the stream exposes CORS audio data;
+- a generative fallback when playback works but browser audio analysis is unavailable;
+- `prefers-reduced-motion` support.
+
+The background animation combines a subtle technical grid, orbital rings, waveform horizon, particles and market-tape bars. It stays intentionally low-contrast so the trading data remains the primary visual layer.
 
 ---
 
