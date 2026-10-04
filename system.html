@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Trading System Hub — Cloud, Charts, AI & Telegram</title>
+<meta name="description" content="Профессиональный Trading System Hub: Binance chart, Supabase cloud sync, Telegram bot, AI review, prop-account risk controls.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/variables.css">
+<link rel="stylesheet" href="src/css/base.css">
+<link rel="stylesheet" href="src/css/components.css">
+<link rel="stylesheet" href="src/css/responsive.css">
+<style>
+.sys-hero{padding:120px 0 52px;border-bottom:1px solid var(--line)}
+.sys-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.sys-title{font-size:clamp(38px,6vw,68px);line-height:1.05;max-width:980px}
+.sys-title em{font-style:normal;color:var(--accent)}
+.sys-lead{max-width:760px;margin-top:16px;color:var(--txt2);font-size:14px;line-height:1.8}
+.sys-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.sys-card{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--card-shadow)}
+.sys-card h3{font-size:20px;margin-bottom:8px}.sys-card p,.sys-card li{color:var(--txt2);font-size:12.5px;line-height:1.7}.sys-card ul{padding-left:18px;margin-top:8px}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--txt3);margin-bottom:10px}.status::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.chart-shell{background:var(--card-bg);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:var(--card-shadow)}
+.chart-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}.chart-toolbar input,.chart-toolbar select{background:var(--bg);border:1px solid var(--line2);border-radius:10px;color:var(--txt);padding:8px 10px}
+#marketChart{height:520px}
+.arch{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.arch div{background:var(--card-bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:11px;color:var(--txt2);text-align:center}.arch b{display:block;color:var(--accent);margin-bottom:5px}
+.connect{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px}.connect input{background:var(--bg);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;color:var(--txt)}
+.cloud-state{margin-top:10px;font-size:11px;color:var(--txt3)}
+.note{margin-top:14px;border-left:2px solid var(--accent);background:var(--tag);border-radius:0 12px 12px 0;padding:14px 16px;color:var(--txt2);font-size:12px;line-height:1.65}
+@media(max-width:900px){.sys-grid{grid-template-columns:1fr}.arch{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.arch{grid-template-columns:1fr}#marketChart{height:420px}.connect{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<nav><div class="nav-in">
+<a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
+<div class="nav-links"><a href="index.html">Журнал</a><a href="learning.html">Обучение</a><a href="prop-firms.html">Prop Firms</a><a href="#chart">График</a><a href="#cloud">Cloud</a></div>
+<div class="nav-controls"><button class="radio-btn" id="radioBtn" type="button"><div class="radio-dot"></div><span>Radio Kiss</span></button><button class="theme-tog" id="themeTog"></button></div>
+</div></nav>
+
+<header class="sys-hero"><div class="wrap">
+<div class="sys-kicker">Senior Trader Software Architecture</div>
+<h1 class="sys-title">Trading System Hub: <em>данные, график, AI, Telegram и prop-risk.</em></h1>
+<p class="sys-lead">Цель — один центр: сделки из Trading Journal сохраняются в Supabase, рыночные данные приходят бесплатно из Binance, график строится на TradingView Lightweight Charts, AI делает post-trade review, Telegram получает алерты и отчёты, а prop-модуль контролирует drawdown до того, как ты нарушишь правила challenge.</p>
+</div></header>
+
+<main>
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">01</span><h2 class="sec-title">Архитектура</h2></div></div>
+<div class="arch">
+<div><b>Journal UI</b>сделки, screenshots, stats</div>
+<div><b>Binance</b>price + candles + websocket</div>
+<div><b>Supabase</b>Postgres + Auth + knowledge</div>
+<div><b>AI Layer</b>OpenAI / Claude / Groq</div>
+<div><b>Telegram</b>alerts + commands + reports</div>
+<div><b>Prop Guard</b>daily loss + max loss + targets</div>
+</div>
+<div class="note">Принцип: браузер получает только public/publishable credentials. Telegram token, OpenAI/Anthropic API keys и любые secret/service-role ключи должны жить только в backend/Edge Functions.</div>
+</div></section>
+
+<section class="sec" id="chart"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">02</span><h2 class="sec-title">Бесплатный профессиональный график</h2></div></div>
+<div class="chart-shell">
+<div class="chart-toolbar">
+<input id="chartSymbol" value="BTCUSDT" aria-label="Symbol">
+<select id="chartInterval"><option value="1m">1m</option><option value="5m">5m</option><option value="15m" selected>15m</option><option value="1h">1H</option><option value="4h">4H</option><option value="1d">1D</option></select>
+<button class="btn btn-primary" id="chartLoad">Загрузить</button>
+<span id="chartStatus" class="cloud-state">Binance public market data · API key не нужен</span>
+</div>
+<div id="marketChart"></div>
+</div>
+<div class="note">График использует бесплатную open-source библиотеку TradingView Lightweight Charts, а свечи — публичный Binance REST + WebSocket. Это не требует Binance API key для чтения рынка.</div>
+</div></section>
+
+<section class="sec" id="cloud"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">03</span><h2 class="sec-title">Supabase Knowledge Base & Cloud Sync</h2></div></div>
+<div class="sys-grid">
+<div class="sys-card"><div class="status">Подготовлено</div><h3>Что сохраняем</h3><ul><li>trades — все сделки и PNL-поля</li><li>prop_accounts — лимиты challenge/funded accounts</li><li>knowledge_documents — конспекты и правила</li><li>ai_reviews — разборы ChatGPT / Claude / Groq</li><li>alerts — торговые и risk-алерты</li><li>telegram_events — история команд и уведомлений</li></ul></div>
+<div class="sys-card"><div class="status">Безопасность</div><h3>Как подключается</h3><p>На сайте используется только Supabase publishable key + Supabase Auth. Row Level Security делает так, чтобы пользователь видел только свои записи.</p><div class="connect"><input id="cloudEmail" type="email" placeholder="Email для Supabase login"><button class="btn btn-primary" id="cloudLogin">Войти по magic link</button></div><div id="cloudState" class="cloud-state">Проверяю подключение…</div><div style="margin-top:10px"><button class="btn btn-ghost" id="cloudSync">Синхронизировать сделки сейчас</button></div></div>
+</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">04</span><h2 class="sec-title">Telegram Trading Bot</h2></div></div>
+<div class="sys-grid">
+<div class="sys-card"><h3>Команды</h3><ul><li><strong>/status</strong> — баланс, equity, текущий drawdown</li><li><strong>/today</strong> — PNL за день и число сделок</li><li><strong>/risk</strong> — сколько ещё можно потерять до личного daily stop</li><li><strong>/open</strong> — открытые сделки</li><li><strong>/review</strong> — AI-разбор последней сделки</li><li><strong>/weekly</strong> — недельный отчёт</li></ul></div>
+<div class="sys-card"><h3>Автоматические уведомления</h3><ul><li>достигнут 50% личного daily stop</li><li>2 losses подряд → STOP DAY</li><li>цена пришла к alert level</li><li>закрыта сделка → PNL + screenshot + lesson</li><li>приближение к prop daily/max loss</li><li>ежедневный и недельный отчёт</li></ul><p>Bot token хранится в Supabase Edge Function secrets, не в GitHub Pages.</p></div>
+</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">05</span><h2 class="sec-title">AI: ChatGPT + Claude + Groq</h2></div></div>
+<div class="sys-grid">
+<div class="sys-card"><h3>AI Trade Review</h3><p>После закрытия сделки backend собирает: структуру сделки, PNL, emotion, entry/exit reason, prop limits, рыночный контекст и последние записи knowledge base. AI возвращает: что сделано правильно, нарушение правил, качество сетапа, риск и один конкретный урок.</p></div>
+<div class="sys-card"><h3>Важно про подписки</h3><p>Подписка ChatGPT Plus/Pro и подписка Claude дают доступ к продуктам ChatGPT/Claude, но обычно не являются API-балансом для твоего сайта. Для автоматического вызова моделей из Trading Journal нужны отдельные API credentials/billing у соответствующего API-провайдера. Пока можно оставить Groq как бесплатный/дешёвый fallback и подключить OpenAI/Anthropic позже через Edge Function.</p></div>
+</div>
+</div></section>
+
+<section class="sec"><div class="wrap">
+<div class="sec-head"><div class="sec-head-l"><span class="sec-num">06</span><h2 class="sec-title">Prop Risk Engine</h2></div></div>
+<div class="sys-grid">
+<div class="sys-card"><h3>Что считает автоматически</h3><ul><li>current daily PNL</li><li>remaining personal daily risk</li><li>remaining firm daily loss</li><li>remaining max loss</li><li>distance to profit target</li><li>loss streak</li><li>best day / consistency metrics</li></ul></div>
+<div class="sys-card"><h3>Режим challenge</h3><p>Рабочий risk budget должен быть меньше лимита prop firm. Например, при firm Daily Loss 3% система может блокировать новые сделки уже после личного -1% или после 2 убытков подряд.</p></div>
+</div>
+<div class="note">Это risk-control и аналитическая система, а не автоматический исполнитель сделок. Автовыставление ордеров на prop-account следует подключать только если конкретная фирма и платформа явно разрешают такой тип automation.</div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot-in"><span>Trading System Hub · Tetiana Kotolup</span><a href="index.html">Вернуться в журнал</a></div></footer>
+
+<script>
+const savedTheme=localStorage.getItem('tk_theme')||localStorage.getItem('theme')||'dark';
+document.documentElement.dataset.theme=savedTheme;
+document.getElementById('themeTog').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('tk_theme',next);localStorage.setItem('theme',next);});
+const currentLang='ru'; const translations={ru:{alert_radio_error:'Радиопоток сейчас недоступен.'}};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/lightweight-charts@4.2.3/dist/lightweight-charts.standalone.production.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="src/js/cloud-sync.js"></script>
+<script src="src/js/binance-chart.js"></script>
+<script src="src/js/radio-visualizer.js"></script>
+</body>
+</html>
