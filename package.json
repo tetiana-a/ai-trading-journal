@@ -18,6 +18,7 @@
   "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
-    "jest": "^30.4.2"
+    "jest": "^30.4.2",
+    "jsdom": "^26.1.0"
   }
 }

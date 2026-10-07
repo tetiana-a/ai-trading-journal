@@ -1,0 +1,10 @@
+.trade-autofill{margin-bottom:22px;padding:16px;border:1px solid var(--line2);border-radius:12px;background:var(--bg2)}
+.trade-autofill>strong{display:block;font-size:14px;font-weight:500;margin-bottom:10px}
+.autofill-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.autofill-actions select{flex:1 1 260px;min-width:0;max-width:100%}
+.autofill-actions .btn{flex:0 0 auto}
+.autofill-actions .btn:disabled{opacity:.45;cursor:default}
+.trade-autofill p{margin-top:9px;color:var(--txt2);font-size:12px;line-height:1.5}
+#autofillState{color:var(--accent);min-height:18px}
+.autofill-notes{margin-top:8px;width:100%}
+@media(max-width:560px){.trade-autofill{padding:12px}.autofill-actions .btn{flex:1 1 130px}.autofill-actions select{width:100%;flex-basis:100%}}

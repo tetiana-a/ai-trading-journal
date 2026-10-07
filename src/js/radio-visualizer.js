@@ -21,6 +21,16 @@ const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas?.getContext('2d');
 
 const stations = [
+  {"id":"indiepop","name":"Indie Pop Rocks!","country":"US","genre":"Indie · Rock","url":"https://ice6.somafm.com/indiepop-128-mp3","alt":"https://ice2.somafm.com/indiepop-128-mp3"},
+  {"id":"u80s","name":"Underground 80s","country":"US","genre":"80s · New Wave","url":"https://ice6.somafm.com/u80s-256-mp3","alt":"https://ice2.somafm.com/u80s-256-mp3"},
+  {"id":"folkfwd","name":"Folk Forward","country":"US","genre":"Folk","url":"https://ice6.somafm.com/folkfwd-128-mp3","alt":"https://ice2.somafm.com/folkfwd-128-mp3"},
+  {"id":"seventies","name":"Left Coast 70s","country":"US","genre":"70s · Rock","url":"https://ice6.somafm.com/seventies-320-mp3","alt":"https://ice2.somafm.com/seventies-320-mp3"},
+  {"id":"spacestation","name":"Space Station Soma","country":"US","genre":"Electronic · Space","url":"https://ice6.somafm.com/spacestation-320-mp3","alt":"https://ice2.somafm.com/spacestation-320-mp3"},
+  {"id":"deepspaceone","name":"Deep Space One","country":"US","genre":"Ambient · Focus","url":"https://ice6.somafm.com/deepspaceone-128-mp3","alt":"https://ice2.somafm.com/deepspaceone-128-mp3"},
+  {"id":"defcon","name":"DEF CON Radio","country":"US","genre":"Electronic","url":"https://ice6.somafm.com/defcon-256-mp3","alt":"https://ice2.somafm.com/defcon-256-mp3"},
+  {"id":"cliqhop","name":"cliqhop idm","country":"US","genre":"IDM · Electronic","url":"https://ice6.somafm.com/cliqhop-256-mp3","alt":"https://ice2.somafm.com/cliqhop-256-mp3"},
+  {"id":"bossa","name":"Bossa Beyond","country":"US","genre":"Bossa Nova · World","url":"https://ice6.somafm.com/bossa-256-mp3","alt":"https://ice2.somafm.com/bossa-256-mp3"},
+  {"id":"poptron","name":"PopTron","country":"US","genre":"Electropop","url":"https://ice6.somafm.com/poptron-128-mp3","alt":"https://ice2.somafm.com/poptron-128-mp3"},
  {id:'jazz',name:'Sonic Universe',country:'US',genre:'Jazz',url:'https://ice2.somafm.com/sonicuniverse-128-mp3',alt:'https://ice5.somafm.com/sonicuniverse-128-mp3'},
  {id:'lush',name:'Lush',country:'US',genre:'Electronic',url:'https://ice2.somafm.com/lush-128-mp3',alt:'https://ice5.somafm.com/lush-128-mp3'},
  {id:'beat',name:'Beat Blender',country:'US',genre:'House',url:'https://ice2.somafm.com/beatblender-128-mp3',alt:'https://ice5.somafm.com/beatblender-128-mp3'},

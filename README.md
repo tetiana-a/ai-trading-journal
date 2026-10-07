@@ -487,6 +487,15 @@ Released under the **MIT License**.
 
 ### Workspace and playback hardening
 
-The shared workspace layer keeps the existing rose/graphite palette, adds direct links to market, position sizing, risk and journal, and improves form and table readability. The existing Audio Deck, station skipping, visualizer toggle and canvas are preserved. Sonic Universe, Lush and Beat Blender expand the selection to 11 stations. Official listings: [SomaFM](https://somafm.com/listen/) and [Radio France](https://developers.radiofrance.fr/doc/tutorial-by-example/list-locals-and-webradios).
+The shared workspace layer keeps the existing rose/graphite palette, adds direct links to market, position sizing, risk and journal, and improves form and table readability. The existing Audio Deck, station skipping, visualizer toggle and canvas are preserved. Sonic Universe, Lush and Beat Blender expand the selection to 21 stations. Official listings: [SomaFM](https://somafm.com/listen/) and [Radio France](https://developers.radiofrance.fr/doc/tutorial-by-example/list-locals-and-webradios).
 
 Connection attempts time out after 12 seconds per candidate, CORS failures retry direct playback with generative canvas, and switching or pausing cancels stale requests. A stream error stops playback and shows an inline message. Stored volume is clamped; local storage failure does not stop radio controls. Reduced motion and background tabs pause canvas rendering while audio continues. Supabase, charts, Telegram, broker import and prop guard modules are unchanged.
+
+
+### Trade form autofill and expanded radio (2026-10-07)
+
+The Audio Deck now includes 21 stations. New channels: Indie Pop Rocks!, Underground 80s, Folk Forward, Left Coast 70s, Space Station Soma, Deep Space One, DEF CON Radio, cliqhop idm, Bossa Beyond and PopTron. Their primary and backup HTTPS URLs come from the [official SomaFM channel catalogue](https://somafm.com/channels.json); all 20 new endpoints returned CORS-enabled audio and decoded to non-silent samples during verification. Availability is a point-in-time check, not a future uptime guarantee. The radio canvas is unchanged.
+
+Quick fill above the trade form offers history suggestions for text and numeric inputs, a note picker, and explicit full-field copying from a selected trade. Date, direction, status, broker/account, setup, risk fields, prices, quantity, fees, reasons and notes are included; screenshots are not copied. Review the copied values before submitting. Adding still uses the existing validation and prop guard.
+
+All 24 trade fields are saved as a local draft and restored on reload. Broker, account, strategy, setup, timeframe and session carry forward after adding a trade; prices and quantities are not silently reused for a new trade. Close-trade fields share exit-price and exit-reason suggestions. Use Clear fields to replace the current draft with a blank form. Drafts and context stay in browser storage and are not synced to Supabase. Browser storage failure is shown inline.

@@ -73,8 +73,10 @@ async function loadTrades() {
 }
 
 async function saveTrades() {
+  let locallySaved = false;
   try {
     await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
+    locallySaved = true;
     if (window.TradingCloud) {
       const session = await window.TradingCloud.session();
       if (session) {
@@ -86,6 +88,7 @@ async function saveTrades() {
     console.error('[trades] Storage error', e);
     alert(translations[currentLang].alert_storage_error);
   }
+  return locallySaved;
 }
 
 /* ===== Live Price Updates ===== */
@@ -93,20 +96,27 @@ async function saveTrades() {
 const fTickerInput = document.getElementById('fTicker');
 const livePriceHint = document.getElementById('livePriceHint');
 let priceDebounce;
+let priceRequestId = 0;
 
 fTickerInput.addEventListener('input', () => {
   clearTimeout(priceDebounce);
+  const requestId = ++priceRequestId;
+  livePriceHint.onclick = null;
+  livePriceHint.textContent = '';
   clearValidationErrors();
   const val = fTickerInput.value.trim();
   if (!val) { livePriceHint.textContent = ''; return; }
 
   priceDebounce = setTimeout(async () => {
     const price = await fetchLivePrice(val);
+    if (requestId !== priceRequestId) return;
     const t = translations[currentLang];
     if (price) {
       livePriceHint.textContent = `${t.hint_price} $${price.toLocaleString('ru-RU', { maximumFractionDigits: 8 })} ${t.hint_click}`;
       livePriceHint.onclick = () => {
+        if (requestId !== priceRequestId) return;
         document.getElementById('fEntry').value = price;
+        document.getElementById('fEntry').dispatchEvent(new Event('input', { bubbles:true }));
         document.getElementById('fEntry').focus();
       };
     } else {
@@ -151,6 +161,7 @@ function renderAll() {
   drawPnlBarChart();
   renderCalendar();
   document.getElementById('footTradeCount').textContent = trades.length + ' ' + pluralTrades(trades.length, t);
+  document.dispatchEvent(new Event('journal:trades-updated'));
 }
 
 function renderTrades(t) {
@@ -425,7 +436,10 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
     screenshots: currentScreenshots,
   };
   trades.push(tr);
-  await saveTrades();
+  if (!await saveTrades()) {
+    trades = trades.filter(trade => trade.id !== tr.id);
+    return;
+  }
   renderAll();
 
   ['fTicker', 'fDeposit', 'fEntry', 'fExit', 'fVolume', 'fEntryReason', 'fExitReason', 'fNotes',
@@ -435,6 +449,10 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
   currentScreenshots = [];
   renderFormScreenshots();
   livePriceHint.textContent = '';
+  livePriceHint.onclick = null;
+  clearTimeout(priceDebounce);
+  priceRequestId++;
+  document.dispatchEvent(new CustomEvent('journal:trade-added', { detail:tr }));
   document.getElementById('fTicker').focus();
 });
 
