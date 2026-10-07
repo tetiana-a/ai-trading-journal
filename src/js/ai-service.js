@@ -50,7 +50,7 @@
     }catch(e){if(token===epoch)$('reviewState').textContent=e.message;}
   }
   function options(){const select=$('reviewTrade'),value=select.value;select.replaceChildren(new Option('Выбери сделку',''));if(typeof trades!=='undefined')for(const t of [...trades].reverse())select.add(new Option(`${t.date||'—'} · ${t.ticker} · ${t.side}`,t.id));select.value=value;}
-  async function connection(){const token=epoch;$('reviewConnection').textContent='Проверяю сервер…';try{const r=await invoke({action:'status'});if(token===epoch)$('reviewConnection').textContent=r.configured?'Ключ настроен · '+r.model+'. Доступ к модели проверится при создании отчёта.':'Нужен OPENAI_API_KEY в Secrets Supabase.';}catch(e){if(token===epoch)$('reviewConnection').textContent=e.message;}}
+  async function connection(){const token=epoch;$('reviewConnection').textContent='Проверяю сервер…';try{const r=await invoke({action:'status'});if(token===epoch)$('reviewConnection').textContent=r.configured?(r.modelAccessible?'Ключ принят, модель доступна · ':'Ключ настроен · ')+r.model+'. Баланс и анализ проверяются при создании отчёта.':'Нужен OPENAI_API_KEY в Secrets Supabase.';}catch(e){if(token===epoch)$('reviewConnection').textContent=e.message;}}
   window.analyzeTrade=id=>run('trade',String(id));
   $('reviewSingle').addEventListener('click',()=>run('trade',$('reviewTrade').value));$('reviewHistory').addEventListener('click',()=>run('history'));$('reviewWeekly').addEventListener('click',()=>run('weekly'));
   $('reviewRefresh').addEventListener('click',()=>archive());$('reviewMore').addEventListener('click',()=>archive(true));

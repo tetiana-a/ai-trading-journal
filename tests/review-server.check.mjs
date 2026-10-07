@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {periodFor,selectTrades,resultOf,summarize,validateReview,detailSample} from '../supabase/functions/journal-review/core.mjs';
-import {createHandler} from '../supabase/functions/journal-review/handler.mjs';
+import {createHandler,providerFailure} from '../supabase/functions/journal-review/handler.mjs';
 const owner='00000000-0000-4000-8000-000000000001';
 const row={id:'00000000-0000-4000-8000-000000000002',external_id:'trade1',user_id:owner,ticker:'BTCUSDC',side:'Long',status:'closed',entry:100,exit:120,volume:2,fees:1,trade_date:'2026-10-07',screenshot_paths:[],broker:'Binance',account_label:'spot'};
 const narrative={summary:'Review',strengths:['Plan'],findings:[{title:'Execution',detail:'Check fees',trade_ids:['trade1']}],actions:['Record stop'],limitations:['Small sample']};
@@ -87,4 +87,13 @@ test('retry returns saved report without another paid API request',async()=>{
 test('hourly guard and user-selected photo opt-out work',async()=>{
  const limited=harness({limited:true});assert.equal((await limited.handler(req())).status,429);assert.equal(limited.provider.length,0);
  const h=harness({rows:[{...row,screenshot_paths:[owner+'/trade1/0.jpg']}]});const data=await (await h.handler(req({includePhotos:false}))).json();assert.equal(data.report.metadata.coverage.photosReviewed,0);assert.equal(h.calls.filter(c=>c.url.includes('/storage/')).length,0);
+});
+
+test('provider errors have actionable codes and never expose raw response details',async()=>{
+ for(const [status,raw,expected] of [[401,'invalid_api_key','AI_INVALID_KEY'],[403,'','AI_PERMISSION'],[404,'model_not_found','AI_MODEL_ACCESS'],[429,'insufficient_quota','AI_QUOTA'],[429,'rate_limit','AI_RATE_LIMIT'],[400,'invalid_image','AI_IMAGE'],[400,'','AI_REQUEST'],[503,'','AI_UNAVAILABLE']]){
+ const error=await providerFailure(new Response(JSON.stringify({error:{code:raw,message:'SECRET PRIVATE CONTENT'}}),{status}));assert.equal(error.code,expected);assert(!error.message.includes('SECRET'));}
+});
+test('status validates model access without reading trades or creating completions',async()=>{
+ const paths=[];const handler=createHandler({env:k=>({SUPABASE_URL:'https://project.test',SUPABASE_ANON_KEY:'public',OPENAI_API_KEY:'private'})[k],fetchImpl:async(url)=>{paths.push(new URL(url).pathname);return new Response(JSON.stringify(url.includes('/auth/')?{id:owner}:{id:'gpt-4.1-mini'}));}});
+ const res=await handler(req({action:'status'}));assert.equal((await res.json()).modelAccessible,true);assert.deepEqual(paths,['/auth/v1/user','/v1/models/gpt-4.1-mini']);
 });

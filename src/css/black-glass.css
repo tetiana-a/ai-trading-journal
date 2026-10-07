@@ -1,0 +1,14 @@
+/* Black glass surfaces, scoped to dark mode; canvas/audio behavior is untouched. */
+[data-theme="dark"]{color-scheme:dark}
+[data-theme="dark"] body{background:#000}
+[data-theme="dark"] :is(.modal-box,.radio-dock,.pd-panel,.pd-kpi,.cloud-panel,.review-center,.review-account,.review-finding,.review-archive-card,.form-card,.kpi-card,.pnl-chart-wrap,.cal-grid,.cal-year-card,.learning-teaser,.chapter,.lesson,.sys-card,.chart-shell,.tool-card,.firm-card,.prop-card,.tk-table,.month-table,.sys-signal-board){background:rgba(14,14,14,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-color:rgba(255,255,255,.13);box-shadow:0 12px 36px rgba(0,0,0,.22)}
+[data-theme="dark"] :is(.hero>.wrap,.learning-hero>.wrap,.sys-hero>.wrap,.sec-head,.chapter-head,.foot-in){background:rgba(5,5,5,.66);border-radius:16px;padding:20px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+[data-theme="dark"] :is(input,textarea,select,.tool-result,.mono-output,.kb-item,.formula,.note,.checklist,.practice){background:rgba(8,8,8,.86);color:var(--txt);border-color:var(--line2)}
+[data-theme="dark"] select option{background:#101010;color:#f0ebe8}
+[data-theme="dark"] .modal-overlay{background:rgba(0,0,0,.68)}
+[data-theme="dark"] .modal-box{background:rgba(12,12,12,.93)}
+[data-theme="dark"] .review-error{color:#f3a2a2;background:rgba(55,15,15,.65);border:1px solid rgba(243,162,162,.22);border-radius:12px;padding:16px;line-height:1.7}
+[data-theme="dark"] :is(.f-lbl,.stat-l,.pd-note,.review-note,.learning-kicker){opacity:1}
+@supports not (backdrop-filter:blur(1px)){[data-theme="dark"] :is(.modal-box,.radio-dock,.pd-panel,.chapter,.lesson,.sys-card){background:rgba(12,12,12,.97)}}
+@media(prefers-reduced-transparency:reduce){[data-theme="dark"] :is(.modal-box,.radio-dock,.pd-panel,.pd-kpi,.chapter,.lesson,.sys-card,.hero>.wrap,.learning-hero>.wrap,.sys-hero>.wrap){background:#101010;backdrop-filter:none}}
+@media(max-width:600px){[data-theme="dark"] :is(.hero>.wrap,.learning-hero>.wrap,.sys-hero>.wrap){padding:18px 14px}}

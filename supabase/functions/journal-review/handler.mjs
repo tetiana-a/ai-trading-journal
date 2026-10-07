@@ -1,5 +1,21 @@
 import { VERSION, LIMITS, periodFor, selectTrades, summarize, detailSample, validateReview } from './core.mjs';
 
+
+export async function providerFailure(response) {
+  const body=await response.json().catch(()=>({})),raw=body.error?.code;
+  let code='AI_PROVIDER_ERROR',message='OpenAI отклонил запрос. Проверь настройки модели.';
+  if(response.status===401){code='AI_INVALID_KEY';message='OpenAI не принимает API-ключ (401). Замени OPENAI_API_KEY в Secrets Supabase на действующий ключ OpenAI API.';}
+  else if(raw==='insufficient_quota'){code='AI_QUOTA';message='Недостаточно квоты OpenAI API. Проверь баланс и лимит расходов проекта; подписка ChatGPT не оплачивает API.';}
+  else if(response.status===429){code='AI_RATE_LIMIT';message='Превышен лимит запросов OpenAI. Подожди минуту и повтори.';}
+  else if(response.status===404||raw==='model_not_found'){code='AI_MODEL_ACCESS';message='Модель недоступна этому API-проекту. Проверь JOURNAL_REVIEW_MODEL и доступ к модели в OpenAI.';}
+  else if(response.status===403){code='AI_PERMISSION';message='OpenAI запретил доступ (403). Проверь права API-ключа и проекта.';}
+  else if(['invalid_image','invalid_image_format','image_parse_error','invalid_base64_image'].includes(raw)){code='AI_IMAGE';message='OpenAI не смог прочитать фото. Повтори без фотографий или загрузи изображение заново.';}
+  else if(response.status===400){code='AI_REQUEST';message='OpenAI не принимает параметры запроса (400). Модель должна поддерживать Chat Completions, JSON и фотографии.';}
+  else if(response.status>=500){code='AI_UNAVAILABLE';message='Временная ошибка OpenAI. Повтори позже.';}
+  console.warn(JSON.stringify({event:'journal_provider_error',status:response.status,code}));
+  return Object.assign(new Error(message),{status:502,code});
+}
+
 export function createHandler({ env, fetchImpl=fetch, now=()=>new Date() }) {
   const locks=new Set();
   return async request => {
@@ -21,8 +37,13 @@ export function createHandler({ env, fetchImpl=fetch, now=()=>new Date() }) {
       if(!user.id || user.is_anonymous)throw fail('Нужен подтверждённый аккаунт.',401);
       const raw=await request.text();if(raw.length>4096)throw fail('Запрос слишком большой.',413);
       let body;try{body=JSON.parse(raw);}catch{throw fail('Неверный формат запроса.');}
-      const apiKey=env('OPENAI_API_KEY'),model=env('JOURNAL_REVIEW_MODEL') || 'gpt-4.1-mini';
-      if(body.action==='status')return reply({configured:!!apiKey,provider:'openai',model,limits:LIMITS});
+      const apiKey=env('OPENAI_API_KEY')?.trim(),model=env('JOURNAL_REVIEW_MODEL')?.trim() || 'gpt-4.1-mini';
+      if(body.action==='status'){
+        if(!apiKey)return reply({configured:false,provider:'openai',model,limits:LIMITS});
+        let check;try{check=await fetchImpl('https://api.openai.com/v1/models/'+encodeURIComponent(model),{headers:{Authorization:'Bearer '+apiKey},signal:AbortSignal.timeout(15000)});}catch{throw fail('Не удалось проверить OpenAI. Повтори позже.',504,'AI_TIMEOUT');}
+        if(!check.ok)throw await providerFailure(check);
+        return reply({configured:true,modelAccessible:true,provider:'openai',model,limits:LIMITS});
+      }
       const scope=body.scope;
       if(!['trade','history','weekly'].includes(scope))throw fail('Выбери тип отчёта.');
       if(scope==='trade' && (typeof body.tradeId!=='string'||!body.tradeId||body.tradeId.length>200))throw fail('Не выбрана сделка.');
@@ -82,7 +103,7 @@ export function createHandler({ env, fetchImpl=fetch, now=()=>new Date() }) {
       let provider;
       try {provider=await fetchImpl('https://api.openai.com/v1/chat/completions',{method:'POST',headers:{Authorization:'Bearer '+apiKey,'Content-Type':'application/json'},body:JSON.stringify({model,store:false,messages:[{role:'system',content:system},{role:'user',content:[{type:'text',text:JSON.stringify(context)},...imageContent]}],response_format:{type:'json_object'},max_completion_tokens:4500}),signal:AbortSignal.timeout(75000)});}
       catch{throw fail('ИИ не ответил вовремя. Отчёт не сохранён; повтори запрос.',504,'AI_TIMEOUT');}
-      if(!provider.ok)throw fail(provider.status===429?'Лимит или баланс OpenAI исчерпан. Проверь API-аккаунт.':'Сервис ИИ отклонил запрос. Проверь серверный ключ и модель.',502,'AI_PROVIDER_ERROR');
+      if(!provider.ok)throw await providerFailure(provider);
       const completion=await provider.json();let narrative;
       try{
         if(completion.choices?.[0]?.finish_reason!=='stop')throw new Error('Incomplete');

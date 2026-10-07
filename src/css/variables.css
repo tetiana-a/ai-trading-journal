@@ -28,14 +28,14 @@
 }
 
 [data-theme="dark"] {
-  --bg:       #1c1a1f;
-  --bg2:      #28252e;
-  --bg3:      #35323d;
+  --bg:       #000000;
+  --bg2:      rgba(16,16,16,.78);
+  --bg3:      #242424;
   --line:     rgba(255,255,255,.05);
   --line2:    rgba(255,255,255,.10);
   --txt:      #f0ebe8;
-  --txt2:     #a9a3b0;
-  --txt3:     #6e6878;
+  --txt2:     #bfbfbf;
+  --txt3:     #989898;
   --tag:      rgba(255,255,255,.02);
   --hov:      rgba(255,255,255,.04);
   --accent:   #d4a29a;
@@ -43,9 +43,9 @@
   --pos:      #8cc49a;
   --neg:      #d98a8a;
   --gold:     212, 162, 154;
-  --card-bg:  #28252e;
+  --card-bg:  rgba(16,16,16,.78);
   --card-shadow: 0 2px 8px rgba(0,0,0,.2);
-  --nav-bg:   rgba(28, 26, 31, 0.88);
+  --nav-bg:   rgba(0,0,0,.88);
   --btn-shadow: 0 2px 8px rgba(0,0,0,.25);
   --cal-today: rgba(160, 140, 200, 0.2);
   --cal-today-border: #b8a4d8;
