@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="uk" data-theme="dark"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Навчальний центр трейдингу — повний курс</title>
+<meta name="description" content="Основи крипторинку, технічний аналіз, ризик, SMC та торговий журнал. Вісім навчальних модулів українською.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/variables.css">
+<link rel="stylesheet" href="src/css/base.css">
+<link rel="stylesheet" href="src/css/components.css">
+<link rel="stylesheet" href="src/css/responsive.css">
+<style>
+.learning-hero{min-height:68vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.learning-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.learning-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:980px}
+.learning-title em{font-style:normal;color:var(--accent)}
+.learning-lead{margin-top:18px;max-width:760px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
+.learning-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.learning-chip{border:1px solid var(--line2);background:var(--card-bg);padding:8px 12px;border-radius:999px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.learning-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.toc a{display:block;background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--txt2);font-size:12px;line-height:1.4;transition:.2s}
+.toc a:hover{border-color:var(--accent);color:var(--txt);transform:translateY(-2px)}
+.toc a b{display:block;color:var(--accent);font-size:9px;letter-spacing:.08em;margin-bottom:6px}
+.chapter{background:var(--card-bg);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--card-shadow);margin-bottom:18px}
+.chapter-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.chapter-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
+.chapter h3{font-size:clamp(24px,3vw,34px);margin-top:5px}
+.chapter-intro{max-width:620px;color:var(--txt2);font-size:13px;line-height:1.7}
+.lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lesson{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:20px}
+.lesson h4{font-size:16px;margin-bottom:10px}
+.lesson p,.lesson li{color:var(--txt2);font-size:12.5px;line-height:1.72;font-weight:300}
+.lesson ul,.lesson ol{padding-left:18px;margin-top:8px}
+.lesson strong{color:var(--txt)}
+.formula{font-family:'JetBrains Mono',monospace;background:var(--tag);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0;color:var(--txt);font-size:11px;overflow:auto}
+.checklist{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--tag)}
+.checklist h4{font-size:13px;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+.checklist ul{columns:2;column-gap:28px;padding-left:18px}
+.checklist li{color:var(--txt2);font-size:12px;line-height:1.7}
+.practice{margin-top:14px;border-left:2px solid var(--accent);padding:15px 18px;background:var(--tag);border-radius:0 12px 12px 0}
+.practice b{display:block;color:var(--accent);font-size:11px;margin-bottom:6px}
+.practice p,.practice li{font-size:12px;color:var(--txt2);line-height:1.7}
+.practice ul{padding-left:18px}
+.warning{margin-top:18px;padding:16px 18px;border:1px solid rgba(217,122,122,.25);background:rgba(217,122,122,.05);border-radius:12px;color:var(--txt2);font-size:12px;line-height:1.7}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.flow-item{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg)}
+.flow-item b{display:block;color:var(--accent);font-size:10px;margin-bottom:8px}
+.flow-item span{font-size:12px;color:var(--txt2);line-height:1.55}
+@media(max-width:1000px){.toc{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.lesson-grid{grid-template-columns:1fr}.chapter-head{display:block}.chapter-intro{margin-top:12px}.checklist ul{columns:1}}
+@media(max-width:560px){.toc,.flow{grid-template-columns:1fr}.chapter{padding:20px}.learning-hero{min-height:auto}}
+ .radio-note{display:flex;align-items:center;gap:8px;color:var(--txt3);font-size:11px;margin-top:12px}.radio-note::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+</style>
+<link rel="stylesheet" href="src/css/workspace.css"><link rel="stylesheet" href="src/css/learning-page.css"><link rel="alternate" hreflang="ru" href="learning.html"><link rel="alternate" hreflang="en" href="learning-en.html"><link rel="alternate" hreflang="uk" href="learning-uk.html"><link rel="alternate" hreflang="cs" href="learning-cs.html"></head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
+    <div class="nav-links">
+      <a href="index.html">Журнал</a>
+      <a href="prop-firms-en.html">Проп-компанії</a>
+      <a href="system-en.html">Система</a>
+      <a href="#contents">Зміст</a>
+      <a href="#workflow">Робочий процес</a>
+      <a href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Конспекти на GitHub</a>
+    </div>
+    <div class="nav-controls"><select id="learningLanguage" class="lang-select" aria-label="Мова"><option value="ru">RU</option><option value="uk" selected>UK</option><option value="en">EN</option><option value="cs">CS</option></select><button class="radio-btn" id="radioBtn" type="button"><div class="radio-dot"></div><span>Слухати</span></button><button class="theme-tog" id="themeTog" aria-label="Theme"></button></div>
+  </div>
+</nav>
+
+<header class="learning-hero">
+  <div class="wrap">
+    <div class="learning-kicker">Навчальний центр трейдингу · авторські матеріали</div>
+    <h1 class="learning-title">Від основ до дисциплінованої торгівлі. <em>Єдина навчальна система.</em></h1>
+    <p class="learning-lead">Навчальна система на основі особистих конспектів, практики на графіках і торгових записів. Матеріал веде від основ до виконання угод, ведення журналу та аналізу.</p>
+    <div class="learning-meta">
+      <span class="learning-chip">8 повних модулів</span>
+      <span class="learning-chip">Крипто + теханаліз + SMC</span>
+      <span class="learning-chip">Ризик під контролем</span>
+      <span class="learning-chip">Практичні чеклісти</span>
+      <span class="learning-chip">Інтеграція з журналом</span>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="#contents">Почати навчання</a>
+      <a class="btn btn-ghost" href="index.html#add">Відкрити торговий журнал</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="sec" id="contents"><div class="wrap">
+  <div class="sec-head"><div class="sec-head-l"><span class="sec-num">00</span><h2 class="sec-title">Зміст курсу</h2></div></div>
+  <div class="toc">
+    <a href="#m1"><b>МОДУЛЬ 01</b>Основи криптовалют і ринку</a>
+    <a href="#m2"><b>МОДУЛЬ 02</b>Технічний аналіз</a>
+    <a href="#m3"><b>МОДУЛЬ 03</b>Управління ризиком</a>
+    <a href="#m4"><b>МОДУЛЬ 04</b>Фундаментальний аналіз</a>
+    <a href="#m5"><b>МОДУЛЬ 05</b>Концепції Smart Money</a>
+    <a href="#m6"><b>МОДУЛЬ 06</b>Фібоначчі та Вайкофф</a>
+    <a href="#m7"><b>МОДУЛЬ 07</b>Торгова стратегія та робочий процес</a>
+    <a href="#m8"><b>МОДУЛЬ 08</b>Журнал, психологія та аналіз</a>
+  </div>
+</div></section>
+
+<section class="sec" id="m1"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 01</span><h3>Основи криптовалют і ринку</h3></div><p class="chapter-intro">Спочатку зрозумій, чим торгуєш, а потім вивчай точки входу. Модуль охоплює роль біткоїна, альткоїни, ринкові цикли, структуру тренду та психологію натовпу.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Основи криптовалют</h4><p>Криптоактиви — цифрові активи на основі розподіленого реєстру. На ціну впливають ліквідність, попит, ринкові наративи, використання, регулювання, пропозиція токенів і готовність ринку до ризику.</p><ul><li><strong>Біткоїн:</strong> основний орієнтир крипторинку та важливий центр ліквідності.</li><li><strong>Альткоїни:</strong> інші криптоактиви, часто з вищою волатильністю та чутливістю до ринкових наративів.</li><li><strong>Стейблкоїни:</strong> інструменти, створені для прив’язки до вартості фіатної валюти; часто використовуються як валюта котирування.</li><li><strong>Спот:</strong> купівля або продаж самого активу.</li><li><strong>Ф’ючерси:</strong> деривативи для довгих і коротких позицій із плечем, що несуть ризик ліквідації.</li></ul></div>
+      <div class="lesson"><h4>2. Біткоїн, альткоїни та домінація</h4><p>Біткоїн часто задає загальний режим ризику на крипторинку. Альткоїни можуть випереджати його під час зростання ліквідності, але різко відставати при підвищенні волатильності BTC.</p><ul><li>Перед угодою з альткоїном перевір тренд і волатильність BTC.</li><li>Порівняй силу активу відносно BTC та USD/USDT.</li><li>Використовуй домінацію як контекст, а не прямий сигнал.</li><li>Пам’ятай: під час паніки кореляції зростають.</li></ul></div>
+      <div class="lesson"><h4>3. Психологія ринку та ажіотаж</h4><p>Ринки проходять цикли страху, невизначеності, жадібності та ейфорії. Сильний наратив може тимчасово переважати фундаментальні фактори.</p><ul><li><strong>FOMO:</strong> вхід без плану лише тому, що ціна рухається.</li><li><strong>Упередження підтвердження:</strong> читання лише інформації, яка підтримує твою позицію.</li><li><strong>Упередження недавності:</strong> припущення, що останній рух триватиме без кінця.</li><li><strong>Стадна поведінка:</strong> наслідування натовпу без власного аналізу.</li></ul></div>
+      <div class="lesson"><h4>4. Тренд і діапазон</h4><p>Спочатку визнач стан ринку:</p><ul><li><strong>Висхідний тренд:</strong> вищі максимуми та вищі мінімуми.</li><li><strong>Низхідний тренд:</strong> нижчі максимуми та нижчі мінімуми.</li><li><strong>Діапазон:</strong> повторні рухи між підтримкою та опором.</li><li><strong>Довгостроковий і короткостроковий рух:</strong> локальний рух може бути проти тренду старшого таймфрейму.</li></ul></div>
+    </div>
+    <div class="practice"><b>ПРАКТИКА</b><ul><li>Відкрий BTCUSDT на 1D, 4H і 1H.</li><li>Познач тренд або діапазон на кожному таймфреймі.</li><li>Одним реченням опиши поточну психологію ринку.</li><li>Порівняй структуру BTC з одним альткоїном.</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m2"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 02</span><h3>Технічний аналіз</h3></div><p class="chapter-intro">Технічний аналіз допомагає впорядкувати інформацію про ціну. Спочатку структура та рівні, потім індикатори.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Підтримка, опір і рівні</h4><ul><li>Підтримка: зона, де раніше з’являвся попит.</li><li>Опір: зона, де раніше з’являлася пропозиція.</li><li>Психологічні рівні: круглі числа або ціни, за якими стежать багато учасників.</li><li>Рівень пробою: попередня межа, яку подолала ціна.</li><li>Рівень ретесту: колишня межа, до якої ціна повернулася після пробою.</li></ul><p>Рівень — зона уваги, а не автоматичний вхід.</p></div>
+      <div class="lesson"><h4>2. Класичні фігури</h4><ul><li>Голова та плечі</li><li>Подвійна вершина</li><li>Подвійне дно</li><li>Висхідний трикутник</li><li>Прапор</li></ul><p>Фігури корисніші біля значущого рівня, коли їх підтримують структура та поведінка обсягу.</p></div>
+      <div class="lesson"><h4>3. Свічкові моделі</h4><ul><li>Молот</li><li>Повішений</li><li>Поглинання</li><li>Доджі</li><li>Ранкова зірка</li></ul><p>Розташування свічки важливіше за її назву. Розворотна модель серед шуму слабша за таку саму модель біля ключового рівня.</p></div>
+      <div class="lesson"><h4>4. Ковзна середня (SMA 30)</h4><p>SMA 30 допомагає побачити короткостроковий напрямок і динамічну підтримку або опір. Не використовуй її окремо від контексту.</p><ul><li>Ціна над висхідною SMA → контекст на користь зростання.</li><li>Ціна під низхідною SMA → контекст на користь падіння.</li><li>Пласка SMA → можливий діапазон або ринковий шум.</li></ul></div>
+      <div class="lesson"><h4>5. RSI</h4><p>Базові орієнтири:</p><div class="formula">RSI &gt; 70 → контекст перекупленості
+RSI &lt; 30 → контекст перепроданості</div><p>Перекупленість не гарантує падіння, а перепроданість — відскоку. Сильний тренд може зберігати крайні значення.</p></div>
+      <div class="lesson"><h4>6. MACD і дивергенція</h4><p>MACD допомагає відстежувати зміну імпульсу та прискорення тренду. Дивергенція може вказувати на послаблення імпульсу, але важливі узгодження зі структурою та ключовими рівнями.</p><ul><li>Вищий максимум ціни + нижчий максимум індикатора → ведмежа дивергенція.</li><li>Нижчий мінімум ціни + вищий мінімум індикатора → бичача дивергенція.</li></ul></div>
+    </div>
+    <div class="checklist"><h4>Чекліст технічного сетапу</h4><ul><li>Тренд старшого таймфрейму визначено</li><li>Ключові підтримку й опір позначено</li><li>Локальна структура зрозуміла</li><li>Умову входу визначено</li><li>Індикатор лише підтверджує</li><li>Рівень скасування сценарію визначено</li><li>Співвідношення прибутку до ризику прийнятне</li><li>Найближчим часом немає важливих новин</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m3"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 03</span><h3>Управління ризиком</h3></div><p class="chapter-intro">Управління ризиком допомагає зберегти рахунок. Хороший сетап із неконтрольованим ризиком може його знищити; середній сетап із дисциплінованим ризиком можна досліджувати обережно.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Ризик на угоду</h4><p>Навчальний приклад:</p><div class="formula">Рахунок = $100
+Ризик = 1–2%
+Плановий максимальний збиток = $1–$2</div><p>Це навчальний приклад, а не універсальне правило.</p></div>
+      <div class="lesson"><h4>2. Стоп-лос</h4><p>Стоп ставлять там, де початковий сценарій перестає діяти, а не на довільній зручній відстані.</p><ul><li>Не торгуй без визначеної умови скасування сценарію.</li><li>Не відсувай стоп через страх зафіксувати збиток.</li><li>Обсяг позиції має відповідати відстані до стопа.</li></ul></div>
+      <div class="lesson"><h4>3. Ризик і прибуток</h4><div class="formula">R:R = потенційний прибуток / потенційний ризик</div><p>Навчальний орієнтир: не менше 1:2, якщо сетап це дозволяє; 1:3 — за кращих умов. Високе R:R не має сенсу, якщо ціль нереалістична.</p></div>
+      <div class="lesson"><h4>4. Обсяг позиції</h4><div class="formula">Обсяг позиції ≈ допустимий ризик у $ / відстань до стопа</div><p>Завжди враховуй специфікацію контракту, плече та комісії конкретного інструмента.</p></div>
+      <div class="lesson"><h4>5. Супровід прибуткових угод</h4><ul><li>Часткова фіксація прибутку.</li><li>Перенесення стопа в беззбиток, коли це виправдано структурою.</li><li>Пересування стопа за ринковою структурою.</li><li>Не змінюй супровід імпульсивно через жадібність.</li></ul></div>
+      <div class="lesson"><h4>6. Після збиткової угоди</h4><ul><li>Не намагайся відігратися.</li><li>Не збільшуй обсяг одразу.</li><li>Відокремлюй поганий процес від поганого результату.</li><li>Запиши збиток у журнал.</li><li>Визнач, чи було порушено правило, чи не спрацював сетап.</li></ul></div>
+    </div>
+    <div class="warning"><strong>Важливо:</strong> плече збільшує і прибутки, і збитки. Невеликий рух ціни може ліквідувати завелику ф’ючерсну позицію. Плече — не безкоштовна купівельна спроможність.</div>
+  </article>
+</div></section>
+
+<section class="sec" id="m4"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 04</span><h3>Фундаментальний аналіз</h3></div><p class="chapter-intro">Фундаментальні фактори пояснюють, чому зростає волатильність, перетікає капітал і технічні рівні можуть раптово перестати працювати.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Економічний календар</h4><p>Перед торгівлею перевір важливі події США: інфляцію, дані ринку праці, рішення центробанку та ключові виступи. Крипторинок часто реагує на ставки, ліквідність і готовність до ризику.</p></div>
+      <div class="lesson"><h4>2. Загальні новини крипторинку</h4><ul><li>Рішення регуляторів</li><li>Новини ETF та інституційних потоків</li><li>Інциденти на біржах</li><li>Злами та вразливості</li><li>Проблеми стейблкоїнів</li><li>Масові ліквідації</li></ul></div>
+      <div class="lesson"><h4>3. Фундаментальні фактори проєкту</h4><ul><li>Яку проблему вирішує</li><li>Призначення токена</li><li>Пропозиція та графік розблокувань</li><li>Активність розробки</li><li>Користувачі та поширення</li><li>Партнерства</li><li>Конкуренти</li><li>Ліквідність</li></ul></div>
+      <div class="lesson"><h4>4. Каскад новин</h4><ol><li>З’являються несподівані новини або макродані.</li><li>Великі учасники зменшують або збільшують ризик.</li><li>Ключові рівні пробиваються.</li><li>Спрацьовують стопи.</li><li>Ліквідації ф’ючерсів прискорюють рух.</li><li>Після збору ліквідності ціна може стабілізуватися або розвернутися.</li></ol></div>
+    </div>
+    <div class="practice"><b>ПЕРЕВІРКА НОВИН ПЕРЕД УГОДОЮ</b><p>Економічний календар → загальні криптоновини → новини проєкту → повернення до графіка → оцінка, чи змінює волатильність умови сетапу.</p></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m5"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 05</span><h3>Концепції Smart Money</h3></div><p class="chapter-intro">Концепції SMC тут допомагають системно вивчати ліквідність, імпульс і структуру ринку. Вони не гарантують виявлення дій інституційних учасників.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. POI — зона інтересу</h4><p>POI — цінова зона, де раніше була помітна реакція або сильний імпульс. Це місце для спостереження, а не сліпого входу.</p></div>
+      <div class="lesson"><h4>2. Ордер-блок</h4><p>Навчальне визначення: свічка або вузька цінова зона, пов’язана із сильним імпульсом. Якість вища, коли рух ламає структуру та створює дисбаланс.</p></div>
+      <div class="lesson"><h4>3. Ліквідність</h4><ul><li>Рівні максимуми та мінімуми</li><li>Попередні локальні максимуми та мінімуми</li><li>Очевидні точки пробою</li><li>Скупчення стопів біля чіткої структури</li><li>Збір ліквідності перед розворотом або продовженням</li></ul></div>
+      <div class="lesson"><h4>4. Дисбаланс</h4><p>Швидкий спрямований рух може залишати зону нерівномірної торгівлі. Ціна іноді повертається до неї частково або повністю. Дисбаланс дає контекст, а не гарантію заповнення.</p></div>
+      <div class="lesson"><h4>5. BOS і CHOCH</h4><ul><li><strong>BOS:</strong> пробій структури на користь продовження руху.</li><li><strong>CHOCH:</strong> зміна характеру руху, що може вказувати на послаблення попередньої структури.</li></ul><p>Завжди визначай локальні екстремуми за однаковими правилами.</p></div>
+      <div class="lesson"><h4>6. Пропозиція та попит</h4><p><strong>Попит:</strong> зона, від якої ціна різко пішла вгору.<br><strong>Пропозиція:</strong> зона, від якої ціна різко пішла вниз.</p><p>Правило виконання: <strong>зона → підтвердження → угода</strong>, а не зона → миттєвий вхід.</p></div>
+    </div>
+    <div class="practice"><b>ПРАКТИКА НА ГРАФІКУ</b><ul><li>Знайди 4 ордер-блоки.</li><li>Знайди 4 зони POI.</li><li>Познач 5 скупчень ліквідності.</li><li>Знайди 5 зборів ліквідності.</li><li>Познач 5 дисбалансів.</li><li>Визнач BOS/CHOCH на двох таймфреймах.</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m6"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 06</span><h3>Фібоначчі та Вайкофф</h3></div><p class="chapter-intro">Ці інструменти допомагають досліджувати відкати та поведінку в діапазоні. Це моделі спостереження, а не точного передбачення.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Корекція Фібоначчі</h4><p>Використовуй Фібоначчі для пошуку можливих зон відкату після чіткого спрямованого руху. Корисне поєднання зі структурою, ліквідністю або попитом і пропозицією.</p><ul><li>Будуй від чіткого екстремуму до екстремуму.</li><li>Не підганяй початкові точки.</li><li>Шукай збіг факторів, а не одну точну пропорцію.</li><li>Чекай підтвердження ціною.</li></ul></div>
+      <div class="lesson"><h4>2. Логіка Вайкоффа</h4><p>Спостерігай за поведінкою всередині діапазону:</p><ul><li>Накопичення</li><li>Розподіл</li><li>Розширення</li><li>Повторне накопичення або розподіл</li></ul><p>Вивчай хибні пробої, збори ліквідності та перехід від рівноваги до спрямованого руху.</p></div>
+      <div class="lesson"><h4>3. Зусилля та результат</h4><p>Одна з ідей Вайкоффа — порівняння зусилля й результату. Велике зусилля за слабкого просування ціни може означати поглинання; сильний результат із чітким імпульсом — дисбаланс.</p></div>
+      <div class="lesson"><h4>4. Поєднання інструментів</h4><p>Приклад збігу факторів:</p><ul><li>Попит на старшому таймфреймі</li><li>Збір ліквідності</li><li>Зона корекції Фібоначчі</li><li>CHOCH на молодшому таймфреймі</li><li>Стоп за рівнем скасування сценарію</li></ul></div>
+    </div>
+  </article>
+</div></section>
+
+<section class="sec" id="m7"><div class="wrap">
+  <article class="chapter" id="workflow">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 07</span><h3>Торгова стратегія та робочий процес</h3></div><p class="chapter-intro">Стратегія — не один індикатор. Це повний процес рішень: контекст, умова входу, скасування сценарію, ризик і аналіз.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>01 · КОНТЕКСТ</b><span>Економічний календар, ринкові новини, новини проєкту, тренд старшого таймфрейму.</span></div>
+      <div class="flow-item"><b>02 · СТРУКТУРА</b><span>Рівні, ліквідність, попит і пропозиція, тренд, BOS/CHOCH.</span></div>
+      <div class="flow-item"><b>03 · СЦЕНАРІЇ</b><span>Запиши умови зростання і падіння до того, як ціна дійде до зони.</span></div>
+      <div class="flow-item"><b>04 · РИЗИК</b><span>Вхід, стоп, ціль, обсяг позиції, максимальний збиток.</span></div>
+      <div class="flow-item"><b>05 · АНАЛІЗ</b><span>Скриншот, результат, емоція, дотримання правил і висновок.</span></div>
+    </div>
+    <div class="lesson-grid" style="margin-top:16px">
+      <div class="lesson"><h4>Планування двох сценаріїв</h4><p><strong>Сценарій зростання:</strong> що має статися для підтвердження лонгу?<br><strong>Сценарій падіння:</strong> що має статися для підтвердження шорту?</p><p>Налаштуй сповіщення й чекай виконання умов замість гонитви за рухом.</p></div>
+      <div class="lesson"><h4>Прогрес на деморахунку</h4><ol><li>Використовуй деморахунок.</li><li>Виконай невелику серію запланованих угод.</li><li>Записуй кожну угоду.</li><li>Проаналізуй 20–30 угод, перш ніж змінювати стратегію.</li><li>Змінюй лише одну змінну за раз.</li></ol></div>
+    </div>
+    <div class="checklist"><h4>Чекліст перед угодою</h4><ul><li>Макрокалендар перевірено</li><li>Ринкові новини перевірено</li><li>Тренд визначено</li><li>Ключовий рівень позначено</li><li>Контекст ліквідності зрозумілий</li><li>Умову входу визначено</li><li>Умову скасування сценарію визначено</li><li>Стоп і ціль встановлено</li><li>Обсяг позиції розраховано</li><li>R:R прийнятне</li><li>Емоційний стан стабільний</li><li>Угоду записано</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m8"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">МОДУЛЬ 08</span><h3>Журнал, психологія та аналіз</h3></div><p class="chapter-intro">Журнал потрібен не лише для обліку PnL. Він має показувати, чи поліпшується процес і які помилки повторюються.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Що записувати</h4><ul><li>Дату й тікер</li><li>Лонг / шорт</li><li>Таймфрейм</li><li>Сетап</li><li>Вхід, стоп, ціль</li><li>Обсяг позиції</li><li>Скриншот</li><li>Емоцію</li><li>Ідею входу</li><li>Причину виходу</li><li>Висновок</li></ul></div>
+      <div class="lesson"><h4>2. Процес і результат</h4><p>Класифікуй кожну угоду:</p><ul><li>Хороший процес / хороший результат</li><li>Хороший процес / поганий результат</li><li>Поганий процес / хороший результат</li><li>Поганий процес / поганий результат</li></ul><p>Прибуткова угода з порушенням правил — усе одно помилка процесу.</p></div>
+      <div class="lesson"><h4>3. Психологія</h4><p>Поширені емоційні ризики:</p><ul><li>Жадібність</li><li>Страх</li><li>FOMO</li><li>Нетерплячість</li><li>Надмірна впевненість</li><li>Торгівля заради відіграшу</li></ul><p>Якщо емоції надто сильні, правильним рішенням може бути відмова від угоди.</p></div>
+      <div class="lesson"><h4>4. Щотижневий аналіз</h4><ul><li>Частка прибуткових угод</li><li>Середній результат у R</li><li>Профіт-фактор</li><li>Середній прибуток і збиток</li><li>Найкращий сетап</li><li>Найчастіша помилка</li><li>Порушення правил</li><li>Емоційні помилки</li><li>Скриншоти сетапів A+</li></ul></div>
+      <div class="lesson"><h4>5. Конспекти з літератури</h4><p>Особисті конспекти з торгової літератури Олександра Герчика охоплюють:</p><ul><li>тренд і рівні,</li><li>торгові системи,</li><li>стоп-лос і тейк-профіт,</li><li>ліквідність,</li><li>механіку лонгу й шорту,</li><li>управління ризиком і дисципліну.</li></ul><p>Головна ідея: торгова система — це <strong>сетап + ризик + виконання + дисципліна + аналіз</strong>.</p></div>
+      <div class="lesson"><h4>6. Відповідальне використання ШІ</h4><p>ШІ може підсумувати угоду, перевірити ідею та знайти суперечності. Не сприймай його як джерело гарантованих сигналів.</p><ul><li>Використовуй ШІ як другу думку.</li><li>Зберігай початкову ідею угоди.</li><li>З часом порівнюй коментарі ШІ з фактичними результатами.</li><li>Не передавай рішення про ризик ШІ всліпу.</li></ul></div>
+    </div>
+    <div class="practice"><b>ШАБЛОН ЩОТИЖНЕВОГО АНАЛІЗУ</b><p>Що спрацювало? Що ні? Яке правило порушувалося найчастіше? Який сетап мав найкраще математичне очікування? Яка емоція повторювалася? Яку одну дію зміню наступного тижня?</p></div>
+  </article>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">ПІДСУМОК</span><h3>Шлях навчання</h3></div><p class="chapter-intro">Не намагайся торгувати всі концепції одночасно. Додавай складність лише після практичного підтвердження розуміння попереднього рівня.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>КРОК 1</b><span>Тренд + рівні</span></div>
+      <div class="flow-item"><b>КРОК 2</b><span>Ризик + один сетап</span></div>
+      <div class="flow-item"><b>КРОК 3</b><span>20–30 демоугод</span></div>
+      <div class="flow-item"><b>КРОК 4</b><span>Журнал + аналіз</span></div>
+      <div class="flow-item"><b>КРОК 5</b><span>Додавай SMC та складніші інструменти лише за потреби</span></div>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="index.html#add">Відкрити торговий журнал</a>
+      <a class="btn btn-ghost" href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Відкрити вихідні конспекти</a>
+    </div>
+    <div class="warning"><strong>Лише для навчання.</strong> Цей навчальний розділ містить авторські конспекти та освітні підсумки. Це не фінансова рекомендація. Повні платні матеріали сторонніх курсів і захищені авторським правом книги на цьому публічному сайті не розміщуються.</div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot-in"><span>Навчальний центр трейдингу · Tetiana Kotolup</span><a href="index.html">Повернутися до журналу</a></div></footer>
+
+
+<script src="src/js/learning-page.js"></script><script src="src/js/radio-visualizer.js"></script></body></html>

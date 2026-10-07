@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html lang="ru" data-theme="dark">
-<head>
+<!DOCTYPE html><html lang="ru" data-theme="dark"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Trading Learning Hub — Полный учебный курс</title>
 <meta name="description" content="Полный учебный раздел по трейдингу: криптовалюта, структура рынка, технический анализ, риск-менеджмент, фундаментал, Smart Money, Fibonacci, Wyckoff, стратегия, психология и журнал сделок.">
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet">
 <link rel="stylesheet" href="src/css/variables.css">
 <link rel="stylesheet" href="src/css/base.css">
 <link rel="stylesheet" href="src/css/components.css">
@@ -55,7 +53,7 @@
 @media(max-width:680px){.nav-links a:not(:first-child){display:none}}
 @media(max-width:560px){.toc,.flow{grid-template-columns:1fr}.chapter{padding:20px}.learning-hero{min-height:auto}}
 </style>
-</head>
+<link rel="stylesheet" href="src/css/workspace.css"><link rel="stylesheet" href="src/css/learning-page.css"><link rel="alternate" hreflang="ru" href="learning.html"><link rel="alternate" hreflang="en" href="learning-en.html"><link rel="alternate" hreflang="uk" href="learning-uk.html"><link rel="alternate" hreflang="cs" href="learning-cs.html"></head>
 <body>
 <canvas id="bgCanvas"></canvas>
 <nav>
@@ -67,7 +65,7 @@
       <a href="#workflow">Стратегия</a>
       <a href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">GitHub Notes</a>
     </div>
-    <div class="nav-controls"><a href="learning-en.html" style="font-size:10px;border:1px solid var(--line2);padding:7px 9px;border-radius:9px;color:var(--txt2)">EN</a>
+    <div class="nav-controls"><select id="learningLanguage" class="lang-select" aria-label="Язык"><option value="ru" selected>RU</option><option value="uk">UK</option><option value="en">EN</option><option value="cs">CS</option></select>
       <button class="radio-btn" id="radioBtn" type="button" aria-label="Включить или выключить Radio Kiss">
         <div class="radio-dot"></div><span>Radio Kiss</span>
       </button>
@@ -252,13 +250,7 @@ RSI &lt; 30 → зона перепроданности</div><p>Перекупл
 
 <footer><div class="wrap foot-in"><span>Trading Learning Hub · Tetiana Kotolup</span><a href="index.html">Вернуться в журнал</a></div></footer>
 
-<script>
-const savedTheme=localStorage.getItem('tk_theme')||localStorage.getItem('theme')||'dark';
-document.documentElement.dataset.theme=savedTheme;
-document.getElementById('themeTog').addEventListener('click',()=>{const next=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=next;localStorage.setItem('tk_theme',next);localStorage.setItem('theme',next);});
-const currentLang='ru';
-const translations={ru:{alert_radio_error:'Радиопоток сейчас недоступен или заблокирован в вашем регионе.'}};
-</script>
-<script src="src/js/radio-visualizer.js"></script>
-</body>
-</html>
+
+
+
+<script src="src/js/learning-page.js"></script><script src="src/js/radio-visualizer.js"></script></body></html>

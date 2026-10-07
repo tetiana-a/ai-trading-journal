@@ -1,0 +1,247 @@
+<!DOCTYPE html><html lang="cs" data-theme="dark"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Vzdělávací centrum tradingu — ucelený kurz</title>
+<meta name="description" content="Základy kryptotrhu, technická analýza, řízení rizika, SMC a obchodní deník. Osm vzdělávacích modulů v češtině.">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;500;600;700&amp;family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="src/css/variables.css">
+<link rel="stylesheet" href="src/css/base.css">
+<link rel="stylesheet" href="src/css/components.css">
+<link rel="stylesheet" href="src/css/responsive.css">
+<style>
+.learning-hero{min-height:68vh;padding:120px 0 64px;display:flex;align-items:flex-end;border-bottom:1px solid var(--line)}
+.learning-kicker{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px}
+.learning-title{font-size:clamp(42px,7vw,78px);line-height:1.02;max-width:980px}
+.learning-title em{font-style:normal;color:var(--accent)}
+.learning-lead{margin-top:18px;max-width:760px;color:var(--txt2);font-size:15px;line-height:1.8;font-weight:300}
+.learning-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px}
+.learning-chip{border:1px solid var(--line2);background:var(--card-bg);padding:8px 12px;border-radius:999px;font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.learning-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.toc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.toc a{display:block;background:var(--card-bg);border:1px solid var(--line);border-radius:14px;padding:16px;color:var(--txt2);font-size:12px;line-height:1.4;transition:.2s}
+.toc a:hover{border-color:var(--accent);color:var(--txt);transform:translateY(-2px)}
+.toc a b{display:block;color:var(--accent);font-size:9px;letter-spacing:.08em;margin-bottom:6px}
+.chapter{background:var(--card-bg);border:1px solid var(--line);border-radius:20px;padding:30px;box-shadow:var(--card-shadow);margin-bottom:18px}
+.chapter-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.chapter-code{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.08em}
+.chapter h3{font-size:clamp(24px,3vw,34px);margin-top:5px}
+.chapter-intro{max-width:620px;color:var(--txt2);font-size:13px;line-height:1.7}
+.lesson-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.lesson{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:20px}
+.lesson h4{font-size:16px;margin-bottom:10px}
+.lesson p,.lesson li{color:var(--txt2);font-size:12.5px;line-height:1.72;font-weight:300}
+.lesson ul,.lesson ol{padding-left:18px;margin-top:8px}
+.lesson strong{color:var(--txt)}
+.formula{font-family:'JetBrains Mono',monospace;background:var(--tag);border:1px solid var(--line);border-radius:10px;padding:12px;margin:10px 0;color:var(--txt);font-size:11px;overflow:auto}
+.checklist{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--tag)}
+.checklist h4{font-size:13px;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em}
+.checklist ul{columns:2;column-gap:28px;padding-left:18px}
+.checklist li{color:var(--txt2);font-size:12px;line-height:1.7}
+.practice{margin-top:14px;border-left:2px solid var(--accent);padding:15px 18px;background:var(--tag);border-radius:0 12px 12px 0}
+.practice b{display:block;color:var(--accent);font-size:11px;margin-bottom:6px}
+.practice p,.practice li{font-size:12px;color:var(--txt2);line-height:1.7}
+.practice ul{padding-left:18px}
+.warning{margin-top:18px;padding:16px 18px;border:1px solid rgba(217,122,122,.25);background:rgba(217,122,122,.05);border-radius:12px;color:var(--txt2);font-size:12px;line-height:1.7}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.flow-item{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--card-bg)}
+.flow-item b{display:block;color:var(--accent);font-size:10px;margin-bottom:8px}
+.flow-item span{font-size:12px;color:var(--txt2);line-height:1.55}
+@media(max-width:1000px){.toc{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}}
+@media(max-width:820px){.lesson-grid{grid-template-columns:1fr}.chapter-head{display:block}.chapter-intro{margin-top:12px}.checklist ul{columns:1}}
+@media(max-width:560px){.toc,.flow{grid-template-columns:1fr}.chapter{padding:20px}.learning-hero{min-height:auto}}
+ .radio-note{display:flex;align-items:center;gap:8px;color:var(--txt3);font-size:11px;margin-top:12px}.radio-note::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+</style>
+<link rel="stylesheet" href="src/css/workspace.css"><link rel="stylesheet" href="src/css/learning-page.css"><link rel="alternate" hreflang="ru" href="learning.html"><link rel="alternate" hreflang="en" href="learning-en.html"><link rel="alternate" hreflang="uk" href="learning-uk.html"><link rel="alternate" hreflang="cs" href="learning-cs.html"></head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="index.html">TK <span>· Trading Journal</span></a>
+    <div class="nav-links">
+      <a href="index.html">Deník</a>
+      <a href="prop-firms-en.html">Prop společnosti</a>
+      <a href="system-en.html">Systém</a>
+      <a href="#contents">Obsah</a>
+      <a href="#workflow">Pracovní postup</a>
+      <a href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Poznámky na GitHubu</a>
+    </div>
+    <div class="nav-controls"><select id="learningLanguage" class="lang-select" aria-label="Jazyk"><option value="ru">RU</option><option value="uk">UK</option><option value="en">EN</option><option value="cs" selected>CS</option></select><button class="radio-btn" id="radioBtn" type="button"><div class="radio-dot"></div><span>Přehrát</span></button><button class="theme-tog" id="themeTog" aria-label="Theme"></button></div>
+  </div>
+</nav>
+
+<header class="learning-hero">
+  <div class="wrap">
+    <div class="learning-kicker">Vzdělávací centrum tradingu · vlastní studijní materiály</div>
+    <h1 class="learning-title">Od základů k disciplinovanému obchodování. <em>Ucelený vzdělávací systém.</em></h1>
+    <p class="learning-lead">Studijní systém založený na vlastních poznámkách, práci s grafy a obchodním deníku. Postupujte od základů přes realizaci obchodů k jejich evidenci a vyhodnocení.</p>
+    <div class="learning-meta">
+      <span class="learning-chip">8 ucelených modulů</span>
+      <span class="learning-chip">Krypto + technická analýza + SMC</span>
+      <span class="learning-chip">Řízení rizika na prvním místě</span>
+      <span class="learning-chip">Praktické kontrolní seznamy</span>
+      <span class="learning-chip">Propojení s deníkem</span>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="#contents">Začít se učit</a>
+      <a class="btn btn-ghost" href="index.html#add">Otevřít obchodní deník</a>
+    </div>
+  </div>
+</header>
+
+<main>
+<section class="sec" id="contents"><div class="wrap">
+  <div class="sec-head"><div class="sec-head-l"><span class="sec-num">00</span><h2 class="sec-title">Obsah kurzu</h2></div></div>
+  <div class="toc">
+    <a href="#m1"><b>MODUL 01</b>Základy kryptoměn a trhu</a>
+    <a href="#m2"><b>MODUL 02</b>Technická analýza</a>
+    <a href="#m3"><b>MODUL 03</b>Řízení rizika</a>
+    <a href="#m4"><b>MODUL 04</b>Fundamentální analýza</a>
+    <a href="#m5"><b>MODUL 05</b>Koncepty Smart Money</a>
+    <a href="#m6"><b>MODUL 06</b>Fibonacci a Wyckoff</a>
+    <a href="#m7"><b>MODUL 07</b>Obchodní strategie a pracovní postup</a>
+    <a href="#m8"><b>MODUL 08</b>Deník, psychologie a vyhodnocení</a>
+  </div>
+</div></section>
+
+<section class="sec" id="m1"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 01</span><h3>Základy kryptoměn a trhu</h3></div><p class="chapter-intro">Než začnete hledat vstupy, porozumějte tomu, co obchodujete. Modul vysvětluje roli bitcoinu, altcoiny, tržní cykly, strukturu trendu a psychologii davu.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Základy kryptoměn</h4><p>Kryptoaktiva jsou digitální aktiva využívající distribuovaný registr. Cenu ovlivňují likvidita, poptávka, tržní příběhy, využití, regulace, nabídka tokenů a ochota trhu podstupovat riziko.</p><ul><li><strong>Bitcoin:</strong> hlavní referenční kryptoaktivum a významné centrum likvidity.</li><li><strong>Altcoiny:</strong> ostatní kryptoaktiva, často s vyšší volatilitou a citlivostí na tržní příběhy.</li><li><strong>Stablecoiny:</strong> nástroje navržené ke sledování hodnoty fiat měny; často slouží jako kotační aktivum.</li><li><strong>Spot:</strong> nákup nebo prodej samotného aktiva.</li><li><strong>Futures:</strong> deriváty umožňující dlouhé i krátké pozice s pákou a rizikem likvidace.</li></ul></div>
+      <div class="lesson"><h4>2. Bitcoin, altcoiny a dominance</h4><p>Bitcoin často určuje celkový rizikový režim kryptotrhu. Altcoiny jej mohou při růstu likvidity překonávat, ale při zvýšené volatilitě BTC mohou výrazně zaostávat.</p><ul><li>Před obchodem s altcoinem zkontrolujte trend a volatilitu BTC.</li><li>Porovnejte sílu aktiva vůči BTC i USD/USDT.</li><li>Dominanci používejte jako kontext, nikoli přímý signál.</li><li>Pamatujte: při panice se korelace zvyšují.</li></ul></div>
+      <div class="lesson"><h4>3. Psychologie trhu a davové nadšení</h4><p>Trhy procházejí cykly strachu, nejistoty, chamtivosti a euforie. Silný příběh může dočasně převážit nad fundamenty.</p><ul><li><strong>FOMO:</strong> vstup bez plánu jen proto, že se cena pohybuje.</li><li><strong>Konfirmační zkreslení:</strong> vyhledávání pouze informací podporujících vaši pozici.</li><li><strong>Zkreslení nedávnou zkušeností:</strong> předpoklad, že poslední pohyb bude pokračovat neomezeně.</li><li><strong>Stádní chování:</strong> následování davu bez vlastní analýzy.</li></ul></div>
+      <div class="lesson"><h4>4. Trend a pásmo</h4><p>Nejprve určete stav trhu:</p><ul><li><strong>Rostoucí trend:</strong> vyšší maxima a vyšší minima.</li><li><strong>Klesající trend:</strong> nižší maxima a nižší minima.</li><li><strong>Pásmo:</strong> opakované pohyby mezi podporou a rezistencí.</li><li><strong>Dlouhodobý a krátkodobý pohyb:</strong> lokální pohyb může směřovat proti trendu vyššího časového rámce.</li></ul></div>
+    </div>
+    <div class="practice"><b>PROCVIČOVÁNÍ</b><ul><li>Otevřete BTCUSDT na 1D, 4H a 1H.</li><li>Na každém časovém rámci určete trend nebo pásmo.</li><li>Jednou větou popište současnou psychologii trhu.</li><li>Porovnejte strukturu BTC s jedním altcoinem.</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m2"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 02</span><h3>Technická analýza</h3></div><p class="chapter-intro">Technická analýza pomáhá uspořádat cenové informace. Nejprve struktura a úrovně, teprve potom indikátory.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Podpora, rezistence a úrovně</h4><ul><li>Podpora: oblast, kde se dříve objevoval nákupní tlak.</li><li>Rezistence: oblast, kde se dříve objevoval prodejní tlak.</li><li>Psychologické úrovně: kulatá čísla nebo široce sledované ceny.</li><li>Úroveň průrazu: předchozí hranice, kterou cena překonala.</li><li>Úroveň retestu: bývalá hranice, ke které se cena po průrazu vrátila.</li></ul><p>Úroveň je oblast zájmu, nikoli automatický vstup.</p></div>
+      <div class="lesson"><h4>2. Klasické formace</h4><ul><li>Hlava a ramena</li><li>Dvojitý vrchol</li><li>Dvojité dno</li><li>Rostoucí trojúhelník</li><li>Vlajka</li></ul><p>Formace mají větší význam u důležité úrovně, pokud je podporují struktura a chování objemu.</p></div>
+      <div class="lesson"><h4>3. Svíčkové formace</h4><ul><li>Kladivo</li><li>Oběšenec</li><li>Pohlcení</li><li>Doji</li><li>Ranní hvězda</li></ul><p>Poloha svíčky je důležitější než její název. Obratová formace uprostřed šumu má menší význam než stejná formace u klíčové úrovně.</p></div>
+      <div class="lesson"><h4>4. Klouzavý průměr (SMA 30)</h4><p>SMA 30 pomáhá zobrazit krátkodobý směr a dynamickou podporu či rezistenci. Nepoužívejte ji bez dalšího kontextu.</p><ul><li>Cena nad rostoucí SMA → kontext podporující růst.</li><li>Cena pod klesající SMA → kontext podporující pokles.</li><li>Plochá SMA → možné pásmo nebo tržní šum.</li></ul></div>
+      <div class="lesson"><h4>5. RSI</h4><p>Základní orientační oblasti:</p><div class="formula">RSI &gt; 70 → kontext překoupenosti
+RSI &lt; 30 → kontext přeprodanosti</div><p>Překoupenost nezaručuje pokles a přeprodanost odraz. Silné trendy mohou udržovat extrémní hodnoty.</p></div>
+      <div class="lesson"><h4>6. MACD a divergence</h4><p>MACD pomáhá sledovat změny hybnosti a zrychlení trendu. Divergence může upozornit na slábnoucí hybnost; větší význam má ve spojení se strukturou a klíčovými úrovněmi.</p><ul><li>Vyšší maximum ceny + nižší maximum indikátoru → medvědí divergence.</li><li>Nižší minimum ceny + vyšší minimum indikátoru → býčí divergence.</li></ul></div>
+    </div>
+    <div class="checklist"><h4>Kontrolní seznam technického nastavení</h4><ul><li>Trend vyššího časového rámce je určen</li><li>Klíčová podpora a rezistence jsou označeny</li><li>Lokální struktura je jasná</li><li>Podmínka vstupu je určena</li><li>Indikátor slouží pouze jako potvrzení</li><li>Úroveň zneplatnění scénáře je určena</li><li>Poměr výnosu k riziku je přijatelný</li><li>Bezprostředně se neočekávají zásadní zprávy</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m3"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 03</span><h3>Řízení rizika</h3></div><p class="chapter-intro">Řízení rizika pomáhá zachovat účet. Dobrý setup s nekontrolovaným rizikem jej může zničit; průměrný setup s disciplinovaným rizikem lze opatrně zkoumat.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Riziko na obchod</h4><p>Studijní příklad:</p><div class="formula">Účet = 100 USD
+Riziko = 1–2 %
+Plánovaná maximální ztráta = 1–2 USD</div><p>Jde o studijní příklad, nikoli univerzální pravidlo.</p></div>
+      <div class="lesson"><h4>2. Stop loss</h4><p>Stop umístěte tam, kde přestává platit původní scénář, nikoli na náhodnou vzdálenost, která je vám příjemná.</p><ul><li>Neobchodujte bez předem určeného zneplatnění scénáře.</li><li>Neposouvejte stop dál ze strachu z realizace ztráty.</li><li>Velikost pozice musí odpovídat vzdálenosti stopu.</li></ul></div>
+      <div class="lesson"><h4>3. Riziko a výnos</h4><div class="formula">R:R = potenciální výnos / potenciální riziko</div><p>Studijní orientace: alespoň 1:2, pokud to setup umožňuje; za kvalitnějších podmínek 1:3. Vysoké R:R nemá význam, je-li cíl nereálný.</p></div>
+      <div class="lesson"><h4>4. Velikost pozice</h4><div class="formula">Velikost pozice ≈ povolené riziko v USD / vzdálenost stopu</div><p>Vždy zohledněte specifikaci kontraktu, páku a poplatky konkrétního nástroje.</p></div>
+      <div class="lesson"><h4>5. Řízení ziskových obchodů</h4><ul><li>Částečné vybírání zisku.</li><li>Posun stopu na nulový výsledek, pokud to odůvodňuje struktura.</li><li>Posouvání stopu za tržní strukturou.</li><li>Neměňte řízení obchodu impulzivně kvůli chamtivosti.</li></ul></div>
+      <div class="lesson"><h4>6. Po ztrátovém obchodu</h4><ul><li>Nesnažte se ztrátu okamžitě získat zpět.</li><li>Nezvyšujte okamžitě velikost pozice.</li><li>Oddělte špatný postup od špatného výsledku.</li><li>Zaznamenejte ztrátu do deníku.</li><li>Zjistěte, zda bylo porušeno pravidlo, nebo nevyšel setup.</li></ul></div>
+    </div>
+    <div class="warning"><strong>Důležité:</strong> páka zvětšuje zisky i ztráty. Malý pohyb ceny může zlikvidovat příliš velkou futures pozici. Páka není bezplatná kupní síla.</div>
+  </article>
+</div></section>
+
+<section class="sec" id="m4"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 04</span><h3>Fundamentální analýza</h3></div><p class="chapter-intro">Fundamenty pomáhají vysvětlit růst volatility, přesuny kapitálu i náhlé selhání technických úrovní.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Ekonomický kalendář</h4><p>Před obchodováním zkontrolujte významné události v USA: inflaci, údaje z trhu práce, rozhodnutí centrální banky a důležité projevy. Kryptotrh často reaguje na sazby, likviditu a ochotu riskovat.</p></div>
+      <div class="lesson"><h4>2. Zprávy z kryptotrhu</h4><ul><li>Rozhodnutí regulátorů</li><li>Zprávy o ETF a institucionálních tocích</li><li>Incidenty na burzách</li><li>Útoky a bezpečnostní zranitelnosti</li><li>Problémy stablecoinů</li><li>Rozsáhlé likvidace</li></ul></div>
+      <div class="lesson"><h4>3. Fundamenty projektu</h4><ul><li>Jaký problém řeší</li><li>Využití tokenu</li><li>Nabídka a harmonogram uvolňování tokenů</li><li>Vývojová aktivita</li><li>Uživatelé a rozšíření</li><li>Partnerství</li><li>Konkurenti</li><li>Likvidita</li></ul></div>
+      <div class="lesson"><h4>4. Kaskádový dopad zpráv</h4><ol><li>Objeví se nečekané zprávy nebo makrodata.</li><li>Velcí účastníci snižují nebo zvyšují riziko.</li><li>Dochází k průrazu klíčových úrovní.</li><li>Aktivují se stop příkazy.</li><li>Likvidace futures zrychlují pohyb.</li><li>Po vybrání likvidity se cena může ustálit nebo otočit.</li></ol></div>
+    </div>
+    <div class="practice"><b>KONTROLA ZPRÁV PŘED OBCHODEM</b><p>Ekonomický kalendář → zprávy z kryptotrhu → zprávy projektu → návrat ke grafu → posouzení, zda volatilita mění podmínky setupu.</p></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m5"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 05</span><h3>Koncepty Smart Money</h3></div><p class="chapter-intro">Koncepty SMC zde slouží k systematickému studiu likvidity, impulzních pohybů a struktury trhu. Nejsou zaručenými stopami institucionálních účastníků.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. POI — oblast zájmu</h4><p>POI je cenová oblast s dřívější výraznou reakcí nebo silným impulzem. Jde o místo ke sledování, nikoli ke vstupu naslepo.</p></div>
+      <div class="lesson"><h4>2. Order block</h4><p>Studijní definice: svíčka nebo úzká cenová oblast spojená se silným impulzem. Význam roste, pokud pohyb naruší strukturu a vytvoří nerovnováhu.</p></div>
+      <div class="lesson"><h4>3. Likvidita</h4><ul><li>Stejná maxima a minima</li><li>Předchozí swingová maxima a minima</li><li>Zjevné body průrazu</li><li>Shluky stop příkazů u jasné struktury</li><li>Vybrání likvidity před obratem nebo pokračováním</li></ul></div>
+      <div class="lesson"><h4>4. Nerovnováha</h4><p>Rychlý směrový pohyb může zanechat oblast nerovnoměrného obchodování. Cena se do ní může částečně či úplně vrátit. Nerovnováha poskytuje kontext, nikoli záruku vyplnění.</p></div>
+      <div class="lesson"><h4>5. BOS a CHOCH</h4><ul><li><strong>BOS:</strong> průraz struktury podporující pokračování pohybu.</li><li><strong>CHOCH:</strong> změna charakteru pohybu naznačující možné slábnutí předchozí struktury.</li></ul><p>Swingové body vždy určujte podle stejných pravidel.</p></div>
+      <div class="lesson"><h4>6. Nabídka a poptávka</h4><p><strong>Poptávka:</strong> oblast, ze které cena prudce vzrostla.<br><strong>Nabídka:</strong> oblast, ze které cena prudce klesla.</p><p>Pravidlo realizace: <strong>oblast → potvrzení → obchod</strong>, nikoli oblast → okamžitý vstup.</p></div>
+    </div>
+    <div class="practice"><b>PROCVIČOVÁNÍ NA GRAFU</b><ul><li>Najděte 4 order blocky.</li><li>Najděte 4 oblasti POI.</li><li>Označte 5 oblastí nahromaděné likvidity.</li><li>Najděte 5 vybrání likvidity.</li><li>Označte 5 nerovnováh.</li><li>Určete BOS/CHOCH na dvou časových rámcích.</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m6"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 06</span><h3>Fibonacci a Wyckoff</h3></div><p class="chapter-intro">Tyto nástroje pomáhají zkoumat korekce a chování v pásmu. Jde o rámce pozorování, nikoli přesné předpovědi.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Fibonacciho retracement</h4><p>Fibonacciho úrovně používejte pro hledání možných korekčních oblastí po jasném směrovém pohybu. Pomáhá jejich souběh se strukturou, likviditou či nabídkou a poptávkou.</p><ul><li>Kreslete od zřetelného swingového bodu k dalšímu.</li><li>Nepřizpůsobujte účelově kotevní body.</li><li>Hledejte souběh faktorů, nikoli jediný přesný poměr.</li><li>Počkejte na cenové potvrzení.</li></ul></div>
+      <div class="lesson"><h4>2. Wyckoffova logika</h4><p>Sledujte chování uvnitř pásma:</p><ul><li>Akumulace</li><li>Distribuce</li><li>Expanze</li><li>Opětovná akumulace nebo distribuce</li></ul><p>Sledujte neúspěšné průrazy, vybrání likvidity a přechod od rovnováhy ke směrovému pohybu.</p></div>
+      <div class="lesson"><h4>3. Úsilí a výsledek</h4><p>Jednou z Wyckoffových myšlenek je porovnání úsilí a výsledku. Velké úsilí při malém cenovém posunu může naznačovat absorpci; výrazný výsledek s čistým impulzem nerovnováhu.</p></div>
+      <div class="lesson"><h4>4. Kombinace nástrojů</h4><p>Příklad souběhu faktorů:</p><ul><li>Poptávka na vyšším časovém rámci</li><li>Vybrání likvidity</li><li>Oblast Fibonacciho korekce</li><li>CHOCH na nižším časovém rámci</li><li>Stop za úrovní zneplatnění scénáře</li></ul></div>
+    </div>
+  </article>
+</div></section>
+
+<section class="sec" id="m7"><div class="wrap">
+  <article class="chapter" id="workflow">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 07</span><h3>Obchodní strategie a pracovní postup</h3></div><p class="chapter-intro">Strategie není jediný indikátor. Je to úplný rozhodovací proces: kontext, vstupní podmínka, zneplatnění scénáře, riziko a vyhodnocení.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>01 · KONTEXT</b><span>Ekonomický kalendář, tržní zprávy, zprávy projektu, trend vyššího časového rámce.</span></div>
+      <div class="flow-item"><b>02 · STRUKTURA</b><span>Úrovně, likvidita, nabídka a poptávka, trend, BOS/CHOCH.</span></div>
+      <div class="flow-item"><b>03 · SCÉNÁŘE</b><span>Zapište podmínky pro růst i pokles dříve, než cena dorazí do oblasti.</span></div>
+      <div class="flow-item"><b>04 · RIZIKO</b><span>Vstup, stop, cíl, velikost pozice, maximální ztráta.</span></div>
+      <div class="flow-item"><b>05 · VYHODNOCENÍ</b><span>Snímek grafu, výsledek, emoce, dodržení pravidel a poučení.</span></div>
+    </div>
+    <div class="lesson-grid" style="margin-top:16px">
+      <div class="lesson"><h4>Plánování dvou scénářů</h4><p><strong>Růstový scénář:</strong> co se musí stát pro potvrzení dlouhé pozice?<br><strong>Poklesový scénář:</strong> co se musí stát pro potvrzení krátké pozice?</p><p>Nastavte upozornění a čekejte na splnění podmínek místo honění pohybu.</p></div>
+      <div class="lesson"><h4>Postup na demo účtu</h4><ol><li>Používejte demo účet.</li><li>Proveďte menší sérii plánovaných obchodů.</li><li>Zaznamenávejte každý obchod.</li><li>Před změnou strategie vyhodnoťte 20–30 obchodů.</li><li>Měňte vždy jen jednu proměnnou.</li></ol></div>
+    </div>
+    <div class="checklist"><h4>Kontrolní seznam před obchodem</h4><ul><li>Makroekonomický kalendář zkontrolován</li><li>Tržní zprávy zkontrolovány</li><li>Trend určen</li><li>Klíčová úroveň označena</li><li>Kontext likvidity je jasný</li><li>Podmínka vstupu je určena</li><li>Zneplatnění scénáře určeno</li><li>Stop a cíl nastaveny</li><li>Velikost pozice vypočtena</li><li>R:R je přijatelné</li><li>Emoce jsou stabilní</li><li>Obchod zaznamenán</li></ul></div>
+  </article>
+</div></section>
+
+<section class="sec" id="m8"><div class="wrap">
+  <article class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">MODUL 08</span><h3>Deník, psychologie a vyhodnocení</h3></div><p class="chapter-intro">Deník neslouží pouze k evidenci PnL. Má ukázat, zda se váš postup zlepšuje a které chyby se opakují.</p></div>
+    <div class="lesson-grid">
+      <div class="lesson"><h4>1. Co zaznamenávat</h4><ul><li>Datum a ticker</li><li>Dlouhá / krátká pozice</li><li>Časový rámec</li><li>Setup</li><li>Vstup, stop, cíl</li><li>Velikost pozice</li><li>Snímek grafu</li><li>Emoce</li><li>Vstupní tezi</li><li>Důvod výstupu</li><li>Poučení</li></ul></div>
+      <div class="lesson"><h4>2. Postup a výsledek</h4><p>Zařaďte každý obchod:</p><ul><li>Dobrý postup / dobrý výsledek</li><li>Dobrý postup / špatný výsledek</li><li>Špatný postup / dobrý výsledek</li><li>Špatný postup / špatný výsledek</li></ul><p>Ziskový obchod s porušením pravidel je stále chybou postupu.</p></div>
+      <div class="lesson"><h4>3. Psychologie</h4><p>Běžná emoční rizika:</p><ul><li>Chamtivost</li><li>Strach</li><li>FOMO</li><li>Netrpělivost</li><li>Přehnaná sebedůvěra</li><li>Obchodování ve snaze odčinit ztrátu</li></ul><p>Pokud jsou emoce příliš silné, správným rozhodnutím může být neobchodovat.</p></div>
+      <div class="lesson"><h4>4. Týdenní vyhodnocení</h4><ul><li>Podíl ziskových obchodů</li><li>Průměrný výsledek v R</li><li>Profit faktor</li><li>Průměrný zisk a ztráta</li><li>Nejlepší setup</li><li>Nejčastější chyba</li><li>Porušení pravidel</li><li>Emoční chyby</li><li>Snímky setupů A+</li></ul></div>
+      <div class="lesson"><h4>5. Poznámky z literatury</h4><p>Vlastní poznámky z obchodní literatury Alexandra Gerčika se zaměřují na:</p><ul><li>trend a úrovně,</li><li>obchodní systémy,</li><li>stop loss a take profit,</li><li>likviditu,</li><li>principy dlouhých a krátkých pozic,</li><li>řízení rizika a disciplínu.</li></ul><p>Hlavní myšlenka: obchodní systém tvoří <strong>setup + riziko + realizace + disciplína + vyhodnocení</strong>.</p></div>
+      <div class="lesson"><h4>6. Odpovědné používání AI</h4><p>AI může shrnout obchod, prověřit tezi a odhalit nesrovnalosti. Nepovažujte ji za zdroj zaručených signálů.</p><ul><li>AI používejte jako druhý názor.</li><li>Uchovávejte původní obchodní tezi.</li><li>Průběžně porovnávejte komentáře AI se skutečnými výsledky.</li><li>Nepřenášejte rozhodování o riziku slepě na AI.</li></ul></div>
+    </div>
+    <div class="practice"><b>ŠABLONA TÝDENNÍHO VYHODNOCENÍ</b><p>Co fungovalo? Co ne? Které pravidlo bylo porušováno nejčastěji? Který setup měl nejlepší očekávaný výsledek? Jaký emoční vzorec se opakoval? Které jedno chování příští týden změním?</p></div>
+  </article>
+</div></section>
+
+<section class="sec"><div class="wrap">
+  <div class="chapter">
+    <div class="chapter-head"><div><span class="chapter-code">ZÁVĚR</span><h3>Studijní postup</h3></div><p class="chapter-intro">Nesnažte se obchodovat všechny koncepty současně. Složitost přidávejte až po praktickém ověření, že předchozí úrovni rozumíte.</p></div>
+    <div class="flow">
+      <div class="flow-item"><b>KROK 1</b><span>Trend + úrovně</span></div>
+      <div class="flow-item"><b>KROK 2</b><span>Riziko + jeden setup</span></div>
+      <div class="flow-item"><b>KROK 3</b><span>20–30 demo obchodů</span></div>
+      <div class="flow-item"><b>KROK 4</b><span>Deník + vyhodnocení</span></div>
+      <div class="flow-item"><b>KROK 5</b><span>SMC a pokročilé nástroje přidávejte pouze tehdy, pokud pomáhají</span></div>
+    </div>
+    <div class="learning-actions">
+      <a class="btn btn-primary" href="index.html#add">Otevřít obchodní deník</a>
+      <a class="btn btn-ghost" href="https://github.com/tetiana-a/ai-trading-journal/tree/main/learning" target="_blank" rel="noopener">Otevřít původní poznámky</a>
+    </div>
+    <div class="warning"><strong>Pouze pro vzdělávání.</strong> Tato sekce obsahuje vlastní studijní poznámky a vzdělávací shrnutí. Nejde o finanční doporučení. Placené materiály cizích kurzů ani celé knihy chráněné autorským právem zde nejsou zveřejňovány.</div>
+  </div>
+</div></section>
+</main>
+
+<footer><div class="wrap foot-in"><span>Vzdělávací centrum tradingu · Tetiana Kotolup</span><a href="index.html">Zpět do deníku</a></div></footer>
+
+
+<script src="src/js/learning-page.js"></script><script src="src/js/radio-visualizer.js"></script></body></html>

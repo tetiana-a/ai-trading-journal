@@ -523,3 +523,7 @@ Coverage: all selected trades are included in calculations (up to 20,000; larger
 PNL uses broker-provided net results when available. USDT/USDC price-based results are labelled estimates assuming base-asset units. Missing lot contract/conversion information produces unknown PNL rather than invented values. Broker net PNL is in unrecorded account currency and is separated from quote-currency estimates; unrelated accounts are not totalled. Drawdown is based on known closed results only and cannot establish intraday FTMO equity compliance. No live equity feed, guaranteed profitability, order execution, or automated signals are provided.
 
 `npm test` runs existing journal tests, review UI tests and mocked server pipeline tests. These cover auth isolation, uploads, pagination, Prague date boundaries, PNL semantics, provider failures, save failures, retries and safe rendering. Live personal-account/model billing validation requires the user's configured server key and signed-in browser.
+
+### Learning hub languages
+
+Complete eight-module learning pages are available in Russian (`learning.html`), English (`learning-en.html`), Ukrainian (`learning-uk.html`) and Czech (`learning-cs.html`). The language selector preserves the current section. All four pages share compact responsive headings, theme controls and the international radio dock with play/pause, volume and localized controls. Playback starts with the dock’s play button; existing stream fallback and canvas animation are preserved.

@@ -126,7 +126,7 @@ function selectedStation() {
 function setDockStatus(text, kind = '') {
   const el = $('radioDockStatus');
   if (!el) return;
-  el.textContent = text;
+  el.textContent = window.localizeRadio ? window.localizeRadio(text) : text;
   el.dataset.kind = kind;
 }
 
@@ -174,6 +174,7 @@ function updateDock() {
 
   const slider = $('radioVolume');
   if (slider && Number(slider.value) !== volume) slider.value = String(volume);
+  window.localizeRadioControls?.();
 }
 
 function buildControls() {
@@ -325,7 +326,7 @@ window.addEventListener('resize', resizeBg);
 resizeBg();
 
 function english() { return typeof currentLang !== 'undefined' ? currentLang === 'en' : document.documentElement.lang === 'en'; }
-function message(en, ru) { return english() ? en : ru; }
+function message(en, ru) { return window.localizeRadio ? window.localizeRadio(en) : english() ? en : ru; }
 function teardownAudioContext() {
   analyser = null; source = null;
   if (audioCtx) audioCtx.close().catch(() => {}); audioCtx = null;
