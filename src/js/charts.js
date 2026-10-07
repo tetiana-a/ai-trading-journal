@@ -4,6 +4,10 @@
  */
 
 function drawEquity() {
+  if (window.PerformanceDashboard && document.getElementById("performanceDashboard")) {
+    window.PerformanceDashboard.render(trades, typeof currentLang === "string" ? currentLang : "ru");
+    return;
+  }
   const canvas = document.getElementById('equityCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');

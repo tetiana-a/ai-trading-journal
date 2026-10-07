@@ -527,3 +527,7 @@ PNL uses broker-provided net results when available. USDT/USDC price-based resul
 ### Learning hub languages
 
 Complete eight-module learning pages are available in Russian (`learning.html`), English (`learning-en.html`), Ukrainian (`learning-uk.html`) and Czech (`learning-cs.html`). The language selector preserves the current section. All four pages share compact responsive headings, theme controls and the international radio dock with play/pause, volume and localized controls. Playback starts with the dock’s play button; existing stream fallback and canvas animation are preserved.
+
+### Performance dashboard
+
+The journal home screen includes a responsive PNL/drawdown dashboard with 7/30/90-day and all-history filters, account and currency separation, six performance metrics, pointer/keyboard inspection and an accessible daily data table. It uses the currently loaded journal data and refreshes with journal changes. PNL and drawdown are aggregated at the end of each Prague calendar day using the close timestamp (trade date fallback). Open positions, unknown results and undated trades are disclosed separately. Broker net results are used without subtracting fees again; price-based crypto results are labeled estimates. Drawdown is for closed PNL only, not account equity or intraday prop compliance. Labels support RU/UK/EN/CS.

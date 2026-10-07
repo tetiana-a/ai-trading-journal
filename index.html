@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="src/css/trade-autofill.css">
 <link rel="stylesheet" href="src/css/cloud-account.css">
 <link rel="stylesheet" href="src/css/ai-review.css">
+<link rel="stylesheet" href="src/css/performance-dashboard.css">
 </head>
 <body>
 
@@ -72,13 +73,8 @@
     <h1 class="hero-title">Trading <em>Journal</em></h1>
     <p class="hero-desc" data-i18n="hero_desc">Все сделки, PNL и статистика считаются автоматически. Подключены актуальные цены с биржи Binance.</p>
       <div class="workspace-shortcuts" aria-label="Навигация рабочего пространства"><a href="#add">Новая сделка</a><a href="#trades">Журнал</a><a href="system.html#prop">Контроль риска</a><a href="system.html#chart">Рынок</a></div>
-<div class="hero-bottom">
-      <div class="hero-stats" id="heroStats"></div>
-      <div class="equity-box">
-        <div class="equity-lbl" data-i18n="equity_lbl">Кривая доходности</div>
-        <canvas id="equityCanvas"></canvas>
-      </div>
-    </div>
+<div id="heroStats" hidden></div>
+<div id="performanceDashboard" class="performance-dashboard"></div>
   </div>
 </section>
 
@@ -376,6 +372,7 @@
 <script src="src/js/ai-service.js"></script>
 <script src="src/js/screenshots.js"></script>
 <script src="src/js/export-import.js"></script>
+<script src="src/js/performance-dashboard.js"></script>
 <script src="src/js/charts.js"></script>
 <script src="src/js/calendar.js"></script>
 <script src="src/js/trades.js"></script>
@@ -386,3 +383,4 @@
 <script src="src/js/trade-autofill.js"></script>
 </body>
 </html>
+
