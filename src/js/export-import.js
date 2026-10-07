@@ -78,8 +78,8 @@ function importJSON() {
         tr.id = uid();
         tr.screenshots = tr.screenshots || [];
       });
+      if (!await saveTrades(imported)) return;
       trades = [...trades, ...imported];
-      await saveTrades();
       renderAll();
     } catch (err) {
       alert('Failed to import: ' + err.message);

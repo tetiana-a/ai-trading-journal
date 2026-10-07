@@ -1,0 +1,6 @@
+.cloud-account { position: relative; z-index: 1; margin-top: 100px; padding: 20px; border: 1px solid var(--line2); border-radius: 16px; background: var(--bg2); }
+.cloud-account p { margin: 8px 0 16px; color: var(--txt2); overflow-wrap: anywhere; }
+.cloud-account-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+.cloud-account input { min-width: 0; max-width: 100%; padding: 10px 12px; border: 1px solid var(--line2); border-radius: 8px; background: var(--bg); color: var(--txt); }
+.cloud-account button { white-space: normal; }
+@media(max-width: 600px) { .cloud-account { margin-top: 90px; } .cloud-account-actions > * { width: 100%; } }

@@ -35,18 +35,27 @@
       if (!String(src).startsWith('data:image/')) continue;
       const path = session.user.id + '/' + trade.id + '/' + i + '.jpg';
       const blob = dataUrlToBlob(src);
+      if (blob.size > 5 * 1024 * 1024) throw new Error('Фото превышает лимит 5 МБ после сжатия');
       const { error } = await client.storage.from('trade-screenshots')
         .upload(path, blob, { contentType: blob.type || 'image/jpeg', upsert: true });
-      if (!error && !paths.includes(path)) paths.push(path);
+      if (error) throw new Error('Фото не загружено: ' + error.message);
+      if (!paths.includes(path)) paths.push(path);
     }
     return paths;
   };
 
-  cloud.pullTrades = async function pullTrades() {
-    const { data, error } = await client.from('trades').select('*').order('trade_date', { ascending: false });
-    if (error) throw error;
-    const rows = data || [];
-    for (const row of rows) row.signed_screenshots = await signedUrls(row.screenshot_paths || []);
+  cloud.pullTrades = async function pullTrades({ includeScreenshots = true } = {}) {
+    const session = await cloud.session();
+    if (!session) throw new Error('Сначала войди по email');
+    const rows = [];
+    for (let start = 0; ; start += 500) {
+      const { data, error } = await client.from('trades').select('*')
+        .eq('user_id', session.user.id).order('created_at').order('id').range(start, start + 499);
+      if (error) throw error;
+      rows.push(...(data || []));
+      if (!data || data.length < 500) break;
+    }
+    if (includeScreenshots) for (const row of rows) row.signed_screenshots = await signedUrls(row.screenshot_paths || []);
     return rows;
   };
 
@@ -94,14 +103,20 @@
       });
     }
     if (!rows.length) return 0;
-    const { error } = await client.from('trades').upsert(rows, { onConflict: 'user_id,external_id' });
-    if (error) throw error;
+    if ((await cloud.session())?.user.id !== session.user.id) throw new Error('Аккаунт изменился. Повтори вход.');
+    for (let start = 0; start < rows.length; start += 200) {
+      const batch = rows.slice(start, start + 200);
+      const { data, error } = await client.from('trades').upsert(batch, { onConflict: 'user_id,external_id' }).select('external_id');
+      if (error) throw error;
+      if (data?.length !== batch.length) throw new Error('База не подтвердила сохранение всех сделок');
+    }
+    if ((await cloud.session())?.user.id !== session.user.id) throw new Error('Аккаунт изменился. Обнови журнал.');
     return rows.length;
   };
 
   cloud.deleteTrade = async function deleteTrade(externalId) {
     const session = await cloud.session();
-    if (!session) return;
+    if (!session) throw new Error('Сначала войди по email');
     const { error } = await client.from('trades')
       .delete().eq('user_id', session.user.id).eq('external_id', String(externalId));
     if (error) throw error;

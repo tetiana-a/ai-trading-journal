@@ -499,3 +499,12 @@ The Audio Deck now includes 21 stations. New channels: Indie Pop Rocks!, Undergr
 Quick fill above the trade form offers history suggestions for text and numeric inputs, a note picker, and explicit full-field copying from a selected trade. Date, direction, status, broker/account, setup, risk fields, prices, quantity, fees, reasons and notes are included; screenshots are not copied. Review the copied values before submitting. Adding still uses the existing validation and prop guard.
 
 All 24 trade fields are saved as a local draft and restored on reload. Broker, account, strategy, setup, timeframe and session carry forward after adding a trade; prices and quantities are not silently reused for a new trade. Close-trade fields share exit-price and exit-reason suggestions. Use Clear fields to replace the current draft with a blank form. Drafts and context stay in browser storage and are not synced to Supabase. Browser storage failure is shown inline.
+
+
+### Direct Supabase journal storage
+
+New trades, close actions, JSON/CSV imports and screenshot uploads now require an authenticated Supabase session. The journal commits to Supabase before changing the displayed history or clearing the form. Failed uploads or database writes remain visible as errors; the form stays available for retry. Screenshot uploads retain the private `trade-screenshots` bucket and its 5 MiB limit after compression.
+
+Use **Войти по email** in the journal, then open the email link in the same browser. **Перенести старые сделки из браузера** explicitly copies legacy local records into the signed-in account and skips IDs already in Supabase. The old browser backup is retained. New trade records and photos are no longer written to localStorage; unfinished text drafts and UI preferences remain local. Loading history reads Supabase with pagination instead of merging stale browser records. The System Hub review also reads cloud trades.
+
+Verification uses mocked authenticated storage/database responses for success, upload failure, database failure, unavailable login and local quota exhaustion; production RLS and bucket settings are checked read-only. A real personal login is required to verify end-to-end saving as the user.

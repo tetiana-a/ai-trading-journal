@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="src/css/workspace.css">
 <link rel="stylesheet" href="src/css/workspace-motion.css">
 <link rel="stylesheet" href="src/css/trade-autofill.css">
+<link rel="stylesheet" href="src/css/cloud-account.css">
 </head>
 <body>
 
@@ -50,6 +51,17 @@
     </div>
   </div>
 </nav>
+
+<section class="wrap cloud-account" aria-label="Хранение сделок">
+  <div><strong>Supabase · твой журнал</strong><p id="cloudState" role="status" aria-live="polite">Проверяю подключение…</p></div>
+  <div class="cloud-account-actions">
+    <label for="cloudEmail">Email аккаунта</label>
+    <input id="cloudEmail" type="email" autocomplete="email" required placeholder="you@example.com">
+    <button class="btn btn-primary" id="cloudLogin" type="button">Войти по email</button>
+    <button class="btn btn-ghost" id="cloudLogout" type="button" hidden>Выйти</button>
+    <button class="btn btn-ghost" id="cloudSync" type="button" disabled>Перенести старые сделки из браузера</button>
+  </div>
+</section>
 
 <!-- ===== Hero ===== -->
 <section class="hero">

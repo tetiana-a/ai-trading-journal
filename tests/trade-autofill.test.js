@@ -25,6 +25,7 @@ function create({draft,context,storedError=false,actualTrades=false,rows=[row]} 
   if(storedError)w.Storage.prototype.setItem = () => {throw new Error('Quota exceeded')};
   if(actualTrades) {
     w.STORAGE_KEYS = {TRADES:'trades'}; w.db = {set:jest.fn(async()=>{}),get:jest.fn(async()=>null)};
+    w.TradingCloud = {pushTrades:jest.fn(async()=>1)};
     w.uid = () => 'new-trade'; w.alert = jest.fn(); w.renderFormScreenshots = jest.fn();
     w.setInterval = () => 0;
     w.TradingRiskGuard = {canAddTrade:jest.fn(async()=>({ok:true}))};
@@ -100,9 +101,9 @@ test('real Add handler keeps validation and prop guard; clears draft only after 
   flush();expect(w.localStorage.getItem('tk_trade_draft_v1')).toBeNull();
 });
 
-test('a failed local save preserves the draft and does not leave a duplicate trade',async()=>{
+test('a failed cloud save preserves the draft and does not leave a duplicate trade',async()=>{
   const {w,q,fill,flush}=create({actualTrades:true});fill();flush();
-  w.db.set.mockRejectedValue(new Error('Storage full'));
+  w.TradingCloud.pushTrades.mockRejectedValue(new Error('Cloud unavailable'));
   const log=jest.spyOn(w.console,'error').mockImplementation(()=>{});
   q('btnAdd').click();await new Promise(resolve=>setImmediate(resolve));
   expect(w.getActualTrades()).toHaveLength(1);expect(q('fEntry').value).toBe('65000');

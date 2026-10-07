@@ -196,8 +196,8 @@
     const ok = confirm(`Detected ${fresh.length} new trades from ${detectBroker(file.name)}.\n\n${sample}\n\nImport them into the journal?`);
     if (!ok) return;
 
+    if (!await saveTrades(fresh)) return;
     trades = [...trades, ...fresh];
-    await saveTrades();
     renderAll();
     alert(`Imported ${fresh.length} trades. Broker-reported PNL is preserved when available.`);
   }

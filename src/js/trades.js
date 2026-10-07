@@ -9,23 +9,28 @@ let closingTradeId = null;
 
 /* ===== Persistence ===== */
 
+let tradeWriteBusy = false;
+let tradeLoadVersion = 0;
+function cloudStatus(message) {
+  const state = document.getElementById('cloudState');
+  if (state) state.textContent = message;
+}
 async function loadTrades() {
+  const version = ++tradeLoadVersion;
+  trades = [];
+  renderAll();
   try {
-    const res = await db.get(STORAGE_KEYS.TRADES);
-    trades = res ? JSON.parse(res) : [];
-  } catch (e) {
-    console.error('[trades] Failed to load trades:', e);
-    trades = [];
-  }
-  try {
-    if (window.TradingCloud) {
-      const session = await window.TradingCloud.session();
-      if (session) {
-        const remote = await window.TradingCloud.pullTrades();
-        const byId = new Map(trades.map(t => [String(t.id), t]));
+    if (!window.TradingCloud) throw new Error('Supabase недоступен. Обнови страницу.');
+    const session = await window.TradingCloud.session();
+    if (!session) {
+      cloudStatus('Войди по email, чтобы открыть и сохранять сделки в Supabase.');
+      return;
+    }
+    const remote = await window.TradingCloud.pullTrades();
+    if (version !== tradeLoadVersion) return;
+    const byId = new Map();
         remote.forEach(r => {
           const id = String(r.external_id || r.id);
-          const local = byId.get(id);
           const mapped = {
             id,
             ticker: r.ticker || '',
@@ -56,40 +61,39 @@ async function loadTrades() {
             openedAt: r.opened_at || '',
             closedAt: r.closed_at || '',
             tags: Array.isArray(r.tags) ? r.tags : [],
-            source: r.source || local?.source || 'journal',
-            screenshots: (r.signed_screenshots && r.signed_screenshots.length) ? r.signed_screenshots : (local?.screenshots || []),
-            screenshotPaths: r.screenshot_paths || local?.screenshotPaths || []
+            source: r.source || 'journal',
+            screenshots: (r.signed_screenshots && r.signed_screenshots.length) ? r.signed_screenshots : [],
+            screenshotPaths: r.screenshot_paths || []
           };
-          byId.set(id, { ...(local || {}), ...mapped });
+          byId.set(id, mapped);
         });
         trades = Array.from(byId.values());
-        await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
-      }
-    }
+    cloudStatus('Загружено из Supabase: ' + trades.length + ' сделок.');
   } catch (e) {
-    console.warn('[trades] Cloud pull skipped:', e);
+    if (version === tradeLoadVersion) cloudStatus('Не удалось загрузить сделки: ' + e.message);
   }
-  renderAll();
+  if (version === tradeLoadVersion) renderAll();
 }
 
-async function saveTrades() {
-  let locallySaved = false;
+async function saveTrades(changedTrades = trades) {
+  if (tradeWriteBusy) return false;
+  tradeWriteBusy = true;
+  cloudStatus('Сохраняю сделку и фото в Supabase…');
   try {
-    await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
-    locallySaved = true;
-    if (window.TradingCloud) {
-      const session = await window.TradingCloud.session();
-      if (session) {
-        await window.TradingCloud.pushTrades(trades);
-        await db.set(STORAGE_KEYS.TRADES, JSON.stringify(trades));
-      }
-    }
+    if (!window.TradingCloud) throw new Error('Supabase недоступен. Обнови страницу.');
+    await window.TradingCloud.pushTrades(changedTrades);
+    cloudStatus('Сделка и фото сохранены в Supabase.');
+    return true;
   } catch (e) {
-    console.error('[trades] Storage error', e);
-    alert(translations[currentLang].alert_storage_error);
+    cloudStatus('Не сохранено: ' + e.message);
+    alert('Не сохранено в Supabase: ' + e.message + '. Данные формы оставлены для повторной попытки.');
+    return false;
+  } finally {
+    tradeWriteBusy = false;
   }
-  return locallySaved;
 }
+
+document.addEventListener('journal:cloud-session', () => { loadTrades(); });
 
 /* ===== Live Price Updates ===== */
 
@@ -227,14 +231,17 @@ function renderTrades(t) {
   document.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', async () => {
       const deletedId = btn.dataset.del;
-      trades = trades.filter(tr => tr.id !== deletedId);
+      if (tradeWriteBusy) return;
+      tradeWriteBusy = true;
       try {
-        if (window.TradingCloud?.deleteTrade) await window.TradingCloud.deleteTrade(deletedId);
+        if (!window.TradingCloud?.deleteTrade) throw new Error('Supabase недоступен');
+        await window.TradingCloud.deleteTrade(deletedId);
+        trades = trades.filter(tr => tr.id !== deletedId);
+        cloudStatus('Сделка удалена из Supabase.');
+        renderAll();
       } catch (e) {
-        console.warn('[trades] Cloud delete skipped:', e);
-      }
-      await saveTrades();
-      renderAll();
+        cloudStatus('Не удалось удалить: ' + e.message);
+      } finally { tradeWriteBusy = false; }
     });
   });
 
@@ -381,6 +388,7 @@ function renderLibrary(t) {
 /* ===== Add Trade ===== */
 
 document.getElementById('btnAdd').addEventListener('click', async () => {
+  if (tradeWriteBusy) return;
   const t = translations[currentLang];
   const fields = {
     ticker: document.getElementById('fTicker').value.trim(),
@@ -435,11 +443,8 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
     closedAt:    document.getElementById('fStatus').value === 'closed' ? new Date().toISOString() : '',
     screenshots: currentScreenshots,
   };
+  if (!await saveTrades([tr])) return;
   trades.push(tr);
-  if (!await saveTrades()) {
-    trades = trades.filter(trade => trade.id !== tr.id);
-    return;
-  }
   renderAll();
 
   ['fTicker', 'fDeposit', 'fEntry', 'fExit', 'fVolume', 'fEntryReason', 'fExitReason', 'fNotes',
@@ -462,11 +467,12 @@ document.getElementById('confirmCloseBtn').addEventListener('click', async () =>
   if (!closingTradeId) return;
   const tr = trades.find(x => x.id === closingTradeId);
   if (tr) {
-    tr.status = 'closed';
-    tr.exit = document.getElementById('closeExitPrice').value;
-    tr.exitReason = document.getElementById('closeExitReason').value;
-    tr.closedAt = new Date().toISOString();
-    await saveTrades();
+    const updated = { ...tr, status: 'closed',
+      exit: document.getElementById('closeExitPrice').value,
+      exitReason: document.getElementById('closeExitReason').value,
+      closedAt: new Date().toISOString() };
+    if (!await saveTrades([updated])) return;
+    Object.assign(tr, updated);
     renderAll();
   }
   document.getElementById('closeTradeModal').classList.remove('show');

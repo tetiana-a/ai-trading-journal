@@ -188,8 +188,8 @@
     async canAddTrade() {
       try {
         const saved = JSON.parse(localStorage.getItem('tk_prop_guard') || '{}');
-        const raw = localStorage.getItem('tk_journal_trades_v2');
-        const list = raw ? JSON.parse(raw) : [];
+        const list = (await window.TradingCloud.pullTrades({ includeScreenshots: false }))
+          .map(r => ({...r, date:r.trade_date}));
         const today = new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Prague',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
         const closedToday = list.filter(x => x.date === today && x.status !== 'open');
         const dayPnl = closedToday.reduce((s,x)=>s+pnlOfTrade(x),0);
@@ -208,7 +208,7 @@
         if (lossStreak >= 2) {
           return { ok:false, reason:T('Два убытка подряд: включён STOP DAY. Новая сделка заблокирована до следующего торгового дня.','Two consecutive losses: STOP DAY is active. A new trade is blocked until the next trading day.') };
         }
-      } catch (_) {}
+      } catch (e) { return { ok:false, reason:T('Не удалось проверить риск. Проверь вход и подключение: ','Risk check unavailable. Check login and connection: ') + e.message }; }
       return { ok:true };
     }
   };
@@ -299,9 +299,10 @@
   });
 
   // ===== Free local review =====
-  $('localReviewBtn')?.addEventListener('click', () => {
-    const raw = localStorage.getItem('tk_journal_trades_v2');
-    const trades = raw ? JSON.parse(raw) : [];
+  $('localReviewBtn')?.addEventListener('click', async () => {
+    let trades;
+    try { trades = (await window.TradingCloud.pullTrades({ includeScreenshots: false })).map(r => ({...r, date:r.trade_date, entryReason:r.entry_reason, exitReason:r.exit_reason, realizedPnl:r.realized_pnl})); }
+    catch (e) { $('localReviewOutput').textContent = e.message; return; }
     const last = trades.filter(t => t.status !== 'open').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0];
     $('localReviewOutput').textContent = last ? localReview(last) : T('Нет закрытых сделок для разбора.','No closed trades to review.');
   });
