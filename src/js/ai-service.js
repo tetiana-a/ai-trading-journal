@@ -1,162 +1,62 @@
-/**
- * ai-service.js — AI trade analysis via Groq (or compatible) API.
- * Reads API credentials from localStorage; constructs a detailed prompt
- * with trade data, live price, and news context.
- */
-
-/**
- * Analyze a trade using AI.
- * @param {string} id - trade ID
- * @returns {Promise<void>}
- */
-async function analyzeTrade(id) {
-  const t = translations[currentLang];
-  const apiKey = localStorage.getItem(STORAGE_KEYS.API_KEY);
-  const apiUrl = localStorage.getItem(STORAGE_KEYS.API_URL) || 'https://api.groq.com/openai/v1/chat/completions';
-  const model  = localStorage.getItem(STORAGE_KEYS.API_MODEL) || 'llama-3.3-70b-versatile';
-
-  const tr = trades.find(x => x.id === id);
-  if (!tr) return;
-
-  if (!apiKey) {
-    const { pnl, pct } = calcPnl(tr);
-    const warnings = [];
-    if (!tr.entryReason) warnings.push('Не зафиксирована причина входа.');
-    if (tr.status !== 'open' && !tr.exitReason) warnings.push('Не зафиксирована причина выхода.');
-    if (/FOMO|Жадность|Азарт|Страх|Нетерпение|Раздражение/i.test(tr.emotion || '')) {
-      warnings.push('Эмоция могла влиять на исполнение — используй pre-trade checklist.');
-    }
-    if (Math.abs(pct) > 0.02) warnings.push('PNL относительно депозита крупный — перепроверь размер позиции и риск.');
-    if (!warnings.length) warnings.push('Критических нарушений по записи не видно; оценивай систему только по серии однотипных сделок.');
-
-    const local = [
-      'БЕСПЛАТНЫЙ ЛОКАЛЬНЫЙ АНАЛИЗ',
-      '',
-      'Сделка: ' + tr.ticker + ' · ' + tr.side,
-      'Результат: ' + fmtMoney(pnl) + ' · ' + fmtPct(pct),
-      '',
-      'Контроль процесса:',
-      ...warnings.map(x => '• ' + x),
-      '',
-      'Следующий шаг: заранее определить invalidation, Stop Loss, риск на сделку и после 20–30 однотипных сделок сравнить статистику.'
-    ].join('\n');
-
-    const aiContent = document.getElementById('aiContent');
-    document.getElementById('aiModalTitle').textContent = 'Free Analyst: ' + tr.ticker + ' (' + tr.date + ')';
-    aiContent.innerHTML = '<div style="color:var(--txt);line-height:1.65;">' + escapeHtml(local).replace(/\n/g,'<br>') + '</div>';
-    document.getElementById('aiModal').classList.add('show');
-    try {
-      if (window.TradingCloud?.saveAIReview) {
-        await window.TradingCloud.saveAIReview({ tradeId: tr.id, provider:'local-rules', model:'risk-review-v1', review:local });
-      }
-    } catch (e) { console.warn('[ai-service] local review cloud save skipped', e); }
-    return;
+/** Server-backed trade reviews; provider credentials never enter the browser. */
+(() => {
+  const $=id=>document.getElementById(id);
+  let busy=false, activeReport=null, epoch=0, offset=0;
+  const pending=new Map(), labels={trade:'Разбор сделки',history:'Анализ всей истории',weekly:'Недельный отчёт'};
+  const num=n=>n==null?'—':Number(n).toLocaleString('ru-RU',{maximumFractionDigits:2});
+  function el(tag,text,cls){const n=document.createElement(tag);if(text!=null)n.textContent=text;if(cls)n.className=cls;return n;}
+  async function invoke(body){
+    if(!window.TradingCloud||!await window.TradingCloud.session())throw new Error('Войди в журнал по email.');
+    const {data,error}=await window.TradingCloud.client.functions.invoke('journal-review',{body});
+    if(error){let message;try{message=(await error.context.json()).error;}catch{}throw new Error(message||'Сервер анализа недоступен. Проверь подключение и повтори.');}
+    if(!data||data.error)throw new Error(data?.error||'Пустой ответ сервера.');return data;
   }
-
-  if (!tr) return;
-
-  const { pnl, pct } = calcPnl(tr);
-  const aiContent = document.getElementById('aiContent');
-  const aiModalTitle = document.getElementById('aiModalTitle');
-
-  aiModalTitle.textContent = `${t.modal_ai_title}: ${tr.ticker} (${tr.date})`;
-  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_loading}</div>`;
-  document.getElementById('aiModal').classList.add('show');
-
-  const baseTicker = cleanTicker(tr.ticker);
-
-  // 1. Fetch current price
-  const currentPrice = await fetchCryptoComparePrice(baseTicker);
-  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_curr_price} ${baseTicker}: ${currentPrice}. ${t.modal_ai_gathering_news}</div>`;
-
-  // 2. Fetch news
-  const newsContext = await fetchNews(baseTicker);
-  aiContent.innerHTML = `<div class="ai-loading">${t.modal_ai_analyzing}</div>`;
-
-  // 3. Build prompt
-  const prompt = `You are a professional crypto trader and mentor with years of experience. 
-  Your task is to conduct a deep, strict, but constructive analysis of the trader's deal. 
-  Consider risk management, psychology, technical analysis, current market price, and fundamental background (based on the provided news).
-  YOU MUST WRITE YOUR RESPONSE IN ${t.lang_name} LANGUAGE.
-
-  Deal data:
-  - Ticker: ${tr.ticker}
-  - Side: ${tr.side}
-  - Status: ${tr.status}
-  - Deposit: $${tr.deposit}
-  - Entry Price: ${tr.entry}
-  - Exit Price: ${tr.exit || 'still open'}
-  - Volume: ${tr.volume}
-  - PNL: $${pnl.toFixed(2)} (${(pct * 100).toFixed(2)}%)
-  - Emotion during trade: ${tr.emotion}
-  - Entry Reason: ${tr.entryReason || 'not specified'}
-  - Exit Reason: ${tr.exitReason || 'not specified'}
-  - Trader Notes: ${tr.notes || 'none'}
-
-  CURRENT MARKET PRICE (right now): ${currentPrice}
-
-  Latest market news:
-  ${newsContext}
-
-  Write the analysis in ${t.lang_name} language in the following format (use markdown with line breaks):
-
-  1. DEAL BREAKDOWN AND CURRENT SITUATION:
-  (Evaluate risk management, entry/exit points. BE SURE to compare the entry/exit price with the CURRENT MARKET PRICE (${currentPrice}). If the trade is closed, evaluate whether it was worth holding longer or if the entry was perfect. If open, evaluate the current floating PNL and risks. IT IS STRICTLY FORBIDDEN TO WRITE THAT THE PRICE IS NOT PROVIDED. If it equals "N/A", write "Could not fetch real-time quotes", but do not ignore this point).
-
-  2. PSYCHOLOGY AND DISCIPLINE:
-  (Analyze the stated emotion. How could it have affected decision-making? Was the trader impulsive or did they stick to the plan?)
-
-  3. FUNDAMENTAL BACKGROUND (BASED ON NEWS):
-  (BE SURE to analyze the provided news. How does it correlate with the trade? If the news does not directly concern the coin, assess the general market sentiment (risk-on/risk-off) and how global events affect this asset. IT IS STRICTLY FORBIDDEN TO WRITE THAT NEWS IS UNAVAILABLE — JUST ANALYZE WHAT IS PROVIDED).
-
-  4. RECOMMENDATIONS FOR THE FUTURE:
-  (Give 3 specific, actionable tips for the trader to improve results in future trades, considering the current price and news).
-
-  Be objective, professional, and mentoring. Do not use generic phrases, be specific. Remember, output must be in ${t.lang_name} language.`;
-
-  // 4. Call AI API
-  try {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-    const res = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: 'You are a professional crypto trader and mentor.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-      }),
-      signal: controller.signal,
-    });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => null);
-      const errMsg = errData?.error?.message || 'Unknown API Error. Check model and key.';
-      throw new Error(`API Error: ${res.status} - ${errMsg}`);
+  function list(box,title,items){if(!items?.length)return;box.append(el('h4',title));const ul=el('ul');items.forEach(t=>ul.append(el('li',t)));box.append(ul);}
+  function show(report){
+    activeReport=report;$('aiModal').classList.add('show');$('reviewDownload').hidden=false;
+    const m=report.metadata||{},n=m.narrative,c=m.coverage,box=$('aiContent');box.replaceChildren();$('aiModalTitle').textContent=labels[m.scope]||'Сохранённый разбор';
+    box.append(el('p','Сохранён в Supabase · '+new Date(report.created_at).toLocaleString('ru-RU')+' · '+(report.model||report.provider),'review-note'));
+    if(m.period)box.append(el('p',m.period.start+' — '+m.period.end+' · '+m.period.timezone,'review-coverage'));
+    if(c)box.append(el('p',`Расчёты: ${c.tradesComputed} сделок. ИИ прочитал: ${c.tradeDetailsReviewed} записей (до ${c.detailTextLimit} символов на текстовое поле), фото: ${c.photosReviewed}/${c.photosAvailable}, документов: ${c.knowledgeReviewed}${c.knowledgeHasMore?' (есть ещё)':''}. Недоступных фото: ${c.photosUnavailable}.`,'review-coverage'));
+    for(const a of m.metrics?.accounts||[]){
+      const card=el('section',null,'review-account');card.append(el('h4',a.broker+' · '+a.account),el('p',a.currency+' · Валюту импортированного PNL сверь с брокером.','review-note'));
+      const grid=el('div',null,'review-metrics');
+      for(const [label,value] of [['Сделок',a.trades],['PNL известных результатов',num(a.netPnl)],['Win rate',a.winRate==null?'—':num(a.winRate*100)+'%'],['Profit factor',num(a.profitFactor)],['Средний результат',num(a.expectancy)],['Просадка закрытых сделок',num(a.closedPnlDrawdown)]]){const cell=el('div');cell.append(el('span',label),el('strong',String(value)));grid.append(cell);}
+      card.append(grid,el('p',`Открытых: ${a.open} · Неизвестный PNL: ${a.unknownPnl} · Оценок PNL: ${a.estimatedPnl} · Комиссии не указаны: ${a.feesUnknown}. Просадка не включает открытые позиции и не подтверждает соблюдение лимитов FTMO.`,'review-note'));box.append(card);
     }
-
-    const data = await res.json();
-    const analysisText = data.choices[0].message.content;
-    aiContent.innerHTML = `<div style="color:var(--txt);line-height:1.6;">${escapeHtml(analysisText).replace(/\n/g, '<br>')}</div>`;
-    try {
-      if (window.TradingCloud?.saveAIReview) {
-        await window.TradingCloud.saveAIReview({ tradeId: tr.id, provider:'groq-compatible', model, review:analysisText });
-      }
-    } catch (e) { console.warn('[ai-service] cloud save skipped', e); }
-  } catch (err) {
-    if (err.name === 'AbortError') {
-      aiContent.innerHTML = `<div style="color:var(--neg);">Request timed out. Try again.</div>`;
-    } else {
-      console.error('[ai-service]', err);
-      aiContent.innerHTML = `<div style="color:var(--neg);">Error fetching AI analysis.<br><small>${escapeHtml(err.message)}</small></div>`;
-    }
+    if(n){box.append(el('h4','Главный вывод'),el('p',n.summary,'review-summary'));list(box,'Что получается',n.strengths);
+      for(const f of n.findings||[]){const article=el('article',null,'review-finding');article.append(el('h4',f.title),el('p',f.detail));
+        for(const id of f.trade_ids||[]){const button=el('button','Сделка '+id,'review-evidence');button.type='button';button.addEventListener('click',()=>{const t=typeof trades==='undefined'?null:trades.find(t=>String(t.id)===id);article.append(el('pre',t?JSON.stringify({ticker:t.ticker,date:t.date,side:t.side,entry:t.entry,exit:t.exit,notes:t.notes},null,2):'Сделка отсутствует в текущем журнале.','review-source'));button.disabled=true;});article.append(button);}box.append(article);
+      }list(box,'План действий',n.actions);list(box,'Ограничения анализа',n.limitations);
+    }else box.append(el('pre',report.review||'','review-source'));
   }
-}
+  async function run(scope,id){
+    if(busy)return;if(scope==='trade'&&!id){$('reviewState').textContent='Сначала выбери сделку.';return;}
+    busy=true;const token=epoch,key=scope+':'+(id||'')+':'+$('reviewPhotos').checked;
+    if(!pending.has(key))pending.set(key,crypto.randomUUID());
+    document.querySelectorAll('#reviewCenter button,[data-ai]').forEach(b=>b.disabled=true);
+    activeReport=null;$('reviewDownload').hidden=true;$('aiModalTitle').textContent=labels[scope];$('aiModal').classList.add('show');$('aiContent').replaceChildren(el('p','Загружаю сделки и фото, считаю показатели и готовлю разбор…','ai-loading'));
+    try{const data=await invoke({scope,tradeId:id,requestId:pending.get(key),includePhotos:$('reviewPhotos').checked,language:typeof currentLang==='undefined'?'ru':currentLang});if(token!==epoch)return;pending.delete(key);show(data.report);await archive();}
+    catch(e){if(token===epoch){$('aiContent').replaceChildren(el('p',e.message,'review-error'));$('reviewState').textContent='Разбор не завершён. Можно повторить той же кнопкой.';}}
+    finally{busy=false;document.querySelectorAll('#reviewCenter button,[data-ai]').forEach(b=>b.disabled=false);}
+  }
+  async function archive(more=false){
+    const token=epoch;if(!more){offset=0;$('reviewArchive').replaceChildren();$('reviewMore').hidden=true;}
+    try{if(!window.TradingCloud||!await window.TradingCloud.session())throw new Error('Войди в журнал по email.');
+      const {data,error}=await window.TradingCloud.client.from('ai_reviews').select('id,trade_id,provider,model,review,metadata,created_at').order('created_at',{ascending:false}).range(offset,offset+19);
+      if(error)throw error;if(token!==epoch)return;
+      for(const report of data||[]){const card=el('button',null,'review-archive-card');card.type='button';card.append(el('strong',labels[report.metadata?.scope]||'Разбор сделки'),el('span',new Date(report.created_at).toLocaleString('ru-RU')),el('small',(report.metadata?.narrative?.summary||report.review||'').slice(0,140)));card.addEventListener('click',()=>show(report));$('reviewArchive').append(card);}
+      offset+=(data||[]).length;$('reviewMore').hidden=(data||[]).length<20;$('reviewState').textContent=offset?'Сохранённые отчёты доступны на любом устройстве после входа.':'Сохранённых разборов пока нет.';
+    }catch(e){if(token===epoch)$('reviewState').textContent=e.message;}
+  }
+  function options(){const select=$('reviewTrade'),value=select.value;select.replaceChildren(new Option('Выбери сделку',''));if(typeof trades!=='undefined')for(const t of [...trades].reverse())select.add(new Option(`${t.date||'—'} · ${t.ticker} · ${t.side}`,t.id));select.value=value;}
+  async function connection(){const token=epoch;$('reviewConnection').textContent='Проверяю сервер…';try{const r=await invoke({action:'status'});if(token===epoch)$('reviewConnection').textContent=r.configured?'Ключ настроен · '+r.model+'. Доступ к модели проверится при создании отчёта.':'Нужен OPENAI_API_KEY в Secrets Supabase.';}catch(e){if(token===epoch)$('reviewConnection').textContent=e.message;}}
+  window.analyzeTrade=id=>run('trade',String(id));
+  $('reviewSingle').addEventListener('click',()=>run('trade',$('reviewTrade').value));$('reviewHistory').addEventListener('click',()=>run('history'));$('reviewWeekly').addEventListener('click',()=>run('weekly'));
+  $('reviewRefresh').addEventListener('click',()=>archive());$('reviewMore').addEventListener('click',()=>archive(true));
+  $('apiSettingsBtn').addEventListener('click',()=>{$('apiSettingsModal').classList.add('show');connection();});$('reviewCheck').addEventListener('click',connection);
+  $('reviewDownload').addEventListener('click',()=>{if(!activeReport)return;const url=URL.createObjectURL(new Blob([JSON.stringify(activeReport,null,2)],{type:'application/json'}));const a=el('a');a.href=url;a.download='trade-review-'+activeReport.id+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);});
+  document.addEventListener('journal:trades-updated',options);
+  document.addEventListener('journal:cloud-session',()=>{epoch++;pending.clear();activeReport=null;$('aiContent').replaceChildren();$('aiModal').classList.remove('show');archive();});
+  archive();
+})();

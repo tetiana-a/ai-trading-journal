@@ -52,9 +52,9 @@ The system keeps the workflow visible and measurable instead of turning trading 
 | 📊 **Statistics dashboard** | Win rate, profit factor, average win/loss, best trade and trading activity |
 | 📈 **Equity curve** | Visualizes account performance from closed trades |
 | 📅 **Calendar & monthly review** | See trading days, monthly PnL and monthly win rate |
-| 🤖 **AI-assisted review** | Optional LLM review plus a free local rule-based process analyst |
+| 🤖 **AI-assisted review** | Server-side trade/history/weekly reviews with private photos, metrics and a saved report archive |
 | 🧠 **Knowledge Base** | Save trading rules, strategy notes, prop-firm rules and study materials in Supabase |
-| ☁️ **Cloud sync** | Optional Supabase Auth + Postgres sync for trades and private screenshots |
+| ☁️ **Cloud sync** | Authenticated direct Supabase storage for trades and private screenshots |
 | 🛡️ **Prop Risk Guard** | Tracks personal daily stop, firm daily loss, max loss and target distance |
 | 🚦 **STOP DAY protection** | Blocks new journal entries after the configured stop condition / loss streak |
 | 🔔 **Price & risk alerts** | Store price alerts and risk thresholds for backend monitoring |
@@ -106,7 +106,7 @@ flowchart LR
     K --> L[Telegram Bot]
 
     A --> M[Local Analyst]
-    A -. optional .-> N[Groq / OpenAI / Claude API]
+    J --> N[Supabase Edge Function → OpenAI]
 ```
 
 ---
@@ -129,7 +129,7 @@ The system is designed to adapt to **my own prop-firm accounts, strategies, lear
 - 📱 **My Telegram Bot** — status, risk, open trades, daily PnL, review and weekly-report commands;
 - ☁️ **My Supabase** — private authenticated storage for trades, screenshots, knowledge, reviews, alerts and account metadata;
 - 🔌 **My Broker / Platform layer** — read-only-first integrations and history imports;
-- 🤖 **My AI review layer** — local rule-based review now, external LLM providers optional later;
+- 🤖 **My AI review layer** — server-side OpenAI review of trades, history and weeks; separate local rules tool in System Hub;
 - 🧰 **My codebase** — every rule, workflow and UI component can be changed as the trading process evolves.
 
 ### Official / read-only-first integrations
@@ -310,7 +310,7 @@ The local analyst checks:
 
 For deeper natural-language analysis, an external provider can be connected.
 
-The architecture is compatible with Groq/OpenAI-compatible endpoints and can be extended to other providers.
+The journal calls the authenticated `journal-review` Edge Function, which uses OpenAI with vision. Provider keys are configured in Supabase Secrets, never in browser settings.
 
 > AI review is a **decision-review tool**, not a trading-signal service.
 
@@ -508,3 +508,18 @@ New trades, close actions, JSON/CSV imports and screenshot uploads now require a
 Use **Войти по email** in the journal, then open the email link in the same browser. **Перенести старые сделки из браузера** explicitly copies legacy local records into the signed-in account and skips IDs already in Supabase. The old browser backup is retained. New trade records and photos are no longer written to localStorage; unfinished text drafts and UI preferences remain local. Loading history reads Supabase with pagination instead of merging stale browser records. The System Hub review also reads cloud trades.
 
 Verification uses mocked authenticated storage/database responses for success, upload failure, database failure, unavailable login and local quota exhaustion; production RLS and bucket settings are checked read-only. A real personal login is required to verify end-to-end saving as the user.
+
+
+### Evidence-based AI review center
+
+The journal provides **Разобрать сделку**, **Анализ всей истории**, and **Недельный отчёт**, plus a private report archive and JSON download. Reports are generated on demand, not automatically scheduled. The weekly report covers the last seven calendar days including today in Europe/Prague, using close timestamps for closed trades and opening timestamps for open trades, with trade_date as a fallback.
+
+Setup: deploy `supabase/functions/journal-review/index.ts` with `verify_jwt = true`; add `OPENAI_API_KEY` to project Secrets. Optional `JOURNAL_REVIEW_MODEL` defaults to `gpt-4.1-mini` and must support image input and JSON chat completions. ChatGPT subscriptions do not include API billing. The settings button checks server key presence; a successful generated report verifies provider access. No credentials are sent to the browser. Existing browser-stored legacy API keys are no longer read or used by the reviewer.
+
+The function validates the user with Supabase Auth, reads trades/knowledge/prop accounts with the caller's JWT and RLS, calculates statistics, retrieves owned private images, requests a structured review and inserts it into `ai_reviews`. It never uses a service-role key. A successful UI state requires the saved row. Model-generated text is rendered as plain text, and unknown trade citations are rejected. Reports store metrics, scope, coverage, image references, usage and a SHA-256 source fingerprint. Cached retries use a request ID; simultaneous requests are blocked within an Edge isolate, with a best-effort 20 successful reports/hour/user limit. This is not a globally atomic billing cap.
+
+Coverage: all selected trades are included in calculations (up to 20,000; larger requests fail explicitly). Natural-language review uses up to 80 recent trade records, 1,200 characters per note field, six photos (12 MiB total), and the 12 latest knowledge documents (2,000 characters each). The report exposes these limits and missing images; it never claims to have reviewed omitted content. All trades are paginated. Large prompts fail explicitly instead of silently dropping metrics.
+
+PNL uses broker-provided net results when available. USDT/USDC price-based results are labelled estimates assuming base-asset units. Missing lot contract/conversion information produces unknown PNL rather than invented values. Broker net PNL is in unrecorded account currency and is separated from quote-currency estimates; unrelated accounts are not totalled. Drawdown is based on known closed results only and cannot establish intraday FTMO equity compliance. No live equity feed, guaranteed profitability, order execution, or automated signals are provided.
+
+`npm test` runs existing journal tests, review UI tests and mocked server pipeline tests. These cover auth isolation, uploads, pagination, Prague date boundaries, PNL semantics, provider failures, save failures, retries and safe rendering. Live personal-account/model billing validation requires the user's configured server key and signed-in browser.

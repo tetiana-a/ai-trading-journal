@@ -194,7 +194,7 @@ function renderTrades(t) {
       <td>${escapeHtml(tr.emotion || '—')}</td>
       <td><div class="row-ss">${ssHtml}</div></td>
       <td class="row-actions">
-        <button class="row-btn ai-btn" data-ai="${tr.id}">AI</button>
+        <button class="row-btn ai-btn" data-ai="${tr.id}">Разобрать сделку</button>
         <button class="row-btn" data-close-id="${tr.id}">${t.modal_close_title}</button>
         <button class="row-btn del" data-del="${tr.id}">✕</button>
       </td>
@@ -220,7 +220,7 @@ function renderTrades(t) {
       <td>${escapeHtml(tr.emotion || '—')}</td>
       <td><div class="row-ss">${ssHtml}</div></td>
       <td class="row-actions">
-        <button class="row-btn ai-btn" data-ai="${tr.id}">AI</button>
+        <button class="row-btn ai-btn" data-ai="${tr.id}">Разобрать сделку</button>
         <button class="row-btn del" data-del="${tr.id}">✕</button>
       </td>
     `;
@@ -493,19 +493,3 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   });
 });
 
-/* ===== API Settings ===== */
-
-document.getElementById('apiSettingsBtn').addEventListener('click', () => {
-  document.getElementById('apiUrlInput').value  = localStorage.getItem(STORAGE_KEYS.API_URL)  || 'https://api.groq.com/openai/v1/chat/completions';
-  document.getElementById('apiKeyInput').value   = localStorage.getItem(STORAGE_KEYS.API_KEY)  || '';
-  document.getElementById('apiModelInput').value = localStorage.getItem(STORAGE_KEYS.API_MODEL) || 'llama-3.3-70b-versatile';
-  document.getElementById('apiSettingsModal').classList.add('show');
-});
-
-document.getElementById('saveApiBtn').addEventListener('click', () => {
-  localStorage.setItem(STORAGE_KEYS.API_URL,  document.getElementById('apiUrlInput').value);
-  localStorage.setItem(STORAGE_KEYS.API_KEY,  document.getElementById('apiKeyInput').value);
-  localStorage.setItem(STORAGE_KEYS.API_MODEL, document.getElementById('apiModelInput').value);
-  document.getElementById('apiSettingsModal').classList.remove('show');
-  alert(translations[currentLang].alert_api_saved);
-});

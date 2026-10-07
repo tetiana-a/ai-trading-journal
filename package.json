@@ -6,7 +6,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "jest --runInBand"
+    "test": "jest --runInBand && node tests/review-server.check.mjs"
   },
   "keywords": [
     "trading-journal",

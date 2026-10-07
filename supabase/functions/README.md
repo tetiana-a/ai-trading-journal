@@ -4,6 +4,7 @@ Production functions used by the personal Trading OS.
 
 | Function | Purpose | Auth |
 |---|---|---|
+| `journal-review` | Server-calculated trade/history/weekly analysis, private images, saved reviews | Supabase user JWT + Auth validation |
 | `market-data` | Normalizes public candles from Binance, Bybit, OKX and Kraken | Public / read-only |
 | `market-alerts` | Scheduled price + prop-risk checks | Internal cron key |
 | `telegram-bot` | Private Telegram command webhook | Telegram webhook secret |
@@ -39,3 +40,10 @@ Register that exact URL in the approved cTrader Open API application.
 - Dynamic OAuth access/refresh tokens are stored in the non-public `private` schema.
 - Exchange public-market adapters require no private key.
 - Trading execution is intentionally outside this repository's automation layer.
+
+### Journal AI review
+
+- `OPENAI_API_KEY`: required, server-only.
+- `JOURNAL_REVIEW_MODEL`: optional; default `gpt-4.1-mini` (vision + JSON).
+
+The implementation and tests are committed under `journal-review/`. Deploy with JWT verification enabled. Each request is scoped by the authenticated user and RLS. Settings status checks key presence, not provider billing or model availability.

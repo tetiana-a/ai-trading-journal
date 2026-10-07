@@ -15,6 +15,7 @@
 <link rel="stylesheet" href="src/css/workspace-motion.css">
 <link rel="stylesheet" href="src/css/trade-autofill.css">
 <link rel="stylesheet" href="src/css/cloud-account.css">
+<link rel="stylesheet" href="src/css/ai-review.css">
 </head>
 <body>
 
@@ -29,6 +30,7 @@
       <a href="#trades" data-i18n="nav_trades">Сделки</a>
       <a href="#calendar" data-i18n="nav_calendar">Календарь</a>
       <a href="#stats" data-i18n="nav_stats">Статистика</a>
+      <a href="#reviewCenter">ИИ-разбор</a>
       <a href="#library" data-i18n="nav_library">Скрины</a>
       <a href="#monthly" data-i18n="nav_monthly">Месяцы</a>
       <a href="learning.html">Learning</a>
@@ -157,6 +159,21 @@
       </div>
     </div>
   </div>
+</section>
+
+<section class="wrap review-panel" id="reviewCenter" aria-labelledby="reviewHeading">
+  <div class="review-heading"><div><span class="review-eyebrow">TRADE REVIEW</span><h2 id="reviewHeading">Разбор торговли</h2><p>Статистика, дисциплина и решения — на основе твоего журнала.</p></div><span class="review-chip">Supabase · private</span></div>
+  <div class="review-controls">
+    <label for="reviewTrade">Сделка<select id="reviewTrade" class="f-input"><option value="">Выбери сделку</option></select></label>
+    <button type="button" class="btn btn-primary" id="reviewSingle">Разобрать сделку</button>
+    <button type="button" class="btn btn-ghost" id="reviewHistory">Анализ всей истории</button>
+    <button type="button" class="btn btn-ghost" id="reviewWeekly">Недельный отчёт</button>
+  </div>
+  <div class="review-options"><label><input type="checkbox" id="reviewPhotos" checked> Анализировать фотографии</label><span>Неделя: последние 7 календарных дней · Прага</span></div>
+  <p class="review-note">Данные для разбора передаются OpenAI через защищённую функцию. API оплачивается отдельно. Статистика — по всем сделкам периода; ИИ изучает до 80 последних записей и 6 фото. Точное покрытие указано в отчёте.</p>
+  <div class="review-history-heading"><h3>Сохранённые разборы</h3><button class="btn btn-ghost" type="button" id="reviewRefresh">Обновить</button></div>
+  <p id="reviewState" role="status" aria-live="polite">Войди в журнал, чтобы открыть разборы.</p><div id="reviewArchive" class="review-archive"></div>
+  <button class="btn btn-ghost" type="button" id="reviewMore" hidden>Показать ещё</button>
 </section>
 
 <!-- ===== Section 02 — Trades ===== -->
@@ -324,11 +341,12 @@
 <div class="modal-overlay" id="aiModal">
   <div class="modal-box large">
     <button class="modal-close" data-close="aiModal">✕</button>
-    <h3 class="modal-title" id="aiModalTitle" data-i18n="modal_ai_title">ИИ Анализ сделки</h3>
+    <h3 class="modal-title" id="aiModalTitle">Разбор торговли</h3>
     <div id="aiContent" class="ai-content">
-      <div class="ai-loading" data-i18n="modal_ai_loading">Получаю актуальную цену и новости...</div>
+      <div class="ai-loading">Собираю данные журнала…</div>
     </div>
     <div class="modal-footer">
+      <button class="btn btn-ghost" id="reviewDownload" type="button" hidden>Скачать отчёт JSON</button>
       <button class="btn btn-ghost" data-close="aiModal" data-i18n="btn_close_modal">Закрыть окно</button>
     </div>
   </div>
@@ -337,20 +355,11 @@
 <div class="modal-overlay" id="apiSettingsModal">
   <div class="modal-box">
     <button class="modal-close" data-close="apiSettingsModal">✕</button>
-    <h3 class="modal-title" data-i18n="modal_api_title">Настройки ИИ (Бесплатно)</h3>
-    <p style="font-size:13px;color:var(--txt2);margin-bottom:16px;font-weight:300;">
-      <span data-i18n="modal_api_desc">Для работы ИИ-аналитика нужна регистрация на</span>
-      <a href="https://console.groq.com/keys" target="blank" style="color:var(--accent)">console.groq.com/keys</a>
-      <span data-i18n="modal_api_desc2">(бесплатно) и вставка ключа сюда.</span>
-    </p>
-    <div class="form-grid" style="grid-template-columns:1fr">
-      <div class="f-field"><label class="f-lbl">API URL</label><input class="f-input" id="apiUrlInput" value="https://api.groq.com/openai/v1/chat/completions"></div>
-      <div class="f-field"><label class="f-lbl" data-i18n="lbl_api_key">API Ключ</label><input class="f-input" id="apiKeyInput" type="password" placeholder="gsk_..."></div>
-      <div class="f-field"><label class="f-lbl" data-i18n="lbl_api_model">Модель</label><input class="f-input" id="apiModelInput" value="llama-3.3-70b-versatile"></div>
-      <div class="form-actions">
-        <button class="btn btn-primary" id="saveApiBtn" data-i18n="btn_save">Сохранить</button>
-      </div>
-    </div>
+    <h3 class="modal-title">Подключение ИИ</h3>
+    <p id="reviewConnection" role="status">Проверяю подключение…</p>
+    <p class="review-note">Ключ хранится только на сервере. В Secrets Supabase добавь OPENAI_API_KEY. Модель по умолчанию: gpt-4.1-mini, с поддержкой фотографий. Подписка ChatGPT не заменяет API-аккаунт.</p>
+    <a class="btn btn-primary" href="https://supabase.com/dashboard/project/fzaawuwfpewqfkwmobpj/functions/secrets" target="_blank" rel="noopener noreferrer">Открыть Secrets Supabase</a>
+    <button class="btn btn-ghost" id="reviewCheck" type="button">Проверить подключение</button>
   </div>
 </div>
 
