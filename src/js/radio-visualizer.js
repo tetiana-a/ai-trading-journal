@@ -440,7 +440,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) { can
 window.addEventListener('pagehide',stopRadio);
 
 function animateBackground() {
-  if (!bgCanvas || !bgCtx || !visualizerEnabled) return;
+  if (!bgCanvas || !bgCtx || !visualizerEnabled || document.body.classList.contains('video-atmosphere')) return;
   if (animationId) cancelAnimationFrame(animationId);
   animationId = null;
   if (reducedMotion || document.hidden) { drawIdleBg(); return; }
@@ -589,6 +589,6 @@ window.RadioDeckBridge = {
  stop: stopRadio,
  externalPlaying(active) {
   isPlaying = !!active; isLoading = false; updateDock();
-  if(active) animateBackground(); else {cancelAnimationFrame(animationId);animationId=null;drawIdleBg();}
+  cancelAnimationFrame(animationId);animationId=null;drawIdleBg();
  }
 };
