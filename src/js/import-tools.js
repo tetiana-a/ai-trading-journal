@@ -174,8 +174,8 @@
         realizedPnl: realized == null ? '' : String(realized),
         importRef,
         source: 'broker-csv',
-        openedAt: isoTimestamp(openTimeRaw),
-        closedAt: isoTimestamp(closeTimeRaw),
+        openedAt: /^MT5_Journal_/i.test(fileName) ? '' : isoTimestamp(openTimeRaw),
+        closedAt: /^MT5_Journal_/i.test(fileName) ? '' : isoTimestamp(closeTimeRaw),
         tags: ['imported'],
         screenshots: []
       });

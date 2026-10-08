@@ -531,3 +531,7 @@ Complete eight-module learning pages are available in Russian (`learning.html`),
 ### Performance dashboard
 
 The journal home screen includes a responsive PNL/drawdown dashboard with 7/30/90-day and all-history filters, account and currency separation, six performance metrics, pointer/keyboard inspection and an accessible daily data table. It uses the currently loaded journal data and refreshes with journal changes. PNL and drawdown are aggregated at the end of each Prague calendar day using the close timestamp (trade date fallback). Open positions, unknown results and undated trades are disclosed separately. Broker net results are used without subtracting fees again; price-based crypto results are labeled estimates. Drawdown is for closed PNL only, not account equity or intraday prop compliance. Labels support RU/UK/EN/CS.
+
+### MT5 Reporter (CSV preview)
+
+`mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA exports supported fully closed positions to UTF-8 CSV for the existing broker importer. It does not trade or send data over the network. Partial closures remain excluded until full closure; reversals and unsupported events are skipped. Broker-local timestamps and separate account charges require reconciliation. Compile and verify on a demo terminal before use: MetaEditor compilation and terminal execution have not been verified in this environment.
