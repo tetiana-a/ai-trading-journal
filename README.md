@@ -535,3 +535,7 @@ The journal home screen includes a responsive PNL/drawdown dashboard with 7/30/9
 ### MT5 Reporter (CSV preview)
 
 `mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA exports supported fully closed positions to UTF-8 CSV for the existing broker importer. It does not trade or send data over the network. Partial closures remain excluded until full closure; reversals and unsupported events are skipped. Broker-local timestamps and separate account charges require reconciliation. Compile and verify on a demo terminal before use: MetaEditor compilation and terminal execution have not been verified in this environment.
+
+### Workspace design system
+
+Shared semantic colors, spacing and component styles support a black/rose dark theme and warm-neutral/terracotta light theme. Theme choice persists across pages. Profit/loss use dedicated accessible colors; translucent surfaces keep text opaque. The journal puts the performance overview first and groups account controls in an expandable panel. The radio player and audio-reactive canvas retain their existing implementation.
