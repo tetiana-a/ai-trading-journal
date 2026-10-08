@@ -58,7 +58,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--nav-bg);ba
 
 /* ===== Form — soft inputs ===== */
 .form-card{border:1px solid var(--line);padding:28px;background:var(--card-bg);border-radius:16px;box-shadow:var(--card-shadow)}
-.form-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.form-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
 .f-field{display:flex;flex-direction:column;gap:5px}
 .f-field.span2{grid-column:span 2}
 .f-lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);font-weight:400}
