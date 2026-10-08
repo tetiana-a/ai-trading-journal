@@ -21,6 +21,7 @@ const bgCanvas = document.getElementById('bgCanvas');
 const bgCtx = bgCanvas?.getContext('2d');
 
 const stations = [
+  {id:"personal",name:"Atmospheric Journey",country:"MP3",genre:"Personal music",url:"assets/audio/atmospheric-journey.mp3",local:true},
   {"id":"indiepop","name":"Indie Pop Rocks!","country":"US","genre":"Indie · Rock","url":"https://ice6.somafm.com/indiepop-128-mp3","alt":"https://ice2.somafm.com/indiepop-128-mp3"},
   {"id":"u80s","name":"Underground 80s","country":"US","genre":"80s · New Wave","url":"https://ice6.somafm.com/u80s-256-mp3","alt":"https://ice2.somafm.com/u80s-256-mp3"},
   {"id":"folkfwd","name":"Folk Forward","country":"US","genre":"Folk","url":"https://ice6.somafm.com/folkfwd-128-mp3","alt":"https://ice2.somafm.com/folkfwd-128-mp3"},
@@ -109,6 +110,7 @@ function savePreference(key, value) { try { localStorage.setItem(key, String(val
 let currentStationId = readPreference('tk_radio_station','soma');
 if (!stations.some(s => s.id === currentStationId)) currentStationId = 'soma';
 
+let localTrackPosition = 0;
 let volume = Number(readPreference('tk_radio_volume','0.52'));
 if (!Number.isFinite(volume)) volume = 0.52;
 volume = Math.min(1,Math.max(0,volume));
@@ -175,7 +177,7 @@ function updateDock() {
   const slider = $('radioVolume');
   if (slider && Number(slider.value) !== volume) slider.value = String(volume);
   window.localizeRadioControls?.();
-  window.YouTubeDeck?.sync();
+  window.LocalMusicDeck?.sync();
 }
 
 function buildControls() {
@@ -237,6 +239,7 @@ function buildControls() {
 
   const select = $('radioStationSelect');
   stations.forEach(s => {
+    if(s.local)return;
     const option = document.createElement('option');
     option.value = s.id;
     option.textContent = s.country + ' · ' + s.name + ' — ' + s.genre;
@@ -334,13 +337,15 @@ function teardownAudioContext() {
 }
 function releaseAudio() {
   if (cancelAttempt) { cancelAttempt(); cancelAttempt = null; }
-  if (audioElement) { audioElement.pause(); audioElement.removeAttribute('src'); audioElement.load(); audioElement = null; }
+  if (audioElement) { if(selectedStation().local && Number.isFinite(audioElement.currentTime))localTrackPosition=audioElement.currentTime; audioElement.pause(); audioElement.removeAttribute('src'); audioElement.load(); audioElement = null; }
   teardownAudioContext();
 }
 function createAudio(useCors, url = selectedStation().url) {
   releaseAudio(); const audio = new Audio();
   if (useCors) audio.crossOrigin = 'anonymous';
   audio.preload = 'none'; audio.src = url; audio.volume = volume; audioElement = audio;
+  audio.loop=!!selectedStation().local;
+  if(audio.loop)audio.addEventListener('loadedmetadata',()=>{if(audio===audioElement&&Number.isFinite(audio.duration)&&localTrackPosition<audio.duration)audio.currentTime=localTrackPosition;},{once:true});
   return audio;
 }
 function setupAudioContext() {
@@ -370,7 +375,6 @@ function playAttempt(audio) {
   });
 }
 async function startRadio(recovery = false) {
-  window.YouTubeDeck?.useRadio();
   if (!radioBtn) return;
   stopRadio(); const token = requestId; isLoading = true; updateDock();
   setDockStatus((recovery ? message('Reconnecting · ','Восстановление · ') : message('Connecting · ','Подключение · '))+selectedStation().name,'loading');
@@ -440,7 +444,7 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) { can
 window.addEventListener('pagehide',stopRadio);
 
 function animateBackground() {
-  if (!bgCanvas || !bgCtx || !visualizerEnabled || document.body.classList.contains('video-atmosphere')) return;
+  if (!bgCanvas || !bgCtx || !visualizerEnabled) return;
   if (animationId) cancelAnimationFrame(animationId);
   animationId = null;
   if (reducedMotion || document.hidden) { drawIdleBg(); return; }
@@ -448,10 +452,12 @@ function animateBackground() {
   const freq = analyser ? new Uint8Array(analyser.frequencyBinCount) : null;
   const wave = analyser ? new Uint8Array(analyser.fftSize) : null;
 
+  let lastVisualFrame=0;
   function draw() {
     if (!isPlaying || !visualizerEnabled) return;
 
     const t = performance.now();
+    if(selectedStation().local&&t-lastVisualFrame<33){animationId=requestAnimationFrame(draw);return;}lastVisualFrame=t;
     const w = window.innerWidth;
     const h = window.innerHeight;
     bgCtx.clearRect(0,0,w,h);
@@ -481,6 +487,11 @@ function animateBackground() {
       high *= 0.45;
     }
 
+    if(selectedStation().local&&window.MusicAtmosphere){
+      window.MusicAtmosphere.render(bgCtx,w,h,t,bass,mid,high,wave);
+      document.querySelectorAll('#radioEq i').forEach((bar,i)=>{bar.style.transform='scaleY('+Math.max(.18,(freq?.[i*7]||0)/255)+')';});
+      animationId=requestAnimationFrame(draw);return;
+    }
     // Fintech grid
     bgCtx.save();
     bgCtx.globalAlpha = 0.07 + mid*0.06;
@@ -575,6 +586,7 @@ function animateBackground() {
 function drawIdleBg() {
   if (!bgCanvas || !bgCtx) return;
   bgCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  if(selectedStation().local&&visualizerEnabled)window.MusicAtmosphere?.render(bgCtx,window.innerWidth,window.innerHeight,0,0,0,0,null);
   document.querySelectorAll('#radioEq i').forEach((bar, i) => {
     bar.style.transform = 'scaleY(' + (0.18 + (i%3)*0.05) + ')';
     bar.style.opacity = '.28';
@@ -584,11 +596,11 @@ function drawIdleBg() {
 buildControls();
 drawIdleBg();
 
-// Shared transport bridge: YouTube keeps its own official player and cannot feed WebAudio.
-window.RadioDeckBridge = {
- stop: stopRadio,
- externalPlaying(active) {
-  isPlaying = !!active; isLoading = false; updateDock();
-  cancelAnimationFrame(animationId);animationId=null;drawIdleBg();
- }
+// Read-only music transport adapter; no trading data dependencies.
+window.RadioDeckBridge={
+ get state(){return {local:!!selectedStation().local,playing:isPlaying,loading:isLoading,position:audioElement?.currentTime||localTrackPosition,duration:audioElement?.duration||0};},
+ select(id){if(!stations.some(s=>s.id===id))return;stopRadio();currentStationId=id;savePreference('tk_radio_station',id);updateDock();startRadio();},
+ toggle(){if(isPlaying||isLoading)stopRadio();else startRadio();},
+ seek(value){if(selectedStation().local&&audioElement&&Number.isFinite(audioElement.duration)){audioElement.currentTime=Math.max(0,Math.min(audioElement.duration,value));localTrackPosition=audioElement.currentTime;}},
+ redraw(){if(!isPlaying)drawIdleBg();}
 };

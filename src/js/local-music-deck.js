@@ -1,0 +1,16 @@
+/* The personal MP3 shares radio transport, volume and analyser. */
+(() => {
+ const dock=document.getElementById('radioDock'),bridge=window.RadioDeckBridge;if(!dock||!bridge)return;
+ const text={ru:['Радио','Моя музыка','Пауза','Воспроизвести','Позиция трека'],uk:['Радіо','Моя музика','Пауза','Відтворити','Позиція треку'],en:['Radio','My music','Pause','Play','Track position'],cs:['Rádio','Moje hudba','Pauza','Přehrát','Pozice skladby']};
+ const words=()=>text[document.getElementById('langSelect')?.value||document.documentElement.lang]||text.en;
+ let lastStation='soma';
+ const modes=document.createElement('div');modes.className='music-source-switch';modes.setAttribute('role','group');modes.setAttribute('aria-label','Audio source');
+ ['radio','music'].forEach((name,i)=>{const b=document.createElement('button');b.type='button';b.dataset.musicSource=name;b.addEventListener('click',()=>{if((i===1)===bridge.state.local)return;if(i===1)lastStation=document.getElementById('radioStationSelect').value||'soma';bridge.select(i===1?'personal':lastStation);});modes.append(b);});dock.querySelector('.radio-dock-top').after(modes);
+ const timeline=document.createElement('label');timeline.className='music-timeline';const label=document.createElement('span'),seek=document.createElement('input'),time=document.createElement('span');seek.type='range';seek.min='0';seek.max='1';seek.step='1';seek.value='0';timeline.append(label,seek,time);dock.querySelector('.radio-volume-row').before(timeline);
+ const button=document.createElement('button');button.id='musicQuickPause';button.className='music-quick-pause';button.type='button';document.getElementById('radioBtn').after(button);button.addEventListener('click',()=>bridge.toggle());
+ seek.addEventListener('input',()=>bridge.seek(Number(seek.value)));
+ const clock=n=>{n=Number.isFinite(n)?Math.floor(n):0;return Math.floor(n/60)+':'+String(n%60).padStart(2,'0');};
+ function progress(){const s=bridge.state;timeline.hidden=!s.local;seek.disabled=!s.local||!Number.isFinite(s.duration)||s.duration<=0;seek.max=String(Number.isFinite(s.duration)&&s.duration>0?s.duration:1);if(document.activeElement!==seek)seek.value=String(s.position||0);time.textContent=clock(s.position)+' / '+clock(s.duration);}
+ function sync(){const s=bridge.state,t=words();dock.classList.toggle('personal-music',s.local);document.body.classList.toggle('personal-music-on',s.local);modes.querySelectorAll('button').forEach((b,i)=>{b.textContent=t[i];b.setAttribute('aria-pressed',String((i===1)===s.local));});button.hidden=!s.local;button.textContent=(s.playing||s.loading?'Ⅱ ':'▶ ')+(s.playing||s.loading?t[2]:t[3]);button.setAttribute('aria-label',button.textContent);label.textContent=t[4];seek.setAttribute('aria-label',t[4]);progress();}
+ window.LocalMusicDeck={sync};document.getElementById('langSelect')?.addEventListener('change',sync);const timer=setInterval(progress,1000);window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});sync();bridge.redraw();
+})();
