@@ -175,6 +175,7 @@ function updateDock() {
   const slider = $('radioVolume');
   if (slider && Number(slider.value) !== volume) slider.value = String(volume);
   window.localizeRadioControls?.();
+  window.YouTubeDeck?.sync();
 }
 
 function buildControls() {
@@ -369,6 +370,7 @@ function playAttempt(audio) {
   });
 }
 async function startRadio(recovery = false) {
+  window.YouTubeDeck?.useRadio();
   if (!radioBtn) return;
   stopRadio(); const token = requestId; isLoading = true; updateDock();
   setDockStatus((recovery ? message('Reconnecting · ','Восстановление · ') : message('Connecting · ','Подключение · '))+selectedStation().name,'loading');
@@ -581,3 +583,12 @@ function drawIdleBg() {
 
 buildControls();
 drawIdleBg();
+
+// Shared transport bridge: YouTube keeps its own official player and cannot feed WebAudio.
+window.RadioDeckBridge = {
+ stop: stopRadio,
+ externalPlaying(active) {
+  isPlaying = !!active; isLoading = false; updateDock();
+  if(active) animateBackground(); else {cancelAnimationFrame(animationId);animationId=null;drawIdleBg();}
+ }
+};
