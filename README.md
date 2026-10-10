@@ -532,9 +532,22 @@ Complete eight-module learning pages are available in Russian (`learning.html`),
 
 The journal home screen includes a responsive PNL/drawdown dashboard with 7/30/90-day and all-history filters, account and currency separation, six performance metrics, pointer/keyboard inspection and an accessible daily data table. It uses the currently loaded journal data and refreshes with journal changes. PNL and drawdown are aggregated at the end of each Prague calendar day using the close timestamp (trade date fallback). Open positions, unknown results and undated trades are disclosed separately. Broker net results are used without subtracting fees again; price-based crypto results are labeled estimates. Drawdown is for closed PNL only, not account equity or intraday prop compliance. Labels support RU/UK/EN/CS.
 
-### MT5 Reporter 1.11
+### Trade review tools
 
-`mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA writes three UTF-8 CSV files into the terminal's `MQL5/Files` folder: `MT5_Journal_<login>.csv` with open and fully closed positions (stop, target, planned risk, charges, server UTC offset), `MT5_Account_<login>.csv` with balance, equity and day-start figures, and `MT5_Quotes_<login>.csv` with bid and ask for every Market Watch symbol. It does not trade or send data over the network.
+The journal measures every closed trade in R and records how it was executed:
+
+- **R per trade** (`src/js/trade-insights.js`): broker result divided by the money at risk at entry; without broker figures, the price move divided by the stop distance. A trade without a usable stop has no R and is left out of R averages rather than guessed.
+- **Execution marks and checklist** (`src/js/trade-extras.js`): one tap for "by the plan" or the mistakes made, plus a pre-entry checklist. The lists are editable and live in `journal_settings`, so every device shows the same ones.
+- **Setup templates**: one tap fills strategy, setup, timeframe, session, entry reason and tags, in the new-trade form and in the "complete the trade" window.
+- **Unfinished queue** (`src/js/trade-notes.js`): trades without a setup or an execution mark are counted and can be completed one after another; Enter saves and moves on.
+- **Breakdowns** (`src/js/insights-panel.js`): results by weekday, entry hour, session, setup, instrument, emotion and strategy; the cost of each mistake; full against partial checklist compliance.
+- **Weekly review**: one page per Monday-to-Sunday week with the best and worst setup, the most expensive mistake and one rule for the week ahead.
+
+These need `supabase/migrations/004_trade_details_and_settings.sql`: the `trades.details` JSON column and the `journal_settings` table.
+
+### MT5 Reporter 1.20
+
+`mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA writes three UTF-8 CSV files into the terminal's `MQL5/Files` folder: `MT5_Journal_<login>.csv` with open and fully closed positions (stop, target, risk at entry, charges, server UTC offset, MAE and MFE from one-minute bars), `MT5_Account_<login>.csv` with balance, equity and day-start figures, and `MT5_Quotes_<login>.csv` with bid and ask for every Market Watch symbol. It also saves a chart picture when a position opens and closes (`MT5_Shot_<login>_<position>_open.png` / `_close.png`), which folder sync attaches to the trade. It does not trade or send data over the network.
 
 The journal reads the files in one of two ways:
 

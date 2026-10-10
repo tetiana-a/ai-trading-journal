@@ -38,7 +38,7 @@ test('open then closed is one trade: facts update, the trader\'s notes and first
 const {dom,api}=importer();const file='MT5_Journal_1514878695.csv';
 const first=api.mergeBrokerTrades([],api.parse(HEADER+'\n'+OPEN_ROW+'\n',file),{deposit:10000});
 expect(first.added).toHaveLength(1);expect(first.updated).toHaveLength(0);const stored=first.added[0];
-expect(stored.deposit).toBe('10000');expect(stored.plannedRiskPct).toBe('0.5');expect('riskMoney' in stored).toBe(false);expect('legacyRef' in stored).toBe(false);
+expect(stored.deposit).toBe('10000');expect(stored.plannedRiskPct).toBe('0.5');expect(stored.riskMoney).toBe(50);expect('mae' in stored).toBe(false);expect('legacyRef' in stored).toBe(false);
 Object.assign(stored,{emotion:'Спокойствие',setup:'EMA pullback',entryReason:'откат к EMA 20',notes:'по плану',stopLoss:'1.168'});
 const again=api.mergeBrokerTrades([stored],api.parse(HEADER+'\n'+OPEN_ROW+'\n',file),{deposit:10000});
 expect(again.added).toHaveLength(0);expect(again.updated).toHaveLength(0);expect(again.live[0].values.currentPrice).toBe(1.1705);
@@ -68,5 +68,22 @@ expect(api.isAccountFile('MT5_Account_1.csv','')).toBe(true);expect(api.isAccoun
 test('reporter 1.10 source stays read-only and writes both files atomically',()=>{
 const s=fs.readFileSync('downloads/mt5/TK_Journal_Reporter.mq5','utf8');
 expect(s).not.toMatch(/\b(OrderSend|OrderSendAsync|OrderModify|PositionClose|PositionModify|WebRequest|CTrade|SocketConnect|SendMail|SendFTP)\s*\(/);
-expect(s).toContain('#property version   "1.11"');expect(s).toContain('MT5_Quotes_');expect(s).toContain('Symbol;Bid;Ask;Digits;Group;Description;Server Time');expect(s).toContain(HEADER);expect(s).toContain('MT5_Account_');expect(s).toContain('FileMove(');expect(s).toContain('DEAL_TYPE_CREDIT');
+expect(s).toContain('#property version   "1.20"');expect(s).toContain(HEADER+';MAE;MFE"');expect(s).toContain('ChartScreenShot(');expect(s).toContain('CopyRates(');expect(s).toContain('"MT5_Shot_"');expect(s).toContain('MT5_Quotes_');expect(s).toContain('Symbol;Bid;Ask;Digits;Group;Description;Server Time');expect(s).toContain(HEADER);expect(s).toContain('MT5_Account_');expect(s).toContain('FileMove(');expect(s).toContain('DEAL_TYPE_CREDIT');
 const braces=(s.match(/\{/g)||[]).length-(s.match(/\}/g)||[]).length,parens=(s.match(/\(/g)||[]).length-(s.match(/\)/g)||[]).length;expect(braces).toBe(0);expect(parens).toBe(0);});
+
+test('reporter 1.20: risk at entry is kept once, MAE and MFE are saved only when the position has closed',()=>{
+const {dom,api}=importer();const file='MT5_Journal_1514878695.csv',H=HEADER+';MAE;MFE';
+const open=api.parse(H+'\n'+OPEN_ROW+';30.00;12.50\n',file);expect(open[0].mae).toBe(30);expect(open[0].mfe).toBe(12.5);
+const first=api.mergeBrokerTrades([],open,{deposit:10000});const stored=first.added[0];
+expect(stored.riskMoney).toBe(50);expect('mae' in stored).toBe(false);expect(first.live[0].values.mfe).toBe(12.5);
+// The floating extremes move with every tick; they must not trigger a save while the position is open.
+const moving=api.mergeBrokerTrades([stored],api.parse(H+'\n'+OPEN_ROW+';35.00;60.00\n',file),{deposit:10000});expect(moving.updated).toHaveLength(0);
+const closed=api.mergeBrokerTrades([stored],api.parse(H+'\n'+CLOSED_ROW.replace(';closed;1.16800000;',';closed;1.17000000;').replace(';50.00;',';25.00;')+';35.00;110.00\n',file),{deposit:10000});
+const done=closed.updated[0];expect(done.mae).toBe(35);expect(done.mfe).toBe(110);expect(done.riskMoney).toBe(50);
+expect(api.mergeBrokerTrades([done],api.parse(H+'\n'+CLOSED_ROW+';35.00;110.00\n',file),{deposit:10000}).updated).toHaveLength(0);
+// A file from an older reporter, without the two columns, changes nothing.
+expect(api.mergeBrokerTrades([done],api.parse(HEADER+'\n'+CLOSED_ROW+'\n',file),{deposit:10000}).updated).toHaveLength(0);
+// A trade synced before 1.20 has no stored risk: the next sync fills it in.
+const old={...done};delete old.riskMoney;delete old.mae;delete old.mfe;
+const filled=api.mergeBrokerTrades([old],api.parse(H+'\n'+CLOSED_ROW+';35.00;110.00\n',file),{deposit:10000}).updated;expect(filled).toHaveLength(1);expect(filled[0].riskMoney).toBe(50);expect(filled[0].mae).toBe(35);
+dom.window.close();});

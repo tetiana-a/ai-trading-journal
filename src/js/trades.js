@@ -35,6 +35,7 @@ async function loadTrades() {
     const byId = new Map();
         remote.forEach(r => {
           const id = String(r.external_id || r.id);
+          const details = r.details && typeof r.details === 'object' ? r.details : {};
           const mapped = {
             id,
             ticker: r.ticker || '',
@@ -67,7 +68,14 @@ async function loadTrades() {
             tags: Array.isArray(r.tags) ? r.tags : [],
             source: r.source || 'journal',
             screenshots: (r.signed_screenshots && r.signed_screenshots.length) ? r.signed_screenshots : [],
-            screenshotPaths: r.screenshot_paths || []
+            screenshotPaths: r.screenshot_paths || [],
+            marks: Array.isArray(details.marks) ? details.marks : [],
+            checklist: details.checklist && Array.isArray(details.checklist.done) ? details.checklist : null,
+            riskMoney: details.riskMoney == null ? '' : details.riskMoney,
+            mae: details.mae == null ? '' : details.mae,
+            mfe: details.mfe == null ? '' : details.mfe,
+            playbook: details.playbook || '',
+            shots: Array.isArray(details.shots) ? details.shots : []
           };
           byId.set(id, mapped);
         });
@@ -264,6 +272,7 @@ function renderTrades(t) {
       <td>${tr.volume || '—'}</td>
       <td class="pnl ${pnl >= 0 ? 'pos' : 'neg'}">${fmtMoney(pnl)}</td>
       <td class="pnl ${pct >= 0 ? 'pos' : 'neg'}">${fmtPct(pct)}</td>
+      ${insightCells(tr)}
       <td>${escapeHtml(tr.emotion || '—')}</td>
       <td><div class="row-ss">${ssHtml}</div></td>
       <td class="row-actions">
@@ -318,6 +327,18 @@ function renderTrades(t) {
   });
 
   updateLivePrices();
+}
+
+/* Result in R and how the trade was executed: the two cells added by the review tools. */
+function insightCells(tr) {
+  const insights = window.TradeInsights;
+  if (!insights) return '<td>—</td><td>—</td>';
+  const r = insights.rOf(tr);
+  const rCell = r === null ? '<td>—</td>' : `<td class="pnl ${r >= 0 ? 'pos' : 'neg'}">${r > 0 ? '+' : ''}${r.toFixed(2)}R</td>`;
+  const marks = Array.isArray(tr.marks) ? tr.marks : [], mistakes = marks.filter(id => id !== 'plan');
+  if (!marks.length) return rCell + '<td>—</td>';
+  const names = marks.map(id => window.JournalSettings?.markLabel(id) || id).join(', ');
+  return rCell + `<td title="${escapeHtml(names)}"><span class="exec-mark ${mistakes.length ? 'bad' : 'good'}">${mistakes.length ? '⚠ ' + mistakes.length : '✓'}</span></td>`;
 }
 
 function renderStats(t) {
@@ -485,6 +506,7 @@ document.getElementById('btnAdd').addEventListener('click', async () => {
     plannedRR:   document.getElementById('fPlannedRR')?.value || '',
     fees:        document.getElementById('fFees')?.value || '',
     tags:        (document.getElementById('fTags')?.value || '').split(',').map(x => x.trim()).filter(Boolean),
+    ...(window.TradeExtras?.form?.read() || {}),
     source:      'manual',
     openedAt:    document.getElementById('fStatus').value === 'open' ? new Date().toISOString() : '',
     closedAt:    document.getElementById('fStatus').value === 'closed' ? new Date().toISOString() : '',

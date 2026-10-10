@@ -1,24 +1,31 @@
 //+------------------------------------------------------------------+
-//| TK Journal Reporter 1.11                                         |
-//| Writes three CSV files for the trading journal:                  |
-//|   MT5_Journal_<login>.csv  open and fully closed positions       |
+//| TK Journal Reporter 1.20                                         |
+//| Writes files for the trading journal into MQL5\Files:            |
+//|   MT5_Journal_<login>.csv  open and fully closed positions,      |
+//|                            with risk at entry, MAE and MFE       |
 //|   MT5_Account_<login>.csv  balance, equity and day-start figures |
 //|   MT5_Quotes_<login>.csv   bid and ask of Market Watch symbols   |
-//| Read-only: sends no orders, changes nothing, makes no network    |
-//| calls. Algo Trading, DLL and WebRequest are not needed.          |
+//|   MT5_Shot_<login>_<position>_open.png / _close.png              |
+//|                            a chart picture at entry and at exit  |
+//| Read-only: sends no orders, changes no position and no account   |
+//| setting, makes no network calls. Algo Trading, DLL and           |
+//| WebRequest are not needed.                                       |
 //+------------------------------------------------------------------+
 #property strict
-#property version   "1.11"
-#property description "Read-only reporter: positions, an account snapshot and Market Watch quotes, as CSV."
+#property version   "1.20"
+#property description "Read-only reporter: positions with MAE/MFE, an account snapshot, quotes and chart pictures."
 #property description "No trade requests and no network calls."
 
 input int      RefreshSeconds = 15;                    // Rewrite the files every N seconds (minimum 5)
 input datetime HistoryFrom    = D'2020.01.01 00:00';   // Ignore positions opened before this moment
 input int      DayResetHour   = -1;                    // Trading day starts at this server hour; -1 = midnight Prague time (FTMO)
 input bool     ExportQuotes   = true;                  // Also write bid and ask of every Market Watch symbol
+input bool            ChartShots    = true;            // Save a chart picture when a position opens and when it closes
+input bool            ShotOpenChart = true;            // If the symbol has no open chart, open one for the picture and close it again
+input ENUM_TIMEFRAMES ShotTimeframe = PERIOD_M15;      // Timeframe of that temporary chart
 
-#define REPORTER_VERSION "1.11"
-#define JOURNAL_HEADER   "Ticket;Symbol;Type;Volume;Open Time;Close Time;Open Price;Close Price;Net Pnl;Account;Comment;Status;Stop Loss;Take Profit;Risk Money;Commission;Swap;Current Price;Floating Result;Server UTC Offset"
+#define REPORTER_VERSION "1.20"
+#define JOURNAL_HEADER   "Ticket;Symbol;Type;Volume;Open Time;Close Time;Open Price;Close Price;Net Pnl;Account;Comment;Status;Stop Loss;Take Profit;Risk Money;Commission;Swap;Current Price;Floating Result;Server UTC Offset;MAE;MFE"
 
 long   boundLogin   = 0;
 string boundServer  = "";
@@ -28,6 +35,28 @@ int    closedCount  = 0;
 int    skippedCount = 0;
 int    previousOpen = -1;     // open positions seen on the last cycle
 int    cycles       = 0;
+
+// MAE and MFE of a closed position never change, so they are computed once and kept.
+ulong  excursionIds[];
+double excursionMae[];
+double excursionMfe[];
+int    excursionCount = 0;
+
+// Positions open now and on the previous cycle: the difference tells when to take a chart picture.
+ulong  currentIds[];
+string currentSymbols[];
+int    currentCount = 0;
+ulong  knownIds[];
+string knownSymbols[];
+int    knownCount = -1;       // -1 until the first cycle: positions already open at start are not photographed
+
+// Chart pictures waiting to be taken.
+ulong    shotIds[];
+string   shotKinds[];
+long     shotCharts[];
+bool     shotOwn[];           // true when the reporter opened the chart itself and must close it
+datetime shotDue[];
+int      shotCount = 0;
 
 //--- text helpers ---------------------------------------------------
 string Safe(string s)
@@ -143,6 +172,152 @@ double RiskMoney(string symbol, bool isLong, double volume, double openPrice, do
    if(!ProfitAt(symbol, isLong, volume, openPrice, stop, profit))
       return 0;
    return profit < 0 ? -profit : 0;
+  }
+
+//--- MAE and MFE ----------------------------------------------------
+// Worst and best floating result of a position in account currency, from one-minute bars.
+// Approximate: the bars of the first and the last minute include prices just outside the position's life.
+// `lastPrice` is the exit price of a closed position or the current price of an open one.
+bool Excursion(string symbol, bool isLong, double volume, double openPrice, datetime opened, datetime until, double lastPrice, double &mae, double &mfe)
+  {
+   mae = 0;
+   mfe = 0;
+   datetime from = (datetime)((long)opened - ((long)opened % 60));   // include the bar the position opened in
+   MqlRates rates[];
+   int copied = CopyRates(symbol, PERIOD_M1, from, until, rates);
+   if(copied <= 0)
+      return false;   // history is still loading; the next rebuild tries again
+   double point   = SymbolInfoDouble(symbol, SYMBOL_POINT);
+   double lowest  = openPrice;
+   double highest = openPrice;
+   if(lastPrice > 0)
+     {
+      lowest  = MathMin(lowest, lastPrice);
+      highest = MathMax(highest, lastPrice);
+     }
+   for(int i = 0; i < copied; i++)
+     {
+      // Bars are built from bid prices. A short position is closed at the ask, so the bar's spread is added.
+      double shift = isLong ? 0.0 : (double)rates[i].spread * point;
+      highest = MathMax(highest, rates[i].high + shift);
+      lowest  = MathMin(lowest, rates[i].low + shift);
+     }
+   double worst = 0, best = 0;
+   if(!ProfitAt(symbol, isLong, volume, openPrice, isLong ? lowest : highest, worst))
+      return false;
+   if(!ProfitAt(symbol, isLong, volume, openPrice, isLong ? highest : lowest, best))
+      return false;
+   mae = worst < 0 ? -worst : 0;
+   mfe = best > 0 ? best : 0;
+   return true;
+  }
+
+int FindExcursion(ulong id)
+  {
+   for(int i = 0; i < excursionCount; i++)
+      if(excursionIds[i] == id)
+         return i;
+   return -1;
+  }
+
+//--- chart pictures -------------------------------------------------
+bool HasId(const ulong &list[], int count, ulong id)
+  {
+   for(int i = 0; i < count; i++)
+      if(list[i] == id)
+         return true;
+   return false;
+  }
+
+// A chart of the symbol that is already open, preferring the one the reporter runs on. -1 when there is none.
+long FindChart(string symbol)
+  {
+   if(Symbol() == symbol)
+      return ChartID();
+   long chart = ChartFirst();
+   while(chart >= 0)
+     {
+      if(ChartSymbol(chart) == symbol)
+         return chart;
+      chart = ChartNext(chart);
+     }
+   return -1;
+  }
+
+void QueueShot(ulong id, string symbol, string kind)
+  {
+   if(!ChartShots)
+      return;
+   long chart = FindChart(symbol);
+   bool own   = false;
+   if(chart < 0)
+     {
+      if(!ShotOpenChart)
+         return;
+      chart = ChartOpen(symbol, ShotTimeframe);
+      if(chart <= 0)
+         return;
+      own = true;
+     }
+   int n = shotCount + 1;
+   ArrayResize(shotIds, n);
+   ArrayResize(shotKinds, n);
+   ArrayResize(shotCharts, n);
+   ArrayResize(shotOwn, n);
+   ArrayResize(shotDue, n);
+   shotIds[shotCount]    = id;
+   shotKinds[shotCount]  = kind;
+   shotCharts[shotCount] = chart;
+   shotOwn[shotCount]    = own;
+   shotDue[shotCount]    = (datetime)((long)TimeLocal() + (own ? 3 : 0));   // a new chart needs a moment to load its bars
+   shotCount = n;
+  }
+
+void TakeShots()
+  {
+   int kept = 0;
+   for(int i = 0; i < shotCount; i++)
+     {
+      if(TimeLocal() < shotDue[i])
+        {
+         shotIds[kept]    = shotIds[i];
+         shotKinds[kept]  = shotKinds[i];
+         shotCharts[kept] = shotCharts[i];
+         shotOwn[kept]    = shotOwn[i];
+         shotDue[kept]    = shotDue[i];
+         kept++;
+         continue;
+        }
+      string file = "MT5_Shot_" + IntegerToString(boundLogin) + "_" + IntegerToString((long)shotIds[i]) + "_" + shotKinds[i] + ".png";
+      if(!ChartScreenShot(shotCharts[i], file, 1280, 720, ALIGN_RIGHT))
+         Print("Journal Reporter: chart picture not saved: ", file, ", error ", GetLastError());
+      if(shotOwn[i])
+         ChartClose(shotCharts[i]);
+     }
+   shotCount = kept;
+  }
+
+// Compare the positions open now with those of the previous cycle and photograph what opened or closed.
+void TrackPositions()
+  {
+   if(knownCount >= 0)
+     {
+      for(int i = 0; i < currentCount; i++)
+         if(!HasId(knownIds, knownCount, currentIds[i]))
+            QueueShot(currentIds[i], currentSymbols[i], "open");
+      for(int i = 0; i < knownCount; i++)
+         if(!HasId(currentIds, currentCount, knownIds[i]))
+            QueueShot(knownIds[i], knownSymbols[i], "close");
+     }
+   ArrayResize(knownIds, currentCount);
+   ArrayResize(knownSymbols, currentCount);
+   for(int i = 0; i < currentCount; i++)
+     {
+      knownIds[i]     = currentIds[i];
+      knownSymbols[i] = currentSymbols[i];
+     }
+   knownCount = currentCount;
+   TakeShots();
   }
 
 //--- files ----------------------------------------------------------
@@ -299,11 +474,33 @@ bool RebuildClosedRows()
       double openPrice = entrySum / volumeIn;
       double risk      = RiskMoney(symbol, side == "Long", volumeIn, openPrice, stop);
 
+      double mae = 0, mfe = 0;
+      bool   haveMove = false;
+      int    slot = FindExcursion(id);
+      if(slot >= 0)
+        {
+         mae = excursionMae[slot];
+         mfe = excursionMfe[slot];
+         haveMove = true;
+        }
+      else if(Excursion(symbol, side == "Long", volumeIn, openPrice, opened, closed, exitSum / volumeOut, mae, mfe))
+        {
+         ArrayResize(excursionIds, excursionCount + 1);
+         ArrayResize(excursionMae, excursionCount + 1);
+         ArrayResize(excursionMfe, excursionCount + 1);
+         excursionIds[excursionCount] = id;
+         excursionMae[excursionCount] = mae;
+         excursionMfe[excursionCount] = mfe;
+         excursionCount++;
+         haveMove = true;
+        }
+
       string row = PositionReference(id) + ";" + Safe(symbol) + ";" + side + ";" + Num(volumeIn) + ";"
                    + Stamp(opened) + ";" + Stamp(closed) + ";" + Num(openPrice) + ";" + Num(exitSum / volumeOut) + ";"
                    + Num(net) + ";" + account + ";MT5 Reporter " + REPORTER_VERSION + ": lots, server time, fully closed position;closed;"
                    + (stop > 0 ? Num(stop) : "") + ";" + (target > 0 ? Num(target) : "") + ";" + (risk > 0 ? Money(risk) : "") + ";"
-                   + Money(commission) + ";" + Money(swap) + ";;;" + offset;
+                   + Money(commission) + ";" + Money(swap) + ";;;" + offset + ";"
+                   + (haveMove ? Money(mae) : "") + ";" + (haveMove ? Money(mfe) : "");
       ArrayResize(closedRows, closedCount + 1);
       closedRows[closedCount++] = row;
      }
@@ -321,6 +518,7 @@ int BuildOpenRows(string &rows[], double &openRisk, int &withoutStop, double &fl
    withoutStop = 0;
    floating    = 0;
    ArrayResize(rows, 0);
+   currentCount = 0;
 
    int total = PositionsTotal();
    for(int i = 0; i < total; i++)
@@ -340,6 +538,12 @@ int BuildOpenRows(string &rows[], double &openRisk, int &withoutStop, double &fl
       double   profit    = PositionGetDouble(POSITION_PROFIT);
       double   swap      = PositionGetDouble(POSITION_SWAP);
       datetime opened    = (datetime)PositionGetInteger(POSITION_TIME);
+
+      ArrayResize(currentIds, currentCount + 1);
+      ArrayResize(currentSymbols, currentCount + 1);
+      currentIds[currentCount]     = id;
+      currentSymbols[currentCount] = symbol;
+      currentCount++;
 
       // Commission so far and the stop that was set at entry come from the position's own deals.
       double commission = 0, entryStop = 0, entryTarget = 0;
@@ -376,11 +580,15 @@ int BuildOpenRows(string &rows[], double &openRisk, int &withoutStop, double &fl
       double result = profit + swap + commission;
       floating += result;
 
+      double mae = 0, mfe = 0;
+      bool   haveMove = Excursion(symbol, isLong, volume, openPrice, opened, TimeTradeServer(), current, mae, mfe);
+
       string row = PositionReference(id) + ";" + Safe(symbol) + ";" + (isLong ? "Long" : "Short") + ";" + Num(volume) + ";"
                    + Stamp(opened) + ";;" + Num(openPrice) + ";;;" + account + ";MT5 Reporter " + REPORTER_VERSION + ": open position;open;"
                    + (plannedStop > 0 ? Num(plannedStop) : "") + ";" + (plannedTarget > 0 ? Num(plannedTarget) : "") + ";"
                    + (risk > 0 ? Money(risk) : "") + ";" + Money(commission) + ";" + Money(swap) + ";"
-                   + Num(current) + ";" + Money(result) + ";" + offset;
+                   + Num(current) + ";" + Money(result) + ";" + offset + ";"
+                   + (haveMove ? Money(mae) : "") + ";" + (haveMove ? Money(mfe) : "");
       ArrayResize(rows, count + 1);
       rows[count++] = row;
      }
@@ -531,6 +739,7 @@ void Export()
    double openRisk = 0, floating = 0;
    int    withoutStop = 0;
    int    openCount = BuildOpenRows(openRows, openRisk, withoutStop, floating);
+   TrackPositions();
 
    // Closed rows change only on a trade event; open rows carry live prices, so they are rewritten every cycle.
    string journalFile = "MT5_Journal_" + IntegerToString(boundLogin) + ".csv";

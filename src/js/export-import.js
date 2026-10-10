@@ -14,8 +14,18 @@ function exportJSON() {
   URL.revokeObjectURL(url);
 }
 
+/** R, risk, MAE/MFE, execution marks and checklist score, for the spreadsheet export. */
+function reviewColumns(tr) {
+  const insights = window.TradeInsights, r = insights ? insights.rOf(tr) : null;
+  const quoted = text => `"${String(text).replace(/"/g, '”“')}"`;
+  const marks = (Array.isArray(tr.marks) ? tr.marks : []).map(id => window.JournalSettings?.markLabel(id) || id).join('|');
+  const done = tr.checklist?.done?.length || 0, missed = tr.checklist?.missed?.length || 0;
+  return [r === null ? '' : r.toFixed(2), tr.riskMoney === '' || tr.riskMoney == null ? '' : tr.riskMoney, tr.mae === '' || tr.mae == null ? '' : tr.mae,
+    tr.mfe === '' || tr.mfe == null ? '' : tr.mfe, quoted(marks), done + missed ? done + '/' + (done + missed) : ''];
+}
+
 function exportCSV() {
-  const headers = ['date','ticker','side','status','broker','account','strategy','setup','timeframe','session','deposit','entry','exit','volume','stop_loss','take_profit','planned_risk_pct','planned_rr','fees','realized_pnl','emotion','entryReason','exitReason','notes','tags','pnl_usd','pnl_pct'];
+  const headers = ['date','ticker','side','status','broker','account','strategy','setup','timeframe','session','deposit','entry','exit','volume','stop_loss','take_profit','planned_risk_pct','planned_rr','fees','realized_pnl','emotion','entryReason','exitReason','notes','tags','pnl_usd','pnl_pct','r','risk_money','mae','mfe','execution','checklist'];
   const rows = trades.map(tr => {
     const { pnl, pct } = calcPnl(tr);
     return [
@@ -46,6 +56,7 @@ function exportCSV() {
       `"${(Array.isArray(tr.tags) ? tr.tags.join('|') : '').replace(/"/g, '”“')}"`,
       pnl.toFixed(2),
       (pct * 100).toFixed(2),
+      ...reviewColumns(tr),
     ].join(',');
   });
 
