@@ -68,5 +68,5 @@ expect(api.isAccountFile('MT5_Account_1.csv','')).toBe(true);expect(api.isAccoun
 test('reporter 1.10 source stays read-only and writes both files atomically',()=>{
 const s=fs.readFileSync('downloads/mt5/TK_Journal_Reporter.mq5','utf8');
 expect(s).not.toMatch(/\b(OrderSend|OrderSendAsync|OrderModify|PositionClose|PositionModify|WebRequest|CTrade|SocketConnect|SendMail|SendFTP)\s*\(/);
-expect(s).toContain('#property version   "1.10"');expect(s).toContain(HEADER);expect(s).toContain('MT5_Account_');expect(s).toContain('FileMove(');expect(s).toContain('DEAL_TYPE_CREDIT');
+expect(s).toContain('#property version   "1.11"');expect(s).toContain('MT5_Quotes_');expect(s).toContain('Symbol;Bid;Ask;Digits;Group;Description;Server Time');expect(s).toContain(HEADER);expect(s).toContain('MT5_Account_');expect(s).toContain('FileMove(');expect(s).toContain('DEAL_TYPE_CREDIT');
 const braces=(s.match(/\{/g)||[]).length-(s.match(/\}/g)||[]).length,parens=(s.match(/\(/g)||[]).length-(s.match(/\)/g)||[]).length;expect(braces).toBe(0);expect(parens).toBe(0);});

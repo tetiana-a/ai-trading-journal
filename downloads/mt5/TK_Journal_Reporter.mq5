@@ -1,21 +1,23 @@
 //+------------------------------------------------------------------+
-//| TK Journal Reporter 1.10                                         |
-//| Writes two CSV files for the trading journal:                    |
+//| TK Journal Reporter 1.11                                         |
+//| Writes three CSV files for the trading journal:                  |
 //|   MT5_Journal_<login>.csv  open and fully closed positions       |
 //|   MT5_Account_<login>.csv  balance, equity and day-start figures |
+//|   MT5_Quotes_<login>.csv   bid and ask of Market Watch symbols   |
 //| Read-only: sends no orders, changes nothing, makes no network    |
 //| calls. Algo Trading, DLL and WebRequest are not needed.          |
 //+------------------------------------------------------------------+
 #property strict
-#property version   "1.10"
-#property description "Read-only reporter: open and closed positions plus an account snapshot, as CSV."
+#property version   "1.11"
+#property description "Read-only reporter: positions, an account snapshot and Market Watch quotes, as CSV."
 #property description "No trade requests and no network calls."
 
 input int      RefreshSeconds = 15;                    // Rewrite the files every N seconds (minimum 5)
 input datetime HistoryFrom    = D'2020.01.01 00:00';   // Ignore positions opened before this moment
 input int      DayResetHour   = -1;                    // Trading day starts at this server hour; -1 = midnight Prague time (FTMO)
+input bool     ExportQuotes   = true;                  // Also write bid and ask of every Market Watch symbol
 
-#define REPORTER_VERSION "1.10"
+#define REPORTER_VERSION "1.11"
 #define JOURNAL_HEADER   "Ticket;Symbol;Type;Volume;Open Time;Close Time;Open Price;Close Price;Net Pnl;Account;Comment;Status;Stop Loss;Take Profit;Risk Money;Commission;Swap;Current Price;Floating Result;Server UTC Offset"
 
 long   boundLogin   = 0;
@@ -472,6 +474,32 @@ bool WriteAccount(int openCount, double openRisk, int withoutStop, double floati
    return WriteLines("MT5_Account_" + IntegerToString(boundLogin) + ".csv", lines, n);
   }
 
+//--- Market Watch quotes --------------------------------------------
+// One row per symbol shown in Market Watch, so the journal can list the account's instruments with live prices.
+bool WriteQuotes()
+  {
+   int total = SymbolsTotal(true);
+   string lines[];
+   ArrayResize(lines, total + 1);
+   int n = 0;
+   lines[n++] = "Symbol;Bid;Ask;Digits;Group;Description;Server Time";
+   for(int i = 0; i < total; i++)
+     {
+      string name = SymbolName(i, true);
+      MqlTick tick;
+      if(name == "" || !SymbolInfoTick(name, tick))
+         continue;
+      int    digits = (int)SymbolInfoInteger(name, SYMBOL_DIGITS);
+      string path   = SymbolInfoString(name, SYMBOL_PATH);
+      int    slash  = StringFind(path, "\\");
+      string group  = slash > 0 ? StringSubstr(path, 0, slash) : "";
+      lines[n++] = Safe(name) + ";" + DoubleToString(tick.bid, digits) + ";" + DoubleToString(tick.ask, digits) + ";"
+                   + IntegerToString(digits) + ";" + Safe(group) + ";" + Safe(SymbolInfoString(name, SYMBOL_DESCRIPTION)) + ";"
+                   + Stamp((datetime)tick.time);
+     }
+   return WriteLines("MT5_Quotes_" + IntegerToString(boundLogin) + ".csv", lines, n);
+  }
+
 //--- main cycle -----------------------------------------------------
 void Export()
   {
@@ -522,6 +550,8 @@ void Export()
 
    double dayResult = 0, initialBalance = 0;
    WriteAccount(openCount, openRisk, withoutStop, floating, dayResult, initialBalance);
+   if(ExportQuotes)
+      WriteQuotes();
 
    string dayText = Money(dayResult) + " " + AccountInfoString(ACCOUNT_CURRENCY);
    if(initialBalance > 0)

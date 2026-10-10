@@ -1,0 +1,21 @@
+/* Asset list under the ticker field. */
+.f-field.has-asset-picker{position:relative;z-index:6}
+.asset-picker{position:absolute;top:calc(100% + 6px);left:0;z-index:40;width:max(100%,420px);max-width:calc(100vw - 32px);display:flex;flex-direction:column;border:1px solid var(--line2);border-radius:14px;background:var(--surface-solid);box-shadow:0 18px 48px rgba(0,0,0,.34);overflow:hidden}
+.asset-picker[hidden]{display:none}
+.asset-tabs{display:flex;gap:6px;padding:10px;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+.asset-tab{flex:0 0 auto;min-height:32px;padding:5px 12px;border:1px solid var(--line2);border-radius:999px;background:transparent;color:var(--txt2);font:500 11px 'Outfit','Segoe UI',sans-serif;cursor:pointer;white-space:nowrap}
+.asset-tab:hover{color:var(--txt);border-color:var(--accent)}
+.asset-tab[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.asset-list{max-height:min(46vh,340px);overflow-y:auto;overscroll-behavior:contain;padding:4px}
+.asset-row{display:grid;grid-template-columns:minmax(92px,auto) 1fr auto;gap:12px;align-items:baseline;padding:9px 10px;border-radius:9px;cursor:pointer}
+.asset-row:hover{background:var(--hov)}
+.asset-row[aria-selected=true]{background:var(--tag);outline:1px solid rgba(var(--gold),.35)}
+.asset-symbol{font:500 13px 'JetBrains Mono',ui-monospace,monospace;color:var(--txt);overflow-wrap:anywhere}
+.asset-name{font-size:12px;color:var(--txt3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.asset-price{font:400 12px 'JetBrains Mono',ui-monospace,monospace;color:var(--txt);font-variant-numeric:tabular-nums;text-align:right}
+.asset-price.approx{color:var(--txt2)}
+.asset-price.approx::before{content:'≈ ';color:var(--txt3)}
+.asset-empty{margin:0;padding:18px 12px;font-size:12px;color:var(--txt2)}
+.asset-foot{margin:0;padding:9px 12px;border-top:1px solid var(--line);font-size:10.5px;line-height:1.5;color:var(--txt3)}
+.asset-tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:600px){.asset-picker{width:100%}.asset-row{grid-template-columns:minmax(84px,auto) 1fr auto;gap:8px}}

@@ -286,6 +286,19 @@
     };
   }
 
+  /** Market Watch quotes written by MT5 Reporter: one row per symbol on the account. */
+  function parseQuotes(text) {
+    const lines = String(text || '').replace(/^\uFEFF/,'').split(/\r?\n/).filter(x => x.trim());
+    if (!lines.length || !/^Symbol;Bid;Ask/i.test(lines[0])) throw new Error('Not an MT5 Reporter quotes file');
+    const symbols = new Map();
+    for (const line of lines.slice(1)) {
+      const [symbol, bid, ask, digits, group, description] = line.split(';');
+      if (!symbol) continue;
+      symbols.set(symbol.trim().toUpperCase(), { symbol: symbol.trim(), bid: Number(bid) || 0, ask: Number(ask) || 0, digits: Number.isInteger(Number(digits)) && digits !== '' ? Number(digits) : undefined, group: (group || '').trim(), description: (description || '').trim() });
+    }
+    return symbols;
+  }
+
   const isAccountFile = (name, text) => /^MT5_Account_/i.test(name || '') || /^﻿?Key;Value/.test(text || '');
 
   // Facts the broker knows better than the journal. Everything else on a trade belongs to the trader.
@@ -428,5 +441,5 @@
   document.getElementById('importBrokerCsvBtn')?.addEventListener('click', openPicker);
   document.getElementById('systemBrokerImportBtn')?.addEventListener('click', openPicker);
 
-  window.BrokerCSVImporter = { parse, parseAccount, isAccountFile, mergeBrokerTrades, applyBrokerTrades, rememberAccount, savedAccount, depositFor, sessionOf, openPicker };
+  window.BrokerCSVImporter = { parse, parseAccount, parseQuotes, isAccountFile, mergeBrokerTrades, applyBrokerTrades, rememberAccount, savedAccount, depositFor, sessionOf, openPicker };
 })();

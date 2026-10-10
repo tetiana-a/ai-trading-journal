@@ -64,7 +64,7 @@
   const lang = () => (typeof currentLang === 'string' ? currentLang : (document.documentElement.lang || 'ru').slice(0, 2));
   const words = () => WORDS[lang()] || WORDS.en;
   const money = v => Number(v).toLocaleString(lang() === 'en' ? 'en-US' : 'ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const FILE = /^MT5_(Journal|Account)_\d+\.csv$/i;   // the reporter's temporary "tmp_" files never match
+  const FILE = /^MT5_(Journal|Account|Quotes)_\d+\.csv$/i;   // the reporter's temporary "tmp_" files never match
   const INTERVAL = 15000, STALE_AFTER = 120000;
   const supported = typeof window.showDirectoryPicker === 'function';
 
@@ -102,7 +102,7 @@
     for await (const [name, entry] of folder.entries()) {
       if (entry.kind !== 'file' || !FILE.test(name)) continue;
       const file = await entry.getFile();
-      files.push({ name, file, account: /^MT5_Account_/i.test(name) });
+      files.push({ name, file, account: /^MT5_Account_/i.test(name), quotes: /^MT5_Quotes_/i.test(name) });
     }
     return files;
   }
@@ -125,6 +125,16 @@
         seen[accounts[0].name] = accounts[0].file.lastModified;
       }
 
+      // Bid and ask for every symbol in the terminal's Market Watch: the asset list and the price hint use them.
+      const quotes = files.filter(f => f.quotes).sort((a, b) => b.file.lastModified - a.file.lastModified)[0];
+      if (quotes && typeof importer.parseQuotes === 'function' && (force || seen[quotes.name] !== quotes.file.lastModified)) {
+        const symbols = importer.parseQuotes(await quotes.file.text());
+        window.MT5Quotes = { symbols, at: quotes.file.lastModified };
+        seen[quotes.name] = quotes.file.lastModified;
+        try { localStorage.setItem('tk_mt5_symbols', JSON.stringify([...symbols.values()].map(q => ({ symbol: q.symbol, group: q.group, description: q.description })))); } catch (_) {}
+        document.dispatchEvent(new Event('journal:mt5-quotes'));
+      }
+
       const outcome = { kind: 'synced', added: 0, updated: 0, open: null, at: Date.now() };
       const journalPage = typeof trades !== 'undefined' && typeof saveTrades === 'function';
       if (journalPage) {
@@ -132,7 +142,7 @@
         if (!session) { last = { kind: 'signIn' }; return; }
         if (typeof tradesLoaded === 'undefined' || !tradesLoaded) { last = { kind: 'loading' }; return; }
         let open = 0;
-        for (const item of files.filter(f => !f.account)) {
+        for (const item of files.filter(f => !f.account && !f.quotes)) {
           const changed = force || seen[item.name] !== item.file.lastModified;
           if (!changed && last.kind === 'synced') { open += last.openBy?.[item.name] || 0; (outcome.openBy ||= {})[item.name] = last.openBy?.[item.name] || 0; continue; }
           const parsed = importer.parse(await item.file.text(), item.name);
