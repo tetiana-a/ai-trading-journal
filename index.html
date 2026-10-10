@@ -17,13 +17,14 @@
 <link rel="stylesheet" href="src/css/trade-autofill.css">
 <link rel="stylesheet" href="src/css/cloud-account.css">
 <link rel="stylesheet" href="src/css/ai-review.css">
-<link rel="stylesheet" href="src/css/performance-dashboard.css?v=20261007-dashboard2">
+<link rel="stylesheet" href="src/css/performance-dashboard.css?v=20261011">
 <link rel="stylesheet" href="src/css/black-glass.css?v=20261010-radio">
 <link rel="stylesheet" href="src/css/workspace-sidebar.css?v=20261009-mobile">
 <link rel="stylesheet" href="src/css/design-system.css?v=20261008-refined">
 <link rel="stylesheet" href="src/css/local-music.css?v=20261009-mobile">
-<link rel="stylesheet" href="src/css/mt5-sync.css?v=20261010">
+<link rel="stylesheet" href="src/css/mt5-sync.css?v=20261011">
 <link rel="stylesheet" href="src/css/asset-picker.css?v=20261010">
+<link rel="stylesheet" href="src/css/trade-review.css?v=20261011">
 </head>
 <body>
 
@@ -105,6 +106,7 @@
       <div class="mt5-sync-todo" id="mt5Todo" hidden></div>
     </div>
     <div class="form-card rv">
+      <div id="playbookBar"></div>
       <div class="form-grid">
         <div class="f-field">
           <label class="f-lbl" data-i18n="lbl_ticker">Тикер</label>
@@ -155,6 +157,7 @@
             <div class="f-field"><label class="f-lbl" data-i18n="lbl_tags">Теги</label><input class="f-input" id="fTags" placeholder="A+, news-safe, pullback"></div>
           </div>
         </details>
+        <div class="f-field" style="grid-column:1/-1" id="tradeExtras"></div>
         <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_entry_reason">Причина входа</label><input class="f-input" id="fEntryReason" placeholder="Пробой уровня + объём"></div>
         <div class="f-field span2"><label class="f-lbl" data-i18n="lbl_exit_reason">Причина выхода</label><input class="f-input" id="fExitReason" placeholder="Тейк-профит по плану"></div>
         <div class="f-field" style="grid-column:1/-1"><label class="f-lbl" data-i18n="lbl_notes">Вывод / урок</label><textarea class="f-textarea" id="fNotes" placeholder="Что получилось, что улучшить в следующий раз"></textarea></div>
@@ -218,7 +221,7 @@
       <div class="tbl-wrap">
         <table class="tk-table">
           <thead><tr>
-            <th data-i18n="th_date">Дата</th><th data-i18n="th_ticker">Тикер</th><th data-i18n="th_side">Сторона</th><th data-i18n="th_deposit">Депо</th><th data-i18n="th_entry">Вход</th><th data-i18n="th_exit">Выход</th><th data-i18n="th_volume">Объём</th><th data-i18n="th_pnl_usd">PNL $</th><th data-i18n="th_pnl_pct">PNL %</th><th data-i18n="th_emotion">Эмоция</th><th data-i18n="th_screens">Скрины</th><th data-i18n="th_actions">Действия</th>
+            <th data-i18n="th_date">Дата</th><th data-i18n="th_ticker">Тикер</th><th data-i18n="th_side">Сторона</th><th data-i18n="th_deposit">Депо</th><th data-i18n="th_entry">Вход</th><th data-i18n="th_exit">Выход</th><th data-i18n="th_volume">Объём</th><th data-i18n="th_pnl_usd">PNL $</th><th data-i18n="th_pnl_pct">PNL %</th><th data-i18n="th_r">R</th><th data-i18n="th_exec">Исполнение</th><th data-i18n="th_emotion">Эмоция</th><th data-i18n="th_screens">Скрины</th><th data-i18n="th_actions">Действия</th>
           </tr></thead>
           <tbody id="closedTradesBody"></tbody>
         </table>
@@ -283,6 +286,22 @@
         </table>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- ===== Breakdowns in R, the cost of mistakes, checklist discipline ===== -->
+<section class="sec" id="insights">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">04B</span><h2 class="sec-title" id="insightsTitle">Разрезы и ошибки</h2></div><div id="insightsPeriod"></div></div>
+    <div id="insightsBody"></div>
+  </div>
+</section>
+
+<!-- ===== Weekly review ===== -->
+<section class="sec" id="weekReview">
+  <div class="wrap">
+    <div class="sec-head rv"><div class="sec-head-l"><span class="sec-num">04C</span><h2 class="sec-title" id="weekReviewTitle">Недельный разбор</h2></div></div>
+    <div id="weekReviewBody"></div>
   </div>
 </section>
 
@@ -381,30 +400,34 @@
 <!-- ===== Cloud + JS Modules ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="src/js/cloud-sync.js"></script>
-<script src="src/js/cloud-tools.js"></script>
+<script src="src/js/cloud-tools.js?v=20261011"></script>
 <script src="src/js/trade-tools.js?v=20261010"></script>
 <script src="src/js/storage.js"></script>
-<script src="src/js/i18n.js?v=20261010-quotes"></script>
+<script src="src/js/i18n.js?v=20261011"></script>
 <script src="src/js/analytics.js"></script>
+<script src="src/js/trade-insights.js?v=20261011"></script>
+<script src="src/js/journal-settings.js?v=20261011"></script>
 <script src="src/js/validation.js"></script>
 <script src="src/js/market-api.js?v=20261010-quotes"></script>
 <script src="src/js/ai-service.js?v=20261008-errors"></script>
 <script src="src/js/screenshots.js"></script>
-<script src="src/js/export-import.js"></script>
+<script src="src/js/export-import.js?v=20261011"></script>
 <script src="src/js/performance-dashboard.js?v=20261007-dashboard2"></script>
 <script src="src/js/charts.js?v=20261007-dashboard2"></script>
 <script src="src/js/calendar.js"></script>
-<script src="src/js/trades.js?v=20261010-quotes"></script>
-<script src="src/js/import-tools.js?v=20261010-quotes"></script>
+<script src="src/js/trades.js?v=20261011"></script>
+<script src="src/js/import-tools.js?v=20261011"></script>
 <script src="src/js/music-atmosphere.js?v=20261009-threads"></script>
 <script src="src/js/radio-visualizer.js?v=20261009-mp3"></script>
 <script src="src/js/app.js"></script>
 <script src="src/js/workspace-motion.js"></script>
 <script src="src/js/trade-autofill.js"></script>
 <script src="src/js/asset-picker.js?v=20261010"></script>
-<script src="src/js/trade-notes.js?v=20261010"></script>
-<script src="src/js/mt5-sync.js?v=20261010-quotes"></script>
-<script src="src/js/workspace-sidebar.js?v=20261008-risk"></script>
+<script src="src/js/trade-extras.js?v=20261011"></script>
+<script src="src/js/trade-notes.js?v=20261011"></script>
+<script src="src/js/insights-panel.js?v=20261011"></script>
+<script src="src/js/mt5-sync.js?v=20261011"></script>
+<script src="src/js/workspace-sidebar.js?v=20261011"></script>
 <script src="src/js/design-system.js?v=20261008-refined"></script>
 <script src="src/js/local-music-deck.js?v=20261009-mobile"></script>
 <script src="src/js/audio-autostart.js?v=20261009"></script>

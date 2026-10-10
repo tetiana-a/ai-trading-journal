@@ -20,7 +20,7 @@
       empty: 'В папке нет файлов MT5 Reporter. Проверьте, что выбрана MQL5 → Files и советник запущен.',
       signIn: 'Счёт прочитан. Войдите по email, чтобы сохранять сделки.',
       loading: 'Журнал ещё загружается…', failed: 'Не удалось прочитать папку: ', saveFailed: 'Сделки не сохранены: ',
-      synced: 'синхронизировано', added: 'новых', updated: 'обновлено', open: 'открыто', stale: 'советник не обновлял файлы',
+      synced: 'синхронизировано', shots: 'скриншотов', added: 'новых', updated: 'обновлено', open: 'открыто', stale: 'советник не обновлял файлы',
       balance: 'Баланс', equity: 'Эквити', today: 'Закрыто сегодня', risk: 'Риск до стопов', noStop: 'БЕЗ СТОПА',
       dailyRoom: 'До дневного лимита', maxRoom: 'До общего лимита', trades: 'Сделок сегодня', todo: 'Дополнить:'
     },
@@ -32,7 +32,7 @@
       empty: 'У папці немає файлів MT5 Reporter. Перевірте, що вибрано MQL5 → Files і радник запущено.',
       signIn: 'Рахунок прочитано. Увійдіть по email, щоб зберігати угоди.',
       loading: 'Журнал ще завантажується…', failed: 'Не вдалося прочитати папку: ', saveFailed: 'Угоди не збережено: ',
-      synced: 'синхронізовано', added: 'нових', updated: 'оновлено', open: 'відкрито', stale: 'радник не оновлював файли',
+      synced: 'синхронізовано', shots: 'скриншотів', added: 'нових', updated: 'оновлено', open: 'відкрито', stale: 'радник не оновлював файли',
       balance: 'Баланс', equity: 'Еквіті', today: 'Закрито сьогодні', risk: 'Ризик до стопів', noStop: 'БЕЗ СТОПА',
       dailyRoom: 'До денного ліміту', maxRoom: 'До загального ліміту', trades: 'Угод сьогодні', todo: 'Доповнити:'
     },
@@ -44,7 +44,7 @@
       empty: 'No MT5 Reporter files in this folder. Check that MQL5 → Files is selected and the reporter is running.',
       signIn: 'Account read. Sign in by email to save trades.',
       loading: 'The journal is still loading…', failed: 'Could not read the folder: ', saveFailed: 'Trades were not saved: ',
-      synced: 'synced', added: 'new', updated: 'updated', open: 'open', stale: 'the reporter has not updated the files',
+      synced: 'synced', shots: 'screenshots', added: 'new', updated: 'updated', open: 'open', stale: 'the reporter has not updated the files',
       balance: 'Balance', equity: 'Equity', today: 'Closed today', risk: 'Risk to stops', noStop: 'WITHOUT STOP',
       dailyRoom: 'Daily limit room', maxRoom: 'Max loss room', trades: 'Trades today', todo: 'Add notes:'
     },
@@ -56,7 +56,7 @@
       empty: 'Ve složce nejsou soubory MT5 Reporter. Zkontrolujte, že je vybrána MQL5 → Files a reportér běží.',
       signIn: 'Účet načten. Přihlaste se e-mailem, aby se obchody ukládaly.',
       loading: 'Deník se ještě načítá…', failed: 'Složku se nepodařilo přečíst: ', saveFailed: 'Obchody nebyly uloženy: ',
-      synced: 'synchronizováno', added: 'nových', updated: 'aktualizováno', open: 'otevřeno', stale: 'reportér soubory neaktualizoval',
+      synced: 'synchronizováno', shots: 'snímků', added: 'nových', updated: 'aktualizováno', open: 'otevřeno', stale: 'reportér soubory neaktualizoval',
       balance: 'Zůstatek', equity: 'Equity', today: 'Uzavřeno dnes', risk: 'Riziko ke stopům', noStop: 'BEZ STOPU',
       dailyRoom: 'Do denního limitu', maxRoom: 'Do celkového limitu', trades: 'Obchodů dnes', todo: 'Doplnit:'
     }
@@ -65,7 +65,9 @@
   const words = () => WORDS[lang()] || WORDS.en;
   const money = v => Number(v).toLocaleString(lang() === 'en' ? 'en-US' : 'ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const FILE = /^MT5_(Journal|Account|Quotes)_\d+\.csv$/i;   // the reporter's temporary "tmp_" files never match
-  const INTERVAL = 15000, STALE_AFTER = 120000;
+  // Chart pictures the reporter takes when a position opens and closes: MT5_Shot_<login>_<position>_open.png
+  const SHOT = /^MT5_Shot_(\d+)_(\d+)_(open|close)\.png$/i;
+  const INTERVAL = 15000, STALE_AFTER = 120000, MAX_SHOTS = 6;
   const supported = typeof window.showDirectoryPicker === 'function';
 
   const $ = id => document.getElementById(id);
@@ -100,11 +102,47 @@
   async function readFolder() {
     const files = [];
     for await (const [name, entry] of folder.entries()) {
-      if (entry.kind !== 'file' || !FILE.test(name)) continue;
+      if (entry.kind !== 'file') continue;
+      const shot = SHOT.exec(name);
+      if (!shot && !FILE.test(name)) continue;
       const file = await entry.getFile();
-      files.push({ name, file, account: /^MT5_Account_/i.test(name), quotes: /^MT5_Quotes_/i.test(name) });
+      if (shot) files.push({ name, file, shot: { login: shot[1], position: shot[2], kind: shot[3].toLowerCase() } });
+      else files.push({ name, file, account: /^MT5_Account_/i.test(name), quotes: /^MT5_Quotes_/i.test(name) });
     }
     return files;
+  }
+
+  /** Turn the terminal's PNG into the same kind of compact JPEG the journal stores for pasted screenshots. */
+  async function encodeShot(file) {
+    try {
+      const bitmap = await createImageBitmap(file);
+      const scale = Math.min(1, 1280 / bitmap.width);
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close?.();
+      return canvas.toDataURL('image/jpeg', 0.82);
+    } catch (_) { return ''; }
+  }
+
+  /** Attach each new chart picture to its trade, once. Returns how many were attached. */
+  async function attachShots(shots) {
+    let attached = 0;
+    for (const item of shots) {
+      if (seen[item.name] === item.file.lastModified) continue;
+      const suffix = ':' + item.shot.login + ':' + item.shot.position;
+      const trade = trades.find(t => String(t.importRef || '').startsWith('mt5:') && String(t.importRef).endsWith(suffix));
+      if (!trade) continue;   // the position has not reached the journal yet; look again on the next pass
+      const done = () => { seen[item.name] = item.file.lastModified; };
+      if ((trade.shots || []).includes(item.shot.kind) || (trade.screenshots || []).length >= MAX_SHOTS) { done(); continue; }
+      const image = await api.encodeShot(item.file);
+      if (!image) { done(); continue; }
+      const updated = { ...trade, screenshots: [...(trade.screenshots || []), image], shots: [...(trade.shots || []), item.shot.kind] };
+      if (await importer.saveQuietly([updated])) break;   // busy or offline: the file stays unread and is tried again
+      Object.assign(trade, updated);
+      done(); attached++;
+    }
+    return attached;
   }
 
   /** One pass: read what changed, apply it, and describe the outcome in `last`. */
@@ -113,7 +151,8 @@
     busy = true;
     try {
       if (!await allowed(false)) { last = { kind: 'needAccess' }; return; }
-      const files = await readFolder();
+      const everything = await readFolder();
+      const files = everything.filter(f => !f.shot), shots = everything.filter(f => f.shot);
       if (!files.length) { last = { kind: 'empty' }; return; }
 
       // The newest account file describes the account that is trading now.
@@ -158,6 +197,10 @@
           (outcome.openBy ||= {})[item.name] = done.open || 0;
         }
         outcome.open = open;
+        if (shots.length) {
+          outcome.shots = await attachShots(shots);
+          if (outcome.shots && typeof renderAll === 'function') renderAll();
+        }
       }
       outcome.staleFor = accounts.length ? Date.now() - accounts[0].file.lastModified : 0;
       last = outcome;
@@ -208,7 +251,7 @@
   function renderTodo() {
     if (!todo) return;
     const list = (typeof trades !== 'undefined' ? trades : [])
-      .filter(t => String(t.importRef || '').startsWith('mt5:') && !t.setup && !t.entryReason)
+      .filter(t => String(t.importRef || '').startsWith('mt5:') && (window.TradeInsights ? window.TradeInsights.isIncomplete(t) : !t.setup && !t.entryReason))
       .sort((a, b) => (a.status === 'open' ? 0 : 1) - (b.status === 'open' ? 0 : 1) || String(b.date).localeCompare(String(a.date)))
       .slice(0, 6);
     todo.hidden = !list.length || !window.TradeNotes;
@@ -238,6 +281,7 @@
       if (last.open != null) text += ' · ' + t.open + ': ' + last.open;
       if (last.added) text += ' · ' + t.added + ': ' + last.added;
       if (last.updated) text += ' · ' + t.updated + ': ' + last.updated;
+      if (last.shots) text += ' · ' + t.shots + ': ' + last.shots;
       if (last.staleFor > STALE_AFTER) text += ' · ' + t.stale + ' ' + Math.round(last.staleFor / 60000) + ' min';
     } else text = (t[last.kind] || t.idle) + (last.detail || '');
     if (state) { state.textContent = text; state.dataset.kind = last.kind === 'synced' ? (last.staleFor > STALE_AFTER ? 'warn' : 'live') : (last.kind === 'failed' || last.kind === 'saveFailed' ? 'error' : ''); }
@@ -283,7 +327,8 @@
   document.getElementById('langSelect')?.addEventListener('change', () => setTimeout(render, 0));
   window.addEventListener('pagehide', () => clearInterval(timer));
 
-  window.MT5Sync = { use, sync, disconnect, get status() { return last; } };
+  const api = { use, sync, disconnect, encodeShot, get status() { return last; } };
+  window.MT5Sync = api;
 
   render();
   if (supported || typeof indexedDB !== 'undefined') recall().then(async handle => {

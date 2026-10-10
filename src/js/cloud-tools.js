@@ -59,6 +59,17 @@
     return rows;
   };
 
+  // Everything the trader adds beyond the fixed columns travels in one JSON column.
+  function tradeDetails(t) {
+    const details = {};
+    if (Array.isArray(t.marks) && t.marks.length) details.marks = t.marks.map(String);
+    if (Array.isArray(t.checklist?.done) && Array.isArray(t.checklist?.missed)) details.checklist = { done: t.checklist.done.map(String), missed: t.checklist.missed.map(String) };
+    for (const key of ['riskMoney', 'mae', 'mfe']) if (t[key] !== '' && t[key] != null && Number.isFinite(Number(t[key]))) details[key] = Number(t[key]);
+    if (t.playbook) details.playbook = String(t.playbook);
+    if (Array.isArray(t.shots) && t.shots.length) details.shots = t.shots.map(String);
+    return details;
+  }
+
   cloud.pushTrades = async function pushTrades(localTrades) {
     const session = await cloud.session();
     if (!session) throw new Error('Сначала войди в Supabase');
@@ -98,6 +109,7 @@
         opened_at: t.openedAt || null,
         closed_at: t.closedAt || null,
         tags: Array.isArray(t.tags) ? t.tags : [],
+        details: tradeDetails(t),
         source: t.source || 'github-pages-journal',
         updated_at: new Date().toISOString()
       });
@@ -119,6 +131,23 @@
     if (!session) throw new Error('Сначала войди по email');
     const { error } = await client.from('trades')
       .delete().eq('user_id', session.user.id).eq('external_id', String(externalId));
+    if (error) throw error;
+  };
+
+  /** The trader's own lists (mistakes, checklist, setup templates): one row per account. */
+  cloud.loadSettings = async function loadSettings() {
+    const session = await cloud.session();
+    if (!session) return null;
+    const { data, error } = await client.from('journal_settings').select('data').eq('user_id', session.user.id).maybeSingle();
+    if (error) throw error;
+    return data?.data || null;
+  };
+
+  cloud.saveSettings = async function saveSettings(settings) {
+    const session = await cloud.session();
+    if (!session) throw new Error('Сначала войди в Supabase');
+    const { error } = await client.from('journal_settings')
+      .upsert({ user_id: session.user.id, data: settings || {}, updated_at: new Date().toISOString() }, { onConflict: 'user_id' });
     if (error) throw error;
   };
 

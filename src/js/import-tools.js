@@ -165,6 +165,8 @@
       account: pick(headers,['account','account id','accountid'], taken),
       status: reporter ? pick(headers,['status']) : -1,
       risk: reporter ? pick(headers,['risk money']) : -1,
+      mae: reporter ? headers.findIndex(h => norm(h) === 'mae') : -1,
+      mfe: reporter ? headers.findIndex(h => norm(h) === 'mfe') : -1,
       offset: reporter ? pick(headers,['server utc offset']) : -1
     };
 
@@ -244,9 +246,12 @@
       };
       if (reporter && net != null && commission == null && swap == null) trade.fees = '';
       if (stable) {
-        // Not stored in the cloud: used to match older imports and to show live figures for open positions.
+        // legacyRef matches imports made before version 1.10; it is not stored.
         trade.legacyRef = legacyRef;
-        if (riskMoney != null) trade.riskMoney = riskMoney;
+        // Risk at entry and the worst and best floating result (reporter 1.20) are what R, MAE and MFE are built from.
+        if (riskMoney != null && riskMoney > 0) trade.riskMoney = riskMoney;
+        const mae = cell(idx.mae), mfe = cell(idx.mfe);
+        if (mae != null && mfe != null) { trade.mae = Math.abs(mae); trade.mfe = Math.abs(mfe); }
         if (status === 'open') { trade.currentPrice = cell(idx.current); trade.floatingResult = cell(idx.floating); }
       }
       result.push(trade);
@@ -303,9 +308,11 @@
 
   // Facts the broker knows better than the journal. Everything else on a trade belongs to the trader.
   const BROKER_FIELDS = ['status','entry','exit','volume','realizedPnl','date','fees'];
+  // Final only once the position is closed; while it is open they move with every tick and are shown, not saved.
+  const SETTLED_FIELDS = ['mae','mfe'];
   // Filled once and then left alone: the plan at entry, and what the trader may have typed already.
-  const FILL_ONCE = ['stopLoss','takeProfit','plannedRR','plannedRiskPct','openedAt','closedAt','session','deposit','broker','accountLabel'];
-  const LIVE_FIELDS = ['currentPrice','floatingResult','riskMoney'];
+  const FILL_ONCE = ['stopLoss','takeProfit','plannedRR','plannedRiskPct','riskMoney','openedAt','closedAt','session','deposit','broker','accountLabel'];
+  const LIVE_FIELDS = ['currentPrice','floatingResult'];
 
   /**
    * Fold freshly parsed broker rows into the journal without touching anything the trader wrote.
@@ -322,6 +329,7 @@
       const incoming = { ...p };
       delete incoming.legacyRef;
       for (const key of LIVE_FIELDS) delete incoming[key];
+      if (incoming.status === 'open') for (const key of SETTLED_FIELDS) delete incoming[key];
       if (deposit && !incoming.deposit) incoming.deposit = String(deposit);
       if (deposit && p.riskMoney > 0 && !incoming.plannedRiskPct) incoming.plannedRiskPct = String(round2(p.riskMoney / deposit * 100));
 
@@ -340,9 +348,10 @@
         if (key === 'date' && settled) continue;
         if (incoming[key] !== '' && incoming[key] != null) next[key] = incoming[key];
       }
+      for (const key of SETTLED_FIELDS) if (incoming[key] !== '' && incoming[key] != null) next[key] = incoming[key];
       for (const key of FILL_ONCE) if ((next[key] === '' || next[key] == null) && incoming[key] !== '' && incoming[key] != null) next[key] = incoming[key];
       next.tags = [...new Set([...(Array.isArray(known.tags) ? known.tags : []), ...(incoming.tags || [])])];
-      const changed = [...BROKER_FIELDS, ...FILL_ONCE].some(key => String(next[key] ?? '') !== String(known[key] ?? ''))
+      const changed = [...BROKER_FIELDS, ...SETTLED_FIELDS, ...FILL_ONCE].some(key => String(next[key] ?? '') !== String(known[key] ?? ''))
         || next.tags.length !== (Array.isArray(known.tags) ? known.tags.length : 0);
       if (changed) updated.push(next);
     }
@@ -367,6 +376,18 @@
   }
 
   /**
+   * Save without a dialog: the automatic sync must never interrupt. Returns '' on success,
+   * otherwise the reason, so the caller can report it and try again on the next pass.
+   */
+  async function saveQuietly(changed) {
+    if (tradeWriteBusy) return 'busy';
+    tradeWriteBusy = true;
+    try { await window.TradingCloud.pushTrades(changed); return ''; }
+    catch (e) { return e.message || 'save failed'; }
+    finally { tradeWriteBusy = false; }
+  }
+
+  /**
    * Save parsed broker rows into the journal. Returns what happened; never asks or alerts,
    * so it can run from the automatic folder sync as well as from a manual import.
    */
@@ -376,12 +397,8 @@
     const changed = [...added, ...updated];
     if (changed.length) {
       if (options.quiet) {
-        // The automatic sync must never interrupt with a dialog: report the problem and try again next time.
-        if (tradeWriteBusy) return { ok: false, added: 0, updated: 0, error: 'busy' };
-        tradeWriteBusy = true;
-        try { await window.TradingCloud.pushTrades(changed); }
-        catch (e) { return { ok: false, added: 0, updated: 0, error: e.message }; }
-        finally { tradeWriteBusy = false; }
+        const failure = await saveQuietly(changed);
+        if (failure) return { ok: false, added: 0, updated: 0, error: failure };
       } else if (!await saveTrades(changed)) return { ok: false, added: 0, updated: 0 };
       for (const next of updated) { const current = trades.find(t => t.id === next.id); if (current) Object.assign(current, next); }
       trades.push(...added);
@@ -389,7 +406,9 @@
     // Live figures are shown but not stored: they change every few seconds.
     for (const { id, values } of live) {
       const trade = trades.find(t => t.id === id);
-      if (trade) for (const key of LIVE_FIELDS) if (values[key] != null) trade[key] = values[key];
+      if (!trade) continue;
+      for (const key of LIVE_FIELDS) if (values[key] != null) trade[key] = values[key];
+      if (values.status === 'open' && trade.status === 'open') for (const key of SETTLED_FIELDS) if (values[key] != null) trade[key] = values[key];
     }
     if (changed.length) { if (typeof renderAll === 'function') renderAll(); }
     else if (typeof renderLiveCells === 'function') renderLiveCells();
@@ -441,5 +460,5 @@
   document.getElementById('importBrokerCsvBtn')?.addEventListener('click', openPicker);
   document.getElementById('systemBrokerImportBtn')?.addEventListener('click', openPicker);
 
-  window.BrokerCSVImporter = { parse, parseAccount, parseQuotes, isAccountFile, mergeBrokerTrades, applyBrokerTrades, rememberAccount, savedAccount, depositFor, sessionOf, openPicker };
+  window.BrokerCSVImporter = { parse, parseAccount, parseQuotes, isAccountFile, mergeBrokerTrades, applyBrokerTrades, saveQuietly, rememberAccount, savedAccount, depositFor, sessionOf, openPicker };
 })();

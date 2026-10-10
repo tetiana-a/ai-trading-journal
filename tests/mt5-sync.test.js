@@ -72,3 +72,22 @@ test('MT5 snapshot fills the prop form on the system page and keeps the stored g
  page.window.TradingPropGuard.applySnapshot({...account,equity:9990});let guard=JSON.parse(page.window.localStorage.getItem('tk_prop_guard'));
  expect(guard.currentEquity).toBe(9990);expect(guard.blocked).toBe(false);expect(guard.firmDailyLossPct).toBe(5);
  page.window.TradingPropGuard.applySnapshot({...account,equity:9890});guard=JSON.parse(page.window.localStorage.getItem('tk_prop_guard'));expect(guard.blocked).toBe(true);page.window.close();});
+
+test('chart pictures from the reporter are attached to their trade once, and wait until the trade exists',async()=>{
+ const x=setup();x.w.MT5Sync.encodeShot=jest.fn(async()=>'data:image/jpeg;base64,AAAA');
+ const folder=folderOf({'MT5_Account_1514878695.csv':{modified:1,text:ACCOUNT},'MT5_Shot_1514878695_7001_open.png':{modified:5,text:'png'},'MT5_Shot_1514878695_9999_open.png':{modified:5,text:'png'},'MT5_Shot_notes.png':{modified:5,text:'x'}});
+ await x.w.MT5Sync.use(folder);
+ expect(x.w.MT5Sync.encodeShot).not.toHaveBeenCalled();expect(x.w.TradingCloud.pushTrades).not.toHaveBeenCalled();          // no such trade yet
+ folder.files['MT5_Journal_1514878695.csv']={modified:2,text:HEADER+'\n'+OPEN_ROW+'\n'};
+ await x.w.MT5Sync.sync(false);
+ expect(x.w.TradingCloud.pushTrades).toHaveBeenCalledTimes(2);const trade=x.w.eval('trades')[0];
+ expect(trade.screenshots).toEqual(['data:image/jpeg;base64,AAAA']);expect(trade.shots).toEqual(['open']);expect(x.w.MT5Sync.status.shots).toBe(1);expect(x.state()).toContain('скриншотов: 1');
+ await x.w.MT5Sync.sync(true);expect(x.w.TradingCloud.pushTrades).toHaveBeenCalledTimes(2);expect(x.w.MT5Sync.encodeShot).toHaveBeenCalledTimes(1);          // never attached twice
+ folder.files['MT5_Journal_1514878695.csv']={modified:3,text:HEADER+'\n'+CLOSED_ROW+'\n'};folder.files['MT5_Shot_1514878695_7001_close.png']={modified:6,text:'png'};
+ await x.w.MT5Sync.sync(false);
+ const closed=x.w.eval('trades')[0];expect(closed.status).toBe('closed');expect(closed.screenshots).toHaveLength(2);expect(closed.shots).toEqual(['open','close']);
+ // A picture that cannot be decoded is skipped for good instead of being retried on every pass.
+ x.w.MT5Sync.encodeShot=jest.fn(async()=>'');closed.shots=['open'];closed.screenshots=['a'];folder.files['MT5_Shot_1514878695_7001_close.png']={modified:7,text:'bad'};
+ const before=x.w.TradingCloud.pushTrades.mock.calls.length;await x.w.MT5Sync.sync(false);await x.w.MT5Sync.sync(false);
+ expect(x.w.MT5Sync.encodeShot).toHaveBeenCalledTimes(1);expect(x.w.TradingCloud.pushTrades.mock.calls.length).toBe(before);
+ x.dom.window.close();});
