@@ -1,4 +1,5 @@
 -- Trade review details and the trader's own lists.
+-- Applied to the production Supabase project on 2026-10-10.
 --
 -- trades.details holds what the review tools add to a trade and the fixed columns do not cover:
 --   marks      execution marks: ["plan"] or the ids of the mistakes made
