@@ -11,6 +11,9 @@ let closingTradeId = null;
 
 let tradeWriteBusy = false;
 let tradeLoadVersion = 0;
+// True only while `trades` mirrors the cloud. Imports must wait for it: saving against an empty,
+// not-yet-loaded list would overwrite the notes of trades that already exist.
+let tradesLoaded = false;
 function cloudStatus(message) {
   const state = document.getElementById('cloudState');
   if (state) state.textContent = message;
@@ -18,6 +21,7 @@ function cloudStatus(message) {
 async function loadTrades() {
   const version = ++tradeLoadVersion;
   trades = [];
+  tradesLoaded = false;
   renderAll();
   try {
     if (!window.TradingCloud) throw new Error('Supabase недоступен. Обнови страницу.');
@@ -68,6 +72,7 @@ async function loadTrades() {
           byId.set(id, mapped);
         });
         trades = Array.from(byId.values());
+    tradesLoaded = true;
     cloudStatus('Загружено из Supabase: ' + trades.length + ' сделок.');
   } catch (e) {
     if (version === tradeLoadVersion) cloudStatus('Не удалось загрузить сделки: ' + e.message);
@@ -130,9 +135,26 @@ fTickerInput.addEventListener('input', () => {
   }, 400);
 });
 
+/* Open positions synced from MT5 carry the broker's own price and floating result. */
+function liveCellHtml(tr) {
+  const price = Number(tr.currentPrice).toLocaleString('ru-RU', { maximumFractionDigits: 8 });
+  const result = Number(tr.floatingResult);
+  if (!Number.isFinite(result)) return price;
+  const money = result.toLocaleString('ru-RU', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `${price} <small class="${result >= 0 ? 'pos' : 'neg'}">${result > 0 ? '+' : ''}${money}</small>`;
+}
+function renderLiveCells() {
+  for (const tr of trades) {
+    if (tr.status !== 'open' || !tr.currentPrice) continue;
+    const cell = document.querySelector(`td.live-price[data-ticker-id="${tr.id}"]`);
+    if (cell) { cell.className = 'live-price'; cell.innerHTML = liveCellHtml(tr); }
+  }
+}
+
 async function updateLivePrices() {
   const openTrades = trades.filter(t => t.status === 'open');
   for (const t of openTrades) {
+    if (t.currentPrice) continue;   // fed by MT5, not by the exchange price feed
     const cell = document.querySelector(`td.live-price[data-ticker-id="${t.id}"]`);
     if (cell) {
       const price = await fetchLivePrice(t.ticker);
@@ -189,7 +211,7 @@ function renderTrades(t) {
       <td class="name">${escapeHtml(tr.ticker || '—')}</td>
       <td><span class="badge ${tr.side === 'Long' ? 'long' : 'short'}">${tr.side}</span></td>
       <td>${tr.entry || '—'}</td>
-      <td class="live-price" data-ticker-id="${tr.id}"><span style="color:var(--txt3);font-size:10px;">${t.live_loading}</span></td>
+      <td class="live-price" data-ticker-id="${tr.id}">${tr.currentPrice ? liveCellHtml(tr) : `<span style="color:var(--txt3);font-size:10px;">${t.live_loading}</span>`}</td>
       <td>${tr.volume || '—'}</td>
       <td>${escapeHtml(tr.emotion || '—')}</td>
       <td><div class="row-ss">${ssHtml}</div></td>

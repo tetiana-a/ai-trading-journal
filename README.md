@@ -532,9 +532,18 @@ Complete eight-module learning pages are available in Russian (`learning.html`),
 
 The journal home screen includes a responsive PNL/drawdown dashboard with 7/30/90-day and all-history filters, account and currency separation, six performance metrics, pointer/keyboard inspection and an accessible daily data table. It uses the currently loaded journal data and refreshes with journal changes. PNL and drawdown are aggregated at the end of each Prague calendar day using the close timestamp (trade date fallback). Open positions, unknown results and undated trades are disclosed separately. Broker net results are used without subtracting fees again; price-based crypto results are labeled estimates. Drawdown is for closed PNL only, not account equity or intraday prop compliance. Labels support RU/UK/EN/CS.
 
-### MT5 Reporter (CSV preview)
+### MT5 Reporter 1.10
 
-`mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA exports supported fully closed positions to UTF-8 CSV for the existing broker importer. It does not trade or send data over the network. Partial closures remain excluded until full closure; reversals and unsupported events are skipped. Broker-local timestamps and separate account charges require reconciliation. Compile and verify on a demo terminal before use: MetaEditor compilation and terminal execution have not been verified in this environment.
+`mt5-reporter.html` provides a download and installation guide for `downloads/mt5/TK_Journal_Reporter.mq5`. The read-only EA writes two UTF-8 CSV files into the terminal's `MQL5/Files` folder: `MT5_Journal_<login>.csv` with open and fully closed positions (stop, target, planned risk, charges, server UTC offset) and `MT5_Account_<login>.csv` with balance, equity and day-start figures. It does not trade or send data over the network.
+
+The journal reads the files in one of two ways:
+
+- **Folder sync** (`src/js/mt5-sync.js`): in Chrome or Edge on a computer, grant read access to `MQL5/Files` once; the journal then polls the files every 15 seconds while the tab is open.
+- **Manual import**: "Import Broker CSV" accepts both files.
+
+An open position becomes an open trade and is completed in place when it closes; notes written by the trader are never overwritten (`mergeBrokerTrades` in `src/js/import-tools.js`). The account snapshot fills the prop-limit block on the Trading System page. Reversals and unsupported events are skipped, and separate account charges require reconciliation.
+
+Compile and verify on a demo terminal before use: MetaEditor compilation and terminal execution have not been verified in this environment.
 
 ### Workspace design system
 
