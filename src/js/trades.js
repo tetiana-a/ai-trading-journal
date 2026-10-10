@@ -107,8 +107,45 @@ const livePriceHint = document.getElementById('livePriceHint');
 let priceDebounce;
 let priceRequestId = 0;
 
+/* The hint under the ticker shows the current price and where it comes from, and keeps itself fresh. */
+const PRICE_REFRESH_MS = 10000;
+let priceRefresh;
+
+function priceSourceLabel(quote, t) {
+  if (quote.source === 'mt5') {
+    const spread = quote.ask > 0 ? ` · bid ${formatQuote(quote.bid, quote.digits)} / ask ${formatQuote(quote.ask, quote.digits)}` : '';
+    return t.src_mt5 + spread;
+  }
+  if (quote.source === 'coinbase') return t.src_coinbase;
+  return quote.approximate ? t.src_gold : t.src_binance;
+}
+
+async function showLivePrice(requestId, quiet) {
+  const val = fTickerInput.value.trim();
+  if (!val) return;
+  const quote = await fetchAssetQuote(val);
+  if (requestId !== priceRequestId) return;
+  const t = translations[currentLang];
+  if (quote) {
+    livePriceHint.textContent = `${t.hint_price} ${formatQuote(quote.price, quote.digits)} · ${priceSourceLabel(quote, t)} ${t.hint_click}`;
+    livePriceHint.onclick = () => {
+      if (requestId !== priceRequestId) return;
+      // Insert the number itself, rounded the way the instrument is quoted.
+      const places = Number.isInteger(quote.digits) ? quote.digits : quote.price >= 20 ? 3 : quote.price >= 1 ? 5 : 8;
+      document.getElementById('fEntry').value = Number(quote.price.toFixed(places));
+      document.getElementById('fEntry').dispatchEvent(new Event('input', { bubbles:true }));
+      document.getElementById('fEntry').focus();
+    };
+  } else if (!quiet) {
+    // A failed refresh keeps the last shown price; only a fresh lookup reports "not found".
+    livePriceHint.textContent = t.hint_not_found;
+    livePriceHint.onclick = null;
+  }
+}
+
 fTickerInput.addEventListener('input', () => {
   clearTimeout(priceDebounce);
+  clearInterval(priceRefresh);
   const requestId = ++priceRequestId;
   livePriceHint.onclick = null;
   livePriceHint.textContent = '';
@@ -117,21 +154,9 @@ fTickerInput.addEventListener('input', () => {
   if (!val) { livePriceHint.textContent = ''; return; }
 
   priceDebounce = setTimeout(async () => {
-    const price = await fetchLivePrice(val);
+    await showLivePrice(requestId, false);
     if (requestId !== priceRequestId) return;
-    const t = translations[currentLang];
-    if (price) {
-      livePriceHint.textContent = `${t.hint_price} $${price.toLocaleString('ru-RU', { maximumFractionDigits: 8 })} ${t.hint_click}`;
-      livePriceHint.onclick = () => {
-        if (requestId !== priceRequestId) return;
-        document.getElementById('fEntry').value = price;
-        document.getElementById('fEntry').dispatchEvent(new Event('input', { bubbles:true }));
-        document.getElementById('fEntry').focus();
-      };
-    } else {
-      livePriceHint.textContent = t.hint_not_found;
-      livePriceHint.onclick = null;
-    }
+    priceRefresh = setInterval(() => { if (!document.hidden) showLivePrice(requestId, true); }, PRICE_REFRESH_MS);
   }, 400);
 });
 

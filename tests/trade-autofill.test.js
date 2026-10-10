@@ -19,6 +19,8 @@ function create({draft,context,storedError=false,actualTrades=false,rows=[row]} 
   w.currentLang = 'en'; w.translations = {en:{emo_calm:'Calm',val_required:'Required',val_positive:'Positive'},ru:{emo_calm:'Спокойствие'}};
   w.document.querySelector('[data-i18n="emo_calm"]').textContent = 'Calm';
   w.trades = JSON.parse(JSON.stringify(rows)); w.fetchLivePrice = jest.fn(async () => 66000);
+  // The form asks for a quote (price plus source); the tests keep steering it through the price stub.
+  w.fetchAssetQuote = async symbol => { const price = await w.fetchLivePrice(symbol); return price ? {price, source:'binance', approximate:false} : null; }; w.formatQuote = price => String(price);
   w.clearValidationErrors = jest.fn();
   if(draft)w.localStorage.setItem('tk_trade_draft_v1',JSON.stringify(draft));
   if(context)w.localStorage.setItem('tk_trade_context_v1',JSON.stringify(context));
