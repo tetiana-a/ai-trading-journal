@@ -11,6 +11,7 @@
 
   const PROP_PRESETS = {
     'ftmo-1step': { firm:'FTMO', program:'1-Step', daily:3, max:10, target:10, personal:1 },
+    'ftmo-2step': { firm:'FTMO', program:'2-Step', daily:5, max:10, target:10, personal:1 },
     'the5ers-2step': { firm:'The5ers', program:'2-Step', daily:3, max:10, target:10, personal:1 },
     'itrade-1step': { firm:'iTrade', program:'1-Step', daily:3, max:5, target:10, personal:0.75 },
     'itrade-2step': { firm:'iTrade', program:'2-Step', daily:5, max:7, target:10, personal:1 },
@@ -102,13 +103,19 @@
   function propMetrics() {
     const size = num('propSize');
     const balance = num('propBalance') || size;
-    const equity = num('propEquity') || balance;
-    const dayStart = num('propDayStart') || balance;
-    const dailyPct = num('propDailyPct');
-    const maxPct = num('propMaxPct');
-    const targetPct = num('propTargetPct');
-    const personalPct = num('propPersonalPct');
+    return metricsOf({
+      size, balance,
+      equity: num('propEquity') || balance,
+      dayStart: num('propDayStart') || balance,
+      dailyPct: num('propDailyPct'),
+      maxPct: num('propMaxPct'),
+      targetPct: num('propTargetPct'),
+      personalPct: num('propPersonalPct')
+    });
+  }
 
+  // The same limit arithmetic serves the form on this page and the MT5 snapshot on pages without the form.
+  function metricsOf({ size, balance, equity, dayStart, dailyPct, maxPct, targetPct, personalPct }) {
     const dailyFloor = dayStart * (1 - dailyPct/100);
     const maxFloor = size * (1 - maxPct/100);
     const personalFloor = dayStart * (1 - personalPct/100);
@@ -160,7 +167,15 @@
     }));
   }
 
-  $('propPreset')?.addEventListener('change', applyPreset);
+  // Remember the chosen programme: without this every reload fell back to the first preset and its limits.
+  try {
+    const remembered = localStorage.getItem('tk_prop_preset');
+    if ($('propPreset') && remembered && PROP_PRESETS[remembered]) $('propPreset').value = remembered;
+  } catch (_) {}
+  $('propPreset')?.addEventListener('change', () => {
+    try { localStorage.setItem('tk_prop_preset', $('propPreset').value); } catch (_) {}
+    applyPreset();
+  });
   ['propSize','propBalance','propEquity','propDayStart','propDailyPct','propMaxPct','propTargetPct','propPersonalPct'].forEach(id => $(id)?.addEventListener('input', renderProp));
   $('propSave')?.addEventListener('click', async () => {
     const state = $('propSaveState');
@@ -183,6 +198,49 @@
     } catch (e) { state.textContent = T('Ошибка: ','Error: ') + e.message; }
   });
   applyPreset();
+
+  // ===== MT5 account snapshot =====
+  // MT5 Reporter writes balance, equity and the day-start balance; the journal turns them into limit figures.
+  function applySnapshot(account) {
+    if (!account || !(account.balance > 0)) return;
+    const size = account.initialBalance > 0 ? account.initialBalance : 0;
+    if ($('propResult')) {
+      const put = (id, value) => { if ($(id) && value > 0) $(id).value = value; };
+      put('propSize', size); put('propBalance', account.balance); put('propEquity', account.equity); put('propDayStart', account.dayStartBalance);
+      renderProp();
+      const when = account.updatedAt ? new Date(account.updatedAt).toLocaleString(isEn ? 'en-GB' : 'ru-RU', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+      const note = $('propSource');
+      if (note) note.textContent = 'MT5 · ' + account.server + ' · ' + account.login + (when ? T(' · обновлено ',' · updated ') + when : '')
+        + T(' · открыто: ',' · open: ') + account.openPositions + T(' · риск до стопов: ',' · risk to stops: ') + fmt(account.openRisk) + ' ' + account.currency
+        + (account.openWithoutStop > 0 ? T(' · БЕЗ СТОПА: ',' · WITHOUT STOP: ') + account.openWithoutStop : '');
+      return;
+    }
+    // No form on this page: keep the stored guard current with the limits saved earlier.
+    try {
+      const saved = JSON.parse(localStorage.getItem('tk_prop_guard') || '{}');
+      const m = metricsOf({
+        size: size || Number(saved.accountSize || 0), balance: account.balance, equity: account.equity,
+        dayStart: account.dayStartBalance || account.balance,
+        dailyPct: Number(saved.firmDailyLossPct || 0), maxPct: Number(saved.maxLossPct || 0),
+        targetPct: 0, personalPct: Number(saved.personalDailyStopPct || 0)
+      });
+      const limitsKnown = m.dailyPct > 0 && m.maxPct > 0 && m.personalPct > 0;
+      localStorage.setItem('tk_prop_guard', JSON.stringify({
+        ...saved, accountSize: m.size, dayStartBalance: m.dayStart, currentEquity: m.equity,
+        blocked: limitsKnown ? (m.blocked || m.firmBreach) : !!saved.blocked
+      }));
+    } catch (_) {}
+  }
+  function freshSnapshot() {
+    try {
+      const account = JSON.parse(localStorage.getItem('tk_mt5_account') || 'null');
+      return account && account.updatedAt && Date.now() - Date.parse(account.updatedAt) < 24 * 3600 * 1000 ? account : null;
+    } catch (_) { return null; }
+  }
+  window.TradingPropGuard = { applySnapshot, metricsOf };
+  applySnapshot(freshSnapshot());
+  // Another tab of the journal may be the one syncing with MT5.
+  window.addEventListener('storage', e => { if (e.key === 'tk_mt5_account') applySnapshot(freshSnapshot()); });
 
   window.TradingRiskGuard = {
     async canAddTrade() {
