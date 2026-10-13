@@ -25,9 +25,9 @@
     trend:   { ru: 'Старший таймфрейм в мою сторону', uk: 'Старший таймфрейм у мій бік', en: 'Higher timeframe agrees', cs: 'Vyšší timeframe souhlasí' },
     level:   { ru: 'Вход от уровня или зоны, не посередине', uk: 'Вхід від рівня або зони, не посередині', en: 'Entry at a level or zone, not mid-range', cs: 'Vstup od úrovně nebo zóny, ne uprostřed' },
     confirm: { ru: 'Есть подтверждение по моему сетапу', uk: 'Є підтвердження за моїм сетапом', en: 'My setup is confirmed', cs: 'Můj setup je potvrzen' },
-    risk:    { ru: 'Стоп за структурой, риск не больше 1 %', uk: 'Стоп за структурою, ризик не більше 1 %', en: 'Stop behind structure, risk 1 % or less', cs: 'Stop za strukturou, riziko nejvýše 1 %' },
+    risk:    { ru: 'Стоп за структурой, риск не больше 0,5 %', uk: 'Стоп за структурою, ризик не більше 0,5 %', en: 'Stop behind structure, risk 0.5 % or less', cs: 'Stop za strukturou, riziko nejvýše 0,5 %' },
     target:  { ru: 'Цель не меньше 2R', uk: 'Ціль не менше 2R', en: 'Target at least 2R', cs: 'Cíl alespoň 2R' },
-    news:    { ru: 'Нет важных новостей в ближайшие 30 минут', uk: 'Немає важливих новин у найближчі 30 хвилин', en: 'No major news in the next 30 minutes', cs: 'Žádné důležité zprávy v příštích 30 minutách' }
+    news:    { ru: 'Нет важных новостей за 15 минут до и после входа', uk: 'Немає важливих новин за 15 хвилин до і після входу', en: 'No major news 15 minutes before or after entry', cs: 'Žádné důležité zprávy 15 minut před vstupem ani po něm' }
   };
   const DEFAULT_MARKS = Object.keys(MARK_WORDS).filter(id => id !== 'plan');
   const DEFAULT_CHECKS = Object.keys(CHECK_WORDS);
